@@ -5,47 +5,103 @@
 @section('content')
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="text-gray-800">Daftar Pengunjung</h4>
-    <div>
-        <button id="btnCetakAnggota" class="btn btn-success">
-            <i class="fas fa-print"></i> Cetak Pengunjung
-        </button>
-    </div>
+    <h4 class="text-gray-800 fw-bold">Daftar Pengunjung</h4>
+
+    <button id="btnCetakAnggota" class="btn btn-success shadow-sm">
+        <i class="fas fa-file-excel"></i> Export Excel
+    </button>
 </div>
+
+
+<div class="card shadow">
+<div class="card-body">
 
 <div class="table-responsive">
-    <table class="table table-bordered text-center">
-        <thead class="bg-primary text-white text-center">
-            <tr>
-                <th>Nama</th>
-                <th>Kelas</th>
-                <th>NISN</th>
-                <th>Keperluan</th>
-                <th>Tanggal Kunjungan</th>
-            </tr>
-        </thead>
-        <tbody id="pengunjung"></tbody>
-    </table>
+<table class="table table-bordered table-hover text-center align-middle">
+
+<thead class="bg-primary text-white">
+<tr>
+    <th>Nama</th>
+    <th>Kelas</th>
+    <th>NISN</th>
+    <th>Keperluan</th>
+    <th>Tanggal</th>
+    <th width="140">Aksi</th>
+</tr>
+</thead>
+
+<tbody id="pengunjung">
+<tr>
+<td colspan="6" class="text-muted">Memuat data...</td>
+</tr>
+</tbody>
+
+</table>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
+</div>
+</div>
 
-    const tbody = document.getElementById("pengunjung");
-    const token = localStorage.getItem("token");
+
+
+{{-- MODAL EDIT --}}
+<div class="modal fade" id="modalEdit">
+<div class="modal-dialog">
+<div class="modal-content">
+
+<div class="modal-header">
+<h5 class="modal-title">Edit Pengunjung</h5>
+<button class="close" data-dismiss="modal">&times;</button>
+</div>
+
+<div class="modal-body">
+
+<input type="hidden" id="editId">
+
+<label>Keperluan</label>
+<input type="text" id="editKeperluan" class="form-control mb-3">
+
+<label>Tanggal Kunjungan</label>
+<input type="date" id="editTanggal" class="form-control">
+
+</div>
+
+<div class="modal-footer">
+<button class="btn btn-secondary" data-dismiss="modal">Batal</button>
+<button class="btn btn-primary" id="btnUpdate">Simpan Perubahan</button>
+</div>
+
+</div>
+</div>
+</div>
+
+@endsection
+
+
+
+@section('scripts')
+<script>
+
+const tbody = document.getElementById("pengunjung");
+const token = localStorage.getItem("token");
+
+
+// ================= LOAD DATA =================
+document.addEventListener("DOMContentLoaded", loadData);
+
+async function loadData(){
 
     if(!token){
-        tbody.innerHTML = `<tr><td colspan="5">Silakan login terlebih dahulu</td></tr>`;
+        tbody.innerHTML=`<tr><td colspan="6">Login terlebih dahulu</td></tr>`;
         return;
     }
 
     try{
 
-        const res = await fetch("/api/pengunjung", {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token,
-                "Accept": "application/json"
+        const res = await fetch("/api/pengunjung",{
+            headers:{
+                "Authorization":"Bearer "+token,
+                "Accept":"application/json"
             }
         });
 
@@ -54,36 +110,50 @@ document.addEventListener("DOMContentLoaded", async () => {
         const json = await res.json();
         const data = json.data;
 
-        if(!data || data.length === 0){
-            tbody.innerHTML = `<tr><td colspan="5">Belum ada data pengunjung</td></tr>`;
+        if(!data.length){
+            tbody.innerHTML=`<tr><td colspan="6" class="text-muted">Belum ada data pengunjung</td></tr>`;
             return;
         }
 
-        let rows = "";
+        let html="";
 
-        data.forEach(item => {
-            rows += `
-                <tr>
-                    <td>${item.nama}</td>
-                    <td>${item.kelas}</td>
-                    <td>${item.nisn}</td>
-                    <td>${item.keperluan}</td>
-                    <td>${formatTanggal(item.tanggal_kunjungan)}</td>
-                </tr>
+        data.forEach(p=>{
+            html+=`
+            <tr>
+                <td class="fw-bold">${p.nama}</td>
+                <td>${p.kelas}</td>
+                <td>${p.nisn}</td>
+                <td>${p.keperluan}</td>
+                <td>${formatTanggal(p.tanggal_kunjungan)}</td>
+                <td>
+
+                    <button class="btn btn-sm btn-warning mr-1"
+                        onclick="editData('${p.id}','${p.keperluan}','${p.tanggal_kunjungan}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+
+                    <button class="btn btn-sm btn-danger"
+                        onclick="hapusData('${p.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+
+                </td>
+            </tr>
             `;
         });
 
-        tbody.innerHTML = rows;
+        tbody.innerHTML=html;
 
     }catch(err){
-        tbody.innerHTML = `<tr><td colspan="5">${err.message}</td></tr>`;
+        tbody.innerHTML=`<tr><td colspan="6" class="text-danger">${err.message}</td></tr>`;
     }
-});
+}
 
 
+
+// ================= FORMAT TANGGAL =================
 function formatTanggal(tgl){
-    const d = new Date(tgl);
-    return d.toLocaleDateString("id-ID", {
+    return new Date(tgl).toLocaleDateString("id-ID",{
         day:"2-digit",
         month:"long",
         year:"numeric"
@@ -91,9 +161,99 @@ function formatTanggal(tgl){
 }
 
 
-// tombol print
-document.getElementById("btnCetakAnggota")
-.addEventListener("click", () => window.print());
-</script>
 
+// ================= EDIT =================
+function editData(id,keperluan,tanggal){
+    document.getElementById("editId").value=id;
+    document.getElementById("editKeperluan").value=keperluan;
+    document.getElementById("editTanggal").value=tanggal;
+    $("#modalEdit").modal("show");
+}
+
+
+
+// ================= UPDATE =================
+document.getElementById("btnUpdate").onclick = async ()=>{
+
+    const id=document.getElementById("editId").value;
+
+    const body={
+        keperluan:document.getElementById("editKeperluan").value,
+        tanggal_kunjungan:document.getElementById("editTanggal").value
+    };
+
+    const btn=this;
+    btn.disabled=true;
+    btn.innerText="Menyimpan...";
+
+    const res=await fetch(`/api/pengunjung/${id}`,{
+        method:"PUT",
+        headers:{
+            "Authorization":"Bearer "+token,
+            "Content-Type":"application/json",
+            "Accept":"application/json"
+        },
+        body:JSON.stringify(body)
+    });
+
+    btn.disabled=false;
+    btn.innerText="Simpan Perubahan";
+
+    if(res.ok){
+        $("#modalEdit").modal("hide");
+        loadData();
+    }else{
+        alert("Gagal update data");
+    }
+};
+
+
+
+// ================= DELETE =================
+async function hapusData(id){
+
+    if(!confirm("Yakin ingin menghapus data ini?")) return;
+
+    const res=await fetch(`/api/pengunjung/${id}`,{
+        method:"DELETE",
+        headers:{
+            "Authorization":"Bearer "+token,
+            "Accept":"application/json"
+        }
+    });
+
+    if(res.ok){
+        loadData();
+    }else{
+        alert("Gagal menghapus data");
+    }
+}
+
+
+
+// ================= EXPORT EXCEL =================
+document.getElementById("btnCetakAnggota").addEventListener("click", async ()=>{
+
+    const res = await fetch("/api/pengunjung/export",{
+        headers:{
+            "Authorization":"Bearer "+token
+        }
+    });
+
+    if(!res.ok){
+        alert("Gagal export");
+        return;
+    }
+
+    const blob = await res.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "data-pengunjung.xlsx";
+    a.click();
+});
+
+
+</script>
 @endsection

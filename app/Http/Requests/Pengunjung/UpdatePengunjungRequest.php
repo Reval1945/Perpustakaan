@@ -14,11 +14,8 @@ class UpdatePengunjungRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nama'              => 'required|string|max:255',
-            'kelas'             => 'nullable|string|max:50',
-            'nisn'              => 'nullable|string|max:20',
-            'keperluan'         => 'nullable|string',
-            'tanggal_kunjungan' => 'required|date',
+            'keperluan' => 'required|string|max:255',
+            'tanggal_kunjungan' => 'required|date'
         ];
     }
 }

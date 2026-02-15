@@ -79,8 +79,11 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
     });
 
     // PENGUNJUNG
+    Route::get('/pengunjung/export',[PengunjungController::class,'exportExcel']);
     Route::resource('/pengunjung', PengunjungController::class);
-    Route::get('/export/pengunjung', [PengunjungController::class, 'exportExcel']);
+    Route::put('/pengunjung/{id}',[PengunjungController::class,'update']);
+    Route::delete('/pengunjung/{id}',[PengunjungController::class,'destroy']);
+    
 });
 
 // Super Admin
