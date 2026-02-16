@@ -15,6 +15,7 @@ class Book extends Model
         'id',
         'kode_buku',
         'judul',
+        'sinopsis',
         'category_id',
         'penulis',
         'penerbit',

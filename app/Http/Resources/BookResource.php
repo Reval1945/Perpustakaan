@@ -12,6 +12,7 @@ class BookResource extends JsonResource
             'id'          => $this->id,
             'kode_buku'   => $this->kode_buku,
             'judul'       => $this->judul,
+            'sinopsis'    => $this->sinopsis,
             'kategori'    => $this->category->name ?? null,
             'penulis'     => $this->penulis,
             'penerbit'    => $this->penerbit,

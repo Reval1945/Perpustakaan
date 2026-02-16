@@ -20,10 +20,10 @@
     <table class="table table-bordered text-center">
         <thead class="bg-primary text-white text-center">
             <tr>
-                <th>No Absen</th>
                 <th>Kode User</th>
                 <th>Nama</th>
                 <th>Kelas</th>
+                <th>NISN</th>
                 <th>Email</th>
                 <th>Role</th>
                 <th>Aksi</th>
@@ -86,7 +86,7 @@
                             <label class="font-weight-bold">
                                 <i class="fas fa-id-card mr-1 text-primary"></i> NISN
                             </label>
-                            <input type="text" class="form-control" placeholder="Masukkan NISN">
+                            <input id="nisn" type="number" class="form-control" placeholder="Masukkan NISN">
                         </div>
 
                         <div class="form-group col-md-6">
@@ -110,8 +110,7 @@
                         </label>
                         <select id="role" class="form-control">
                             <option value="">-- Pilih Role --</option>
-                            <option value="user">Pengguna</option>
-                            <option value="admin">Admin</option>
+                            <option value="user">Anggota</option>
                         </select>
                     </div>
 
@@ -222,10 +221,10 @@ function renderTable(users) {
         .forEach(user => {
             tbody.innerHTML += `
                 <tr>
-                    <td>${user.roll_number ?? '-'}</td>
                     <td>${user.kode_user}</td>
                     <td>${user.name}</td>
                     <td>${user.class ?? '-'}</td>
+                    <td>${user.nisn}</td>
                     <td>${user.email}</td>
                     <td>
                         <span class="badge badge-success">
@@ -277,6 +276,7 @@ function renderTable(users) {
         document.getElementById('email').value = user.email;
         document.getElementById('role').value = user.role;
         document.getElementById('class').value = user.class ?? '';
+        document.getElementById('nisn').value = user.nisn;
         document.getElementById('roll_number').value = user.roll_number ?? '';
         document.getElementById('phone').value = user.phone ?? '';
 
@@ -338,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function () {
         email: document.getElementById('email').value,
         role: document.getElementById('role').value,
         class: document.getElementById('class').value,
+        nisn: document.getElementById('nisn').value,
         roll_number: document.getElementById('roll_number').value,
         phone: document.getElementById('phone').value,
         password: document.getElementById('passwordInput').value

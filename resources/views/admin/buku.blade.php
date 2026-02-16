@@ -7,9 +7,14 @@
 {{-- Header --}}
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="text-gray-800">Daftar Buku</h4>
-    <button class="btn btn-primary" data-toggle="modal" data-target="#modalTambahBuku">
-        <i class="fas fa-plus"></i> Tambah Buku
-    </button>
+    <div>
+        <button id="btnTambahBuku" class="btn btn-primary" data-toggle="modal" data-target="#modalTambahBuku">
+            <i class="fas fa-plus"></i> Tambah Buku
+        </button>
+        <button id="btnCetakBuku" class="btn btn-success">
+            <i class="fas fa-print"></i> Cetak Buku
+        </button>
+    </div>
 </div>
 
 <!-- DAFTAR BUKU -->
@@ -42,6 +47,13 @@
                             <i class="fas fa-book mr-1 text-primary"></i> Judul Buku
                         </label>
                         <input type="text" id="judul" class="form-control form-control-lg" placeholder="Masukkan judul buku">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="font-weight-bold">
+                            <i class="fas fa-book mr-1 text-primary"></i> Sinopsis
+                        </label>
+                        <input type="text" id="sinopsis" class="form-control form-control-lg" placeholder="Masukkan sinopsis buku">
                     </div>
 
                     <div class="form-group">
@@ -389,6 +401,7 @@ document.getElementById('btnSaveBook').addEventListener('click', function () {
 
     const formData = new FormData();
     formData.append('judul', document.getElementById('judul').value);
+    formData.append('sinopsis', document.getElementById('sinopsis').value);
     formData.append('kode_buku', document.getElementById('kode_buku').value);
     formData.append('category_id', document.getElementById('category_id').value);
     formData.append('penulis', document.getElementById('penulis').value);
@@ -459,6 +472,7 @@ document.addEventListener('click', function (e) {
 
         document.getElementById('book_id').value = book.id;
         document.getElementById('judul').value = book.judul;
+        document.getElementById('sinopsis').value = book.sinopsis;
         document.getElementById('kode_buku').value = book.kode_buku;
         document.getElementById('penulis').value = book.penulis;
         document.getElementById('penerbit').value = book.penerbit;
@@ -521,7 +535,7 @@ document.addEventListener('click', function (e) {
 
         // Deskripsi / sinopsis (jika tidak ada field, pakai default)
         document.getElementById('modalDeskripsi').textContent =
-            book.deskripsi || 'Tidak ada sinopsis buku.';
+            book.sinopsis || 'Tidak ada sinopsis buku.';
 
         // Tampilkan modal
         $('#modalViewBook').modal('show');

@@ -11,6 +11,7 @@ class UpdateBookRequest extends FormRequest
         return [
             'kode_buku'   => 'required|string|unique:books,kode_buku,' . $this->book,
             'judul'       => 'required|string',
+            'sinopsis'    => 'required|string',
             'category_id' => 'required|exists:categories,id',
             'penulis'     => 'required|string',
             'penerbit'    => 'required|string',
@@ -26,6 +27,7 @@ class UpdateBookRequest extends FormRequest
     {
         return [
             'judul.required' => 'Judul buku wajib diisi',
+            'sinopsis.required' => 'Sinopsis wajib diisi',
             'stok.min'       => 'Stok tidak boleh negatif',
             'rak.required'   => 'Rak wajib diisi',
             'nomor_rak.required' => 'Nomor rak wajib diisi',
