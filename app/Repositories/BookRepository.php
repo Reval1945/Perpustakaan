@@ -10,7 +10,9 @@ class BookRepository implements BookInterface
 {
     public function getAll(array $filters = [])
     {
-        $query = Book::with('category')->latest();
+        $query = Book::with('category')
+            ->withCount('stocks as available_stock')
+            ->latest();
 
         $query->when($filters['judul'] ?? null, function ($q, $value) {
             $q->where('judul', 'like', "%{$value}%");

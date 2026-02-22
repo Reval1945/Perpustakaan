@@ -17,12 +17,12 @@ class BookResource extends JsonResource
             'penulis'     => $this->penulis,
             'penerbit'    => $this->penerbit,
             'tahun'       => $this->tahun,
-            'stok'        => $this->stok,
             'rak'         => $this->rak,
             'nomor_rak'   => $this->nomor_rak,
             'image' => $this->image 
                 ? asset('storage/' . $this->image) 
                 : null,
+            'available_stock' => $this->available_stock ?? 0,
         ];
     }
 }

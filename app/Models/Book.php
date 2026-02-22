@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Support\Str;
 
 class Book extends Model
 {
@@ -12,7 +13,6 @@ class Book extends Model
     protected $table = 'books';
 
     protected $fillable = [
-        'id',
         'kode_buku',
         'judul',
         'sinopsis',
@@ -20,7 +20,6 @@ class Book extends Model
         'penulis',
         'penerbit',
         'tahun',
-        'stok',
         'rak',
         'nomor_rak',
         'image'
@@ -38,4 +37,10 @@ class Book extends Model
     {
         return $this->hasMany(TransactionDetail::class);
     }
+
+    public function stocks()
+{
+    return $this->hasMany(BookStock::class);
+}
+
 }

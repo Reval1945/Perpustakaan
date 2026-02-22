@@ -12,6 +12,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AturanPeminjamanController;
 use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\Anggota\DashboardAnggotaController;
+use App\Http\Controllers\BookStockController;
+use App\Http\Controllers\Anggota\ProfileController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -46,6 +48,7 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
 
     // BUKU
     Route::resource('/books', BookController::class);
+    Route::post('/book-stocks/{book}', [BookStockController::class,'store']);
     Route::get('/books/export/excel', [BookController::class, 'exportExcel']);
 
     //  ATURAN PEMINJAMAN
@@ -100,6 +103,10 @@ Route::middleware(['auth:sanctum', 'role.manual:user'])->group(function () {
     // DASHBOARD
     Route::get('/anggota/dashboard', [DashboardAnggotaController::class, 'index']);
     Route::get('/dashboard/stats', [DashboardAnggotaController::class, 'stats']);
+
+    Route::get('/me',[ProfileController::class,'me']);
+    Route::post('/update-profile',[ProfileController::class,'update']);
+
     // PENGUNJUNG
     Route::post('/pengunjung', [PengunjungController::class, 'store']);
 

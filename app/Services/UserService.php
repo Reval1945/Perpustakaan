@@ -15,6 +15,8 @@ class UserService
             'kode_user'   => User::generateKode($data['role']),
             'name'        => $data['name'],
             'email'       => $data['email'],
+            'nisn'        => $data['nisn'],
+            'photo'       => $data['photo'] ?? null,
             'password'    => Hash::make($data['password']),
             'role'        => $data['role'],
             'class'       => $data['class'] ?? null,

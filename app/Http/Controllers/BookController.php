@@ -61,6 +61,9 @@ class BookController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+        catch (Throwable $e) {
+            return $e->getMessage();
+        }
     }
 
     public function show (string $id){

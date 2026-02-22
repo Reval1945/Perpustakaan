@@ -19,7 +19,6 @@ return new class extends Migration
         $table->string('penulis');
         $table->string('penerbit');
         $table->year('tahun');
-        $table->integer('stok');
         $table->timestamps();
         $table->softDeletes();
 

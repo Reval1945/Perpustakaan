@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'class',
+        'photo',
         'roll_number',
         'phone',
         'nisn',
@@ -47,6 +48,15 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->photo
+            ? asset('storage/profile/'.$this->photo)
+            : asset('template/img/undraw_profile.svg');
+    }
+
     protected function casts(): array
     {
         return [

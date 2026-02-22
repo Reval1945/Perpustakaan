@@ -16,6 +16,7 @@ class StoreBookRequest extends FormRequest
     {
         return [
             'judul'       => 'required|string|max:255',
+            'sinopsis'    => 'required|string|max:255',
             'kode_buku'   => [
                 'required',
                 'string',
@@ -26,7 +27,6 @@ class StoreBookRequest extends FormRequest
             'penulis'     => 'required|string|max:255',
             'penerbit'    => 'required|string|max:255',
             'tahun'       => 'required|digits:4',
-            'stok'        => 'required|integer|min:0',
             'rak'         => 'required|string|max:255',
             'nomor_rak'   => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -37,7 +37,7 @@ class StoreBookRequest extends FormRequest
     {
         return [
             'judul.required' => 'Judul buku wajib diisi',
-            'stok.min'       => 'Stok tidak boleh negatif',
+            'sinopsis.required' => 'Sinopsis buku wajib diisi',
             'rak.required'   => 'Rak wajib diisi',
             'nomor_rak.required' => 'Nomor rak wajib diisi',
             'category_id.required' => 'Kategori wajib diisi',
