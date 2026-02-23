@@ -14,6 +14,7 @@ use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\Anggota\DashboardAnggotaController;
 use App\Http\Controllers\BookStockController;
 use App\Http\Controllers\Anggota\ProfileController;
+use App\Http\Controllers\Admin\ProfileAdminController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -43,12 +44,18 @@ Route::middleware(['auth:sanctum', 'role.manual:user'])->group(function () {
 
 // API FOR ROLE ADMIN
 Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
+
+    Route::get('/me1',[ProfileAdminController::class,'me']);
+    Route::post('/update-profile1',[ProfileAdminController::class,'update']);
+
     // KATEGORI
     Route::resource('/categories', CategoryController::class);
 
     // BUKU
     Route::resource('/books', BookController::class);
-    Route::post('/book-stocks/{book}', [BookStockController::class,'store']);
+    Route::get('/books/{book}/stok', [BookStockController::class,'index']);
+    Route::post('/books/{book}/stok', [BookStockController::class,'store']);
+    Route::delete('/stok/{id}', [BookStockController::class,'destroy']);
     Route::get('/books/export/excel', [BookController::class, 'exportExcel']);
 
     //  ATURAN PEMINJAMAN

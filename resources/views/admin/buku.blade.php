@@ -136,34 +136,41 @@
     </div>
 </div>
 
-<!-- Modal Tambah Stok -->
+<!-- Modal Kelola Stok -->
 <div class="modal fade" id="modalTambahStok">
     <div class="modal-dialog">
         <div class="modal-content">
 
-            <div class="modal-header bg-success text-white">
-                <h5>Tambah Stok Buku</h5>
+            <div class="modal-header bg-primary text-white">
+                <h5>Kelola Stok Buku</h5>
+                <button class="close text-white" data-dismiss="modal">&times;</button>
             </div>
 
             <div class="modal-body">
 
                 <input type="hidden" id="stok_book_id">
 
+                <!-- Input kode -->
                 <div class="form-group">
-                    <label>Jumlah Eksemplar</label>
-                    <input type="number" id="jumlah_stok" class="form-control">
+                    <label>Kode Eksemplar</label>
+                    <input type="text" id="kode_eksemplar" class="form-control" placeholder="Contoh: BK001-A">
                 </div>
 
-            </div>
+                <button class="btn btn-primary btn-block mb-3" id="btnTambahStok">
+                    Tambah Kode
+                </button>
 
-            <div class="modal-footer">
-                <button class="btn btn-success" id="btnTambahStok">Tambah</button>
+                <hr>
+
+                <!-- List stok -->
+                <h6>Daftar Kode Buku</h6>
+                <ul class="list-group" id="listStok"></ul>
+
             </div>
 
         </div>
     </div>
 </div>
-
 
 <!-- MODAL VIEW -->
 <div class="modal fade" id="modalViewBook" tabindex="-1">
@@ -311,8 +318,8 @@
 const API = 'http://127.0.0.1:8000/api';
 const token = localStorage.getItem('token');
 
-/* ================= INIT ================= */
 
+/* ================= INIT ================= */
 document.addEventListener('DOMContentLoaded', () => {
     fetchBooks();
     fetchCategories();
@@ -320,7 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* ================= FETCH BOOKS ================= */
-
 async function fetchBooks(){
     try{
         const res = await fetch(`${API}/books`,{
@@ -330,19 +336,19 @@ async function fetchBooks(){
             }
         });
 
-        if(!res.ok) throw new Error();
-
-        console.log(res.status);
+        if(!res.ok) throw new Error("Fetch gagal");
 
         const data = await res.json();
         renderBooks(data.data);
 
-    }catch{
+    }catch(err){
+        console.error(err);
         alert('Gagal mengambil data buku');
     }
 }
 
 
+/* ================= RENDER BOOK ================= */
 function renderBooks(books){
     const container = document.getElementById('bookList');
     if(!container) return;
@@ -364,26 +370,29 @@ function renderBooks(books){
 
                     <h6 class="font-weight-bold">${book.judul}</h6>
 
-                    <small class="text-muted">Penerbit: ${book.penerbit}</small>
-                    <small>Rak: <b>${book.rak}-${book.nomor_rak}</b></small>
+                    <small class="text-muted">Penerbit: ${book.penerbit ?? '-'}</small>
+                    <small>Rak: <b>${book.rak ?? '-'}-${book.nomor_rak ?? '-'}</b></small>
                     <small>Stok: <b>${stok} Buku</b></small>
 
-                    <span class="badge badge-info mt-1 mb-2">${book.kategori}</span>
+                    <span class="badge badge-info mt-1 mb-2">${book.kategori ?? '-'}</span>
 
                     <div class="mt-auto text-right">
 
                         <button class="btn btn-warning btn-sm action"
-                            data-type="edit" data-id="${book.id}">
+                            data-type="edit"
+                            data-book='${JSON.stringify(book)}'>
                             <i class="fas fa-edit"></i>
                         </button>
 
                         <button class="btn btn-info btn-sm action"
-                            data-type="show" data-id="${book.id}">
+                            data-type="show"
+                            data-book='${JSON.stringify(book)}'>
                             <i class="fas fa-eye"></i>
                         </button>
 
                         <button class="btn btn-danger btn-sm action"
-                            data-type="delete" data-id="${book.id}">
+                            data-type="delete"
+                            data-id="${book.id}">
                             <i class="fas fa-trash"></i>
                         </button>
 
@@ -400,9 +409,7 @@ function renderBooks(books){
 }
 
 
-
 /* ================= FETCH CATEGORY ================= */
-
 async function fetchCategories(){
     try{
         const res = await fetch(`${API}/categories`,{
@@ -428,15 +435,12 @@ async function fetchCategories(){
 }
 
 
-
 /* ================= SAVE BOOK ================= */
-
 document.addEventListener('click', async e=>{
 
     if(!e.target.closest('#btnSaveBook')) return;
 
     const id = document.getElementById('book_id').value;
-
     const form = new FormData();
 
     [
@@ -452,19 +456,18 @@ document.addEventListener('click', async e=>{
     if(img) form.append('image',img);
 
     let url=`${API}/books`;
-
     if(id){
         url+=`/${id}`;
         form.append('_method','PUT');
     }
 
     try{
-
         const res=await fetch(url,{
             method:'POST',
-            headers:{ Authorization:`Bearer ${token}`,
-                      Accept:'application/json'
-                    },
+            headers:{
+                Authorization:`Bearer ${token}`,
+                Accept:'application/json'
+            },
             body:form
         });
 
@@ -479,36 +482,34 @@ document.addEventListener('click', async e=>{
         fetchBooks();
         resetBookForm();
 
-    }catch{
+    }catch(err){
+        console.error(err);
         alert('Gagal menyimpan buku');
     }
-
 });
 
 
 /* ================= ACTION BUTTON ================= */
-
 document.addEventListener('click', async e=>{
 
     const btn=e.target.closest('.action');
     if(!btn) return;
 
-    const id=btn.dataset.id;
     const type=btn.dataset.type;
-
-    const res=await fetch(`${API}/books/${id}`,{
-        headers:{ Authorization:`Bearer ${token}` }
-    });
-
-    const {data:book}=await res.json();
-
 
     /* ===== EDIT ===== */
     if(type==='edit'){
+        const book = JSON.parse(btn.dataset.book);
 
-        Object.keys(book).forEach(k=>{
-            if(document.getElementById(k))
-                document.getElementById(k).value=book[k];
+        document.getElementById('book_id').value = book.id;
+
+        [
+            'judul','sinopsis','kode_buku',
+            'category_id','penulis','penerbit',
+            'tahun','rak','nomor_rak'
+        ].forEach(k=>{
+            const el=document.getElementById(k);
+            if(el) el.value = book[k] ?? '';
         });
 
         $('#modalTambahBuku').modal('show');
@@ -517,14 +518,28 @@ document.addEventListener('click', async e=>{
 
     /* ===== SHOW ===== */
     if(type==='show'){
+        const book = JSON.parse(btn.dataset.book);
 
-        document.getElementById('modalJudul').textContent=book.judul;
-        document.getElementById('modalCover').src=book.image || '';
-        document.getElementById('modalStok').textContent=(book.available_stock ?? 0)+' Buku';
-        document.getElementById('modalPenerbit').textContent=book.penerbit;
-        document.getElementById('modalKategori').textContent=book.kategori;
-        document.getElementById('modalRak').textContent=book.rak+"-"+book.nomor_rak;
-        document.getElementById('modalDeskripsi').textContent=book.sinopsis || '-';
+        document.getElementById('modalJudul').innerText = book.judul;
+        document.getElementById('modalPenerbit').innerText = book.penerbit ?? '-';
+        document.getElementById('modalKategori').innerText = book.kategori ?? '-';
+        document.getElementById('modalRak').innerText = `${book.rak} - ${book.nomor_rak}`;
+        document.getElementById('modalStok').innerText = book.available_stock ?? 0;
+        document.getElementById('modalDeskripsi').innerText = book.sinopsis ?? '-';
+        document.getElementById('modalCover').src = book.image ?? 'https://via.placeholder.com/300x400?text=No+Image';
+
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+
+        if (book.available_stock > 0) {
+            statusIcon.innerHTML = `<i class="fas fa-check-circle text-success fa-lg"></i>`;
+            statusText.innerText = 'Tersedia';
+            statusText.className = 'font-weight-bold text-success';
+        } else {
+            statusIcon.innerHTML = `<i class="fas fa-times-circle text-danger fa-lg"></i>`;
+            statusText.innerText = 'Tidak Tersedia';
+            statusText.className = 'font-weight-bold text-danger';
+        }
 
         $('#modalViewBook').modal('show');
     }
@@ -533,56 +548,130 @@ document.addEventListener('click', async e=>{
     /* ===== DELETE ===== */
     if(type==='delete'){
 
+        const id = btn.dataset.id;
+
         if(!confirm('Yakin hapus buku ini?')) return;
 
-        await fetch(`${API}/books/${id}`,{
-            method:'DELETE',
-            headers:{ Authorization:`Bearer ${token}` }
-            
-        });
+        try{
+            await fetch(`${API}/books/${id}`,{
+                method:'DELETE',
+                headers:{ Authorization:`Bearer ${token}` }
+            });
 
-        fetchBooks();
+            fetchBooks();
+
+        }catch(err){
+            console.error(err);
+            alert('Gagal hapus buku');
+        }
     }
-
 });
 
 
 /* ================= MODAL TAMBAH STOK ================= */
 
-document.addEventListener('click', e=>{
-
-    const btn=e.target.closest('.btn-stok');
+// buka modal stok
+document.addEventListener('click', async function(e){
+    const btn = e.target.closest('.btn-stok');
     if(!btn) return;
 
-    const id=btn.dataset.id;
-    document.getElementById('stok_book_id').value=id;
+    const bookId = btn.dataset.id;
+    document.getElementById('stok_book_id').value = bookId;
 
     $('#modalTambahStok').modal('show');
+
+    loadStok(bookId);
 });
 
 
-/* ================= SAVE STOK ================= */
+// LOAD DATA STOK
+async function loadStok(bookId){
+    const token = localStorage.getItem('token');
 
-document.addEventListener('click', async e=>{
-
-    if(!e.target.closest('#btnTambahStok')) return;
-
-    const id=document.getElementById('stok_book_id').value;
-    const jumlah=document.getElementById('jumlah_stok').value;
-    const rak=document.getElementById('rak_stok').value;
-
-    await fetch(`${API}/book-stocks/${id}`,{
-        method:'POST',
+    const res = await fetch(`/api/books/${bookId}/stok`,{
         headers:{
-            Authorization:`Bearer ${token}`,
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({jumlah,rak})
+            'Authorization':'Bearer '+token,
+            'Accept':'application/json'
+        }
     });
 
-    alert('Stok berhasil ditambahkan');
-    $('#modalTambahStok').modal('hide');
-    fetchBooks();
+    const data = await res.json();
+
+    const list = document.getElementById('listStok');
+    list.innerHTML='';
+
+    if(!data.data || data.data.length===0){
+        list.innerHTML='<li class="list-group-item text-muted">Belum ada stok</li>';
+        return;
+    }
+
+    data.data.forEach(stok=>{
+        list.innerHTML += `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${stok.kode_eksemplar}
+
+                <button class="btn btn-danger btn-sm btn-hapus-stok"
+                    data-id="${stok.id}">
+                    Hapus
+                </button>
+            </li>
+        `;
+    });
+}
+
+document.getElementById('btnTambahStok').addEventListener('click', async ()=>{
+
+    const bookId = document.getElementById('stok_book_id').value;
+    const kode = document.getElementById('kode_eksemplar').value.trim();
+    const token = localStorage.getItem('token');
+
+    if(!kode){
+        alert('Kode harus diisi');
+        return;
+    }
+
+    const res = await fetch(`/api/books/${bookId}/stok`,{
+        method:'POST',
+        headers:{
+            'Authorization':'Bearer '+token,
+            'Content-Type':'application/json',
+            'Accept':'application/json'
+        },
+        body: JSON.stringify({
+            kode_eksemplar:kode
+        })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok){
+        alert(data.message || 'Gagal tambah stok');
+        return;
+    }
+
+    document.getElementById('kode_eksemplar').value='';
+    loadStok(bookId);
+});
+
+document.addEventListener('click', async function(e){
+    const btn = e.target.closest('.btn-hapus-stok');
+    if(!btn) return;
+
+    if(!confirm('Hapus kode ini?')) return;
+
+    const id = btn.dataset.id;
+    const token = localStorage.getItem('token');
+    const bookId = document.getElementById('stok_book_id').value;
+
+    await fetch(`/api/stok/${id}`,{
+        method:'DELETE',
+        headers:{
+            'Authorization':'Bearer '+token,
+            'Accept':'application/json'
+        }
+    });
+
+    loadStok(bookId);
 });
 
 

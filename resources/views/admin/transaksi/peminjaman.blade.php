@@ -225,7 +225,7 @@ function fetchTransactions() {
                 return `
                     <tr>
                         <td>${i + 1}</td>
-                        <td>${d.kode_buku}</td>
+                        <td>${d.book_stock?.kode_eksemplar ?? '-'}</td>
                         <td>${d.judul_buku}</td>
                         <td>${d.status}</td>
                         <td>${actionDetail}</td>

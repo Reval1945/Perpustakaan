@@ -2,27 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Book;
 use App\Models\BookStock;
-use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class BookStockController extends Controller
 {
-    public function store(Request $request, Book $book)
+    public function index($bookId)
     {
-        $request->validate([
-            'jumlah'=>'required|integer|min:1'
+        $stocks = BookStock::where('book_id',$bookId)->get();
+
+        return response()->json([
+            'success'=>true,
+            'data'=>$stocks
         ]);
-
-        for($i=1;$i<=$request->jumlah;$i++){
-            BookStock::create([
-                'book_id'=>$book->id,
-                'kode_eksemplar'=>$book->kode_buku.'-'.Str::random(5)
-            ]);
-        }
-
-        return response()->json(['message'=>'Stok berhasil ditambah']);
     }
 
+    public function store(Request $request,$bookId)
+    {
+        $request->validate([
+            'kode_eksemplar'=>'required|string|max:50|unique:book_stocks,kode_eksemplar'
+        ]);
+
+        $stock = BookStock::create([
+            'book_id'=>$bookId,
+            'kode_eksemplar'=>$request->kode_eksemplar
+        ]);
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Stok berhasil ditambahkan',
+            'data'=>$stock
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $stock = BookStock::findOrFail($id);
+        $stock->delete();
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Stok dihapus'
+        ]);
+    }
 }

@@ -23,7 +23,7 @@
             <i class="fas fa-user-circle fa-3x"></i>
         </div>
         <div>
-            <h5 class="mb-1">Selamat Datang, {{ Auth::user()->name ?? 'Anggota' }}!</h5>
+            <h5 class="mb-1">Selamat Datang, {{ auth()->user()->name ?? 'Anggota' }}!</h5>
             <p class="mb-0">Kelola peminjaman bukumu dengan mudah di dashboard ini.</p>
         </div>
     </div>

@@ -188,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const image = book.image 
                 ? book.image 
                 : 'https://via.placeholder.com/300x400?text=No+Image';
+            const stok = book.available_stock ?? 0;
 
             bookList.innerHTML += `
             <div class="col-md-3 mb-4">
@@ -200,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <h6 class="font-weight-bold">${book.judul}</h6>
                         <p class="small mb-1 text-muted">Penerbit: ${book.penerbit}</p>
                         <p class="small mb-1">Rak: ${book.rak} - ${book.nomor_rak}</p>
-                        <p class="small mb-2">Stok: ${book.stok}</p>
+                        <p class="small mb-2">Stok: ${stok}</p>
 
                         <span class="badge badge-info mb-3">${book.kategori}</span>
 
@@ -278,14 +279,14 @@ function viewBook(id) {
     document.getElementById('modalPenerbit').innerText = book.penerbit;
     document.getElementById('modalKategori').innerText = book.kategori ?? '-';
     document.getElementById('modalRak').innerText = `${book.rak} - ${book.nomor_rak}`;
-    document.getElementById('modalStok').innerText = book.stok;
-    document.getElementById('modalDeskripsi').innerText = book.sipnosis ?? 'Sipnosis buku tidak tersedia.';
+    document.getElementById('modalStok').innerText = book.available_stock ?? 0;
+    document.getElementById('modalDeskripsi').innerText = book.sinopsis ?? 'Sipnosis buku tidak tersedia.';
     document.getElementById('modalCover').src = image;
 
     const statusIcon = document.getElementById('statusIcon');
     const statusText = document.getElementById('statusText');
 
-    if (book.stok > 0) {
+    if (book.available_stock > 0) {
         statusIcon.innerHTML = `<i class="fas fa-check-circle text-success fa-lg"></i>`;
         statusText.innerText = 'Tersedia';
         statusText.className = 'font-weight-bold text-success';

@@ -12,7 +12,8 @@ class TransactionRepository implements TransactionInterface{
     {
         return Transactions::with([
             'user',
-            'details.book'
+            'details.book',
+            'details.bookStock'
         ])->latest()->get();
     }
 

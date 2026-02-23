@@ -4,12 +4,14 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use App\Models\Book;
+use App\Models\BookStock;
 use App\Models\Transactions;
 use App\Models\AturanPeminjaman;
 use App\Models\TransactionDetail;
 use Illuminate\Support\Facades\DB;
 use App\Services\Generators\TransactionCodeGenerator;
 use Illuminate\Validation\ValidationException;
+
 
 class AdminTransactionService
 {
@@ -46,21 +48,45 @@ class AdminTransactionService
         });
     }
 
-    public function verifikasiPinjam(Transactions $transaksi): Transactions
+    public function verifikasiPinjam($transaction)
     {
-        $transaksi->update([
-            'status' => 'dipinjam'
-        ]);
+        DB::transaction(function () use ($transaction) {
 
-        $transaksi->details()
-            ->where('status', 'menunggu_verifikasi')
-            ->update([
+            foreach ($transaction->details as $detail) {
+
+                if ($detail->status !== 'menunggu_verifikasi') {
+                    continue;
+                }
+
+                // ambil stok tersedia
+                $stok = BookStock::where('book_id', $detail->book_id)
+                    ->where('status', 'tersedia')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$stok) {
+                    throw new \Exception("Stok buku {$detail->judul_buku} habis");
+                }
+
+                // ubah status stok
+                $stok->update([
+                    'status' => 'dipinjam'
+                ]);
+
+                // assign stok ke detail
+                $detail->update([
+                    'book_stock_id' => $stok->id,
+                    'status' => 'dipinjam'
+                ]);
+            }
+
+            // update transaksi utama
+            $transaction->update([
                 'status' => 'dipinjam'
             ]);
-
-        return $transaksi;
+        });
     }
-
+    
     public function verifyReturnTransaction(Transactions $transaction, array $data)
     {
         return DB::transaction(function () use ($transaction, $data) {

@@ -53,13 +53,6 @@
             </a>
         </li>
 
-        <li class="nav-item {{ Request::is('admin/buku') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/buku') }}">
-                <i class="fas fa-fw fa-book"></i>
-                <span>Buku</span>
-            </a>
-        </li>
-
         <li class="nav-item {{ Request::is('admin/aturanpeminjaman') ? 'active' : '' }}">
             <a class="nav-link" href="{{ url('/admin/aturanpeminjaman') }}">
                 <i class="fas fa-clipboard-list"></i>
@@ -71,6 +64,13 @@
             <a class="nav-link" href="{{ url('/admin/kategori') }}">
                 <i class="fas fa-list"></i>
                 <span>Kategori</span>
+            </a>
+        </li>
+        
+         <li class="nav-item {{ Request::is('admin/buku') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/buku') }}">
+                <i class="fas fa-fw fa-book"></i>
+                <span>Buku</span>
             </a>
         </li>
 
@@ -157,12 +157,17 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                            <span class="mr-2 text-gray-600 small">Admin</span>
-                            <img class="img-profile rounded-circle"
-                                 src="{{ asset('template/img/undraw_profile.svg') }}">
+                            <span id="navName" class="mr-2 text-gray-600 small">Loading...</span>
+                                <img id="navPhoto"
+                                    class="img-profile rounded-circle"
+                                    src="{{ asset('template/img/undraw_profile.svg') }}">
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow">
-                           <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalProfile">
+                                <i class="fas fa-user-edit fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Edit Profil
+                            </a>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Logout
                             </a>
@@ -188,6 +193,47 @@
             </div>
         </footer>
 
+    </div>
+</div>
+
+<!-- MODAL EDIT PROFILE -->
+<div class="modal fade" id="modalProfile" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form id="formProfile" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profil</h5>
+                    <button class="close" data-dismiss="modal">×</button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="text-center mb-3">
+                        <img id="previewPhoto"
+                             src="{{ asset('template/img/undraw_profile.svg') }}"
+                             style="width:100px;height:100px;object-fit:cover;border-radius:50%">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nama</label>
+                        <input type="text" name="name" id="inputName" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Foto</label>
+                        <input type="file" name="photo" id="inputPhoto" class="form-control">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
 
@@ -254,6 +300,81 @@ document.getElementById('btnLogout').addEventListener('click', function () {
     });
 });
 
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    // =====================
+    // LOAD USER NAVBAR
+    // =====================
+    async function loadUser(){
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        const res = await fetch('/api/me1',{
+            headers:{ Authorization:'Bearer '+token }
+        });
+
+        if(!res.ok) return;
+
+        const data = await res.json();
+
+        document.getElementById('navName').innerText = data.name;
+        document.getElementById('navPhoto').src =
+            data.photo + '?t=' + new Date().getTime();
+
+        // isi modal otomatis
+        document.getElementById('inputName').value = data.name;
+        document.getElementById('previewPhoto').src = data.photo;
+    }
+
+    loadUser();
+
+
+    // =====================
+    // PREVIEW FOTO
+    // =====================
+    const inputPhoto = document.getElementById('inputPhoto');
+
+    if(inputPhoto){
+        inputPhoto.addEventListener('change', e=>{
+            const file = e.target.files[0];
+            if(!file) return;
+
+            document.getElementById('previewPhoto').src =
+                URL.createObjectURL(file);
+        });
+    }
+
+
+    // =====================
+    // SUBMIT PROFILE
+    // =====================
+    const formProfile = document.getElementById('formProfile');
+
+    if(formProfile){
+        formProfile.addEventListener('submit',async e=>{
+            e.preventDefault();
+
+            const token = localStorage.getItem('token');
+            const form = new FormData(e.target);
+
+            console.log([...form]); // ← DEBUG
+
+            const res = await fetch('/api/update-profile1',{
+                method:'POST',
+                headers:{ Authorization:'Bearer '+token },
+                body:form
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            alert(data.message);
+        });
+    }
+
+});
 </script>
 @yield('scripts')
 

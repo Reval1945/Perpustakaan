@@ -22,7 +22,7 @@ class BookResource extends JsonResource
             'image' => $this->image 
                 ? asset('storage/' . $this->image) 
                 : null,
-            'available_stock' => $this->available_stock ?? 0,
+           'available_stock' => $this->stocks()->where('status','tersedia')->count(),
         ];
     }
 }

@@ -96,6 +96,7 @@ function renderBookCard(book) {
 
     const tanggalPinjam = formatDateToInput(new Date());
     const tanggalKembali = formatDateToInput(new Date(Date.now() + maksHariPinjam * 24 * 60 * 60 * 1000));
+    const stok = book.available_stock ?? 0;
 
     document.getElementById('pinjaman-list').innerHTML += `
     <div class="card shadow-sm mb-4" data-id="${book.id}">
@@ -115,7 +116,7 @@ function renderBookCard(book) {
                 </div>
                 <div class="col-md-3">
                     <label>Stok</label>
-                    <input type="text" class="form-control" value="${book.stok}" readonly>
+                    <input type="text" class="form-control" value="${stok}" readonly>
                 </div>
                 <div class="col-md-3">
                     <label>Tanggal Pinjam</label>
@@ -169,7 +170,7 @@ function renderBooksModal(books) {
     }
 
     books.forEach(book => {
-        const kategori = book.category?.name || 'Tanpa Kategori';
+        const stok = book.available_stock ?? 0;
         const image = book.image
             ? book.image
             : 'https://via.placeholder.com/300x400?text=No+Image';
@@ -181,7 +182,7 @@ function renderBooksModal(books) {
                     <div class="card-body d-flex flex-column">
                         <h6 class="font-weight-bold">${book.judul}</h6>
                         <p class="small mb-1 text-muted">Penerbit: ${book.penerbit}</p>
-                        <span class="badge badge-info mb-3">${kategori}</span>
+                        <span class="badge badge-info mb-3">${book.kategori}</span>
                         <div class="mt-auto d-flex">
                             <button class="btn btn-success btn-sm flex-fill"
                                 onclick="renderBookCard({
@@ -190,7 +191,7 @@ function renderBooksModal(books) {
                                     penerbit: '${book.penerbit}',
                                     rak: '${book.rak}',
                                     nomor_rak: '${book.nomor_rak || ''}',
-                                    stok: '${book.stok}',
+                                    stok: '${stok}',
                                     image: '${image}'
                                 })">
                                 Pilih

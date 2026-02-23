@@ -27,6 +27,7 @@ class TransactionDetail extends Model
         'denda',
         'jenis_denda',
         'status_denda',
+        'book_stock_id',
     ];
 
     protected $casts = [
@@ -48,4 +49,13 @@ class TransactionDetail extends Model
         return \Carbon\Carbon::parse($this->tanggal_pinjam)->format('Y-m-d');
     }
 
+    public function stock()
+    {
+        return $this->belongsTo(BookStock::class,'book_stock_id');
+    }
+
+    public function bookStock()
+    {
+        return $this->belongsTo(BookStock::class);
+    }
 }
