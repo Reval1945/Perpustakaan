@@ -45,4 +45,5 @@ class BookStockController extends Controller
             'message'=>'Stok dihapus'
         ]);
     }
+
 }

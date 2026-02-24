@@ -28,7 +28,7 @@ class AdminTransactionService
                 'tanggal_pinjam'      => $tanggalPinjam,
                 'tanggal_jatuh_tempo' => $tanggalPinjam->copy()
                     ->addDays($aturan->maks_hari_pinjam),
-                'status'              => 'dipinjam',
+                'status'              => 'menunggu_verifikasi',
             ]);
 
             $books = Book::whereIn('id', $bookIds)->get();
@@ -40,7 +40,7 @@ class AdminTransactionService
                     'judul_buku' => $b->judul,
                     'tanggal_jatuh_tempo' => $tanggalPinjam->copy()
                     ->addDays($aturan->maks_hari_pinjam),
-                    'status'     => 'dipinjam',
+                    'status'     => 'menunggu_verifikasi',
                 ])->toArray()
             );
 
@@ -142,14 +142,34 @@ class AdminTransactionService
         $nominalPerHari = $data['denda'] ?? 0;
         $totalDenda = $jumlahHariTelat * $nominalPerHari;
 
-        $detail->update([
-            'status'            => $data['status'],
-            'tanggal_kembali'   => $today,
-            'jenis_denda'       => $jumlahHariTelat > 0 ? $data['jenis_denda'] : null,
-            'jumlah_hari_telat' => $jumlahHariTelat,
-            'denda'             => $totalDenda,
-            'catatan'           => $data['catatan'] ?? null,
-        ]);
+        // mapping status detail → status stock
+        $stockStatus = match ($data['status']) {
+            'dikembalikan' => 'tersedia',
+            'terlambat' => 'tersedia',
+            'rusak' => 'rusak',
+            'hilang' => 'hilang',
+        };
+
+        DB::transaction(function () use ($detail, $data, $today, $jumlahHariTelat, $totalDenda, $stockStatus) {
+
+            // update detail
+            $detail->update([
+                'status'            => $data['status'],
+                'tanggal_kembali'   => $today,
+                'jenis_denda'       => $jumlahHariTelat > 0 ? $data['jenis_denda'] : null,
+                'jumlah_hari_telat' => $jumlahHariTelat,
+                'denda'             => $totalDenda,
+                'catatan'           => $data['catatan'] ?? null,
+            ]);
+
+            // update status eksemplar buku
+            if ($detail->book_stock_id) {
+                BookStock::where('id', $detail->book_stock_id)
+                    ->update([
+                        'status' => $stockStatus
+                    ]);
+            }
+        });
 
         return $detail;
     }

@@ -64,7 +64,7 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
 
     // TRANSAKSI
     Route::get('/transactions', [TransactionController::class, 'index']);
-    Route::post('/transactions', action: [TransactionController::class, 'AdminStore']);
+    Route::post('/transactions', [TransactionController::class, 'AdminStore']);
     Route::put('/transactions/{id}/verifikasi-pinjam', [TransactionController::class, 'verifikasiPinjam']);
     Route::put('/transactions/{id}/verifikasi-kembali', [TransactionController::class, 'verifikasiKembali']);
     Route::put('/transactions/{id}', [TransactionController::class, 'update']);

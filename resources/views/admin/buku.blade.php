@@ -606,15 +606,28 @@ async function loadStok(bookId){
     }
 
     data.data.forEach(stok=>{
-        list.innerHTML += `
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                ${stok.kode_eksemplar}
 
+        let badge='secondary';
+        if(stok.status==='tersedia') badge='success';
+        else if(stok.status==='dipinjam') badge='warning';
+        else if(stok.status==='rusak') badge='danger';
+
+        list.innerHTML += `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+
+            <div>
+                <strong>${stok.kode_eksemplar}</strong><br>
+                <span class="badge badge-${badge}">${stok.status}</span>
+            </div>
+
+            <div>
                 <button class="btn btn-danger btn-sm btn-hapus-stok"
                     data-id="${stok.id}">
                     Hapus
                 </button>
-            </li>
+            </div>
+
+        </li>
         `;
     });
 }
@@ -651,6 +664,43 @@ document.getElementById('btnTambahStok').addEventListener('click', async ()=>{
 
     document.getElementById('kode_eksemplar').value='';
     loadStok(bookId);
+});
+
+document.addEventListener('click', async function(e){
+
+    // ================= EDIT STATUS =================
+    const editBtn = e.target.closest('.btn-edit-stok');
+    if(editBtn){
+
+        const id = editBtn.dataset.id;
+        const oldStatus = editBtn.dataset.status;
+
+        const status = prompt(
+            "Ubah status:\ntersedia | dipinjam | rusak",
+            oldStatus
+        );
+
+        if(!status) return;
+
+        const token = localStorage.getItem('token');
+
+        const res = await fetch(`/api/stok/${id}`,{
+            method:'PUT',
+            headers:{
+                'Authorization':'Bearer '+token,
+                'Content-Type':'application/json',
+                'Accept':'application/json'
+            },
+            body: JSON.stringify({status})
+        });
+
+        if(res.ok){
+            loadStok(currentBookId);
+        }else{
+            alert('Gagal update status');
+        }
+    }
+
 });
 
 document.addEventListener('click', async function(e){
