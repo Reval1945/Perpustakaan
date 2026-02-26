@@ -19,6 +19,7 @@ use App\Http\Requests\Admin\StoreTransactionRequest;
 use App\Http\Requests\Admin\UpdateTransactionRequest;
 use App\Http\Requests\Transaction\StorePeminjamanRequest;
 use App\Http\Requests\Transaction\VerifyReturnAllRequest;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
@@ -147,6 +148,7 @@ class TransactionController extends Controller
     public function verifikasiKembaliDetail(VerifyReturnRequest $request, string $detailId) 
     {
         try {
+
             $detail = TransactionDetail::with('transaction')
                 ->findOrFail($detailId);
 
@@ -223,16 +225,27 @@ class TransactionController extends Controller
             'tanggal_jatuh_tempo' => 'required|date'
         ]);
 
-        $trx = Transactions::where('kode_transaksi', $kode)->firstOrFail();
+        // Menggunakan DB Transaction agar jika satu gagal, semua batal (menjaga integritas data)
+        return DB::transaction(function () use ($validated, $kode) {
+            
+            $trx = Transactions::where('kode_transaksi', $kode)->firstOrFail();
 
-        $trx->update([
-            'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo']
-        ]);
+            // 1. Update di tabel Transactions (Header)
+            $trx->update([
+                'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo']
+            ]);
 
-        return response()->json([
-            'message' => 'Tanggal jatuh tempo berhasil diperbarui',
-            'data' => $trx
-        ]);
+            // 2. Update SEMUA baris di tabel TransactionDetail yang memiliki transaction_id sama
+            // Inilah yang membuat data di sisi Anggota ikut berubah
+            $trx->details()->update([
+                'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo']
+            ]);
+
+            return response()->json([
+                'message' => 'Tanggal jatuh tempo berhasil diperbarui di header dan semua detail',
+                'data' => $trx->load('details') // Load details agar JSON yang dikembalikan lengkap
+            ]);
+        });
     }
 
     public function updateJatuhTempoDetail(Request $request, $id)
@@ -313,6 +326,5 @@ class TransactionController extends Controller
             'tanggal_jatuh_tempo' => $data->tanggal_jatuh_tempo
         ]);
     }
-
 }
 

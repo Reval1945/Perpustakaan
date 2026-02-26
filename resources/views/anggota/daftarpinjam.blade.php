@@ -86,12 +86,13 @@ function renderTabel(dataTransaksi){
 
     let no = 1;
 
-    function formatTanggal(tgl){
-        const d = new Date(tgl);
-        return d.toLocaleDateString('id-ID',{
-            year:'numeric',
-            month:'2-digit',
-            day:'2-digit'
+    function formatTanggal(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
         });
     }
 

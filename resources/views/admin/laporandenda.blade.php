@@ -20,6 +20,7 @@
                     <th>Judul Buku</th>
                     <th width="130">Tggl Pinjam</th>
                     <th width="130">Tggl Kembali</th>
+                    <th width="110">Jenis Denda</th>
                     <th width="110">Telat</th>
                     <th width="110">Denda</th>
                     <th width="130">Status Denda</th>
@@ -125,6 +126,7 @@ function loadDenda() {
                     <td>${judul}</td>
                     <td class="text-center">${tglPinjam}</td>
                     <td class="text-center">${tglKembali}</td>
+                    <td class="text-center">${item.jenis_denda ?? '-'}</td>
                     <td class="text-center text-danger">${telat}</td>
                     <td class="text-center">${denda}</td>
                     <td class="text-center">${statusBadge}</td>

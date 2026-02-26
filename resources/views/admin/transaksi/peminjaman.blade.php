@@ -36,9 +36,10 @@
             </tbody>
 
         </table>
+    </div>
 
-        <!-- Modal Konfirmasi Detail -->
-        <div class="modal fade" id="modalAccDetail" tabindex="-1">
+<!-- Modal Konfirmasi Detail -->
+    <div class="modal fade" id="modalAccDetail" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
@@ -58,13 +59,14 @@
                 </div>
 
                 <div class="form-group">
-                <label>Jenis Denda</label>
+                <label>Jenis Pelanggaran (Denda)</label>
                 <select id="jenis_denda" class="form-control">
                     <option value="">- Tidak Ada -</option>
-                    <option value="uang">Uang</option>
-                    <option value="barang">Barang</option>
+                    <option value="telat">Telat (Uang)</option>
+                    <option value="rusak">Buku Rusak</option>
+                    <option value="hilang">Buku Hilang</option>
                 </select>
-                </div>
+            </div>
 
                 <div class="form-group">
                 <label>Denda</label>
@@ -78,53 +80,8 @@
             </div>
             </div>
         </div>
-        </div>
-
     </div>
 
-    <!-- FETCH DATA TRANSAKSI -->
-<!-- Modal Konfirmasi Detail -->
-<div class="modal fade" id="modalAccDetail" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Konfirmasi Pengembalian</h5>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-
-        <div class="modal-body">
-            <input type="hidden" id="detailId">
-
-            <div class="form-group">
-            <label>Status</label>
-            <select id="status" class="form-control">
-                <option value="dikembalikan">Dikembalikan</option>
-                <option value="terlambat">Terlambat</option>
-            </select>
-            </div>
-
-            <div class="form-group">
-            <label>Jenis Denda</label>
-            <select id="jenis_denda" class="form-control">
-                <option value="">- Tidak Ada -</option>
-                <option value="uang">Uang</option>
-                <option value="barang">Barang</option>
-            </select>
-            </div>
-
-            <div class="form-group">
-            <label>Denda</label>
-            <input type="number" id="denda" class="form-control" placeholder="Masukkan denda">
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-            <button class="btn btn-primary" id="btnSubmitAccDetail">Simpan</button>
-        </div>
-        </div>
-    </div>
-</div>
 
 <script>
 function formatTanggal(dateString) {
@@ -193,7 +150,12 @@ function fetchTransactions() {
             return;
         }
 
-        const filteredData = res.data.filter(trx => trx.details.some(d => d.status !== 'dikembalikan'));
+        // Sembunyikan transaksi yang sudah semua dikembalikan
+        // dan juga sembunyikan transaksi dengan status keseluruhan 'terlambat'
+        const filteredData = res.data.filter(trx =>
+            trx.details.some(d => d.status !== 'dikembalikan')
+            && getTransactionStatus(trx) !== 'terlambat'
+        );
 
         if (filteredData.length === 0) {
             tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Tidak ada data peminjaman</td></tr>`;
@@ -216,6 +178,7 @@ function fetchTransactions() {
                         <button 
                             class="btn btn-success btn-sm btn-acc-detail" 
                             data-id="${d.id}"
+                            data-jatuh-tempo="${d.tanggal_jatuh_tempo}">
                             title="Konfirmasi Buku">
                             Konfirmasi
                         </button>
@@ -325,11 +288,36 @@ document.addEventListener('DOMContentLoaded', fetchTransactions);
 // ACC STATUS / MODAL
 // =========================
 let accEndpoint = '';
+let dendaPerHariAturan = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchTransactions();
+    fetchDendaRule();
+});
+
+function fetchDendaRule() {
+    const token = localStorage.getItem('token');
+    fetch('http://127.0.0.1:8000/api/aturan-peminjaman/aktif', {
+        method: 'GET',
+        headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.data && res.data.denda_per_hari) {
+            dendaPerHariAturan = parseFloat(res.data.denda_per_hari);
+            console.log("Denda per hari berhasil dimuat: ", dendaPerHariAturan);
+        }
+    })
+    .catch(err => console.error("Gagal load aturan denda:", err));
+}
 
 document.addEventListener('click', function(e) {
     const token = localStorage.getItem('token');
 
-    // ACC TRANSAKSI (pinjam)
+    // Tombol Konfirmasi Utama (Pinjam)
     if (e.target.closest('.btn-acc')) {
         const btn = e.target.closest('.btn-acc');
         const id = btn.dataset.id;
@@ -340,67 +328,114 @@ document.addEventListener('click', function(e) {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({status: 'dipinjam'})
             })
             .then(res => res.json())
-            .then(res => fetchTransactions())
-            .catch(err => alert('Gagal konfirmasi peminjaman'));
+            .then(() => fetchTransactions())
+            .catch(() => alert('Gagal konfirmasi peminjaman'));
             return;
         }
 
         accEndpoint = `http://127.0.0.1:8000/api/transactions/${id}/verifikasi-kembali`;
-        document.getElementById('status').value = 'dikembalikan';
-        document.getElementById('jenis_denda').value = '';
-        document.getElementById('denda').value = '';
-        $('#modalAccDetail').modal('show');
+        // Gunakan jatuh tempo dari data transaksi atau detail pertama
+        const tglJatuhTempo = btn.dataset.jatuhTempo || '';
+        calculateAndFillModal(null, tglJatuhTempo);
     }
 
-    // ACC DETAIL (pengembalian)
+    // Tombol Konfirmasi Per Buku (Detail)
     if (e.target.closest('.btn-acc-detail')) {
-        const id = e.target.closest('.btn-acc-detail').dataset.id;
+        const btn = e.target.closest('.btn-acc-detail');
+        const id = btn.dataset.id;
+        const tglJatuhTempo = btn.dataset.jatuhTempo;
+
         accEndpoint = `http://127.0.0.1:8000/api/transaction-detail/${id}/verify-return`;
 
         document.getElementById('detailId').value = id;
-        document.getElementById('status').value = 'dikembalikan';
-        document.getElementById('jenis_denda').value = '';
-        document.getElementById('denda').value = '';
-        $('#modalAccDetail').modal('show');
+        calculateAndFillModal(id, tglJatuhTempo);
     }
 });
 
-// Submit modal
-document.getElementById('btnSubmitAccDetail').addEventListener('click', function() {
-    if (!accEndpoint) {
-        alert('Endpoint belum diset!');
-        return;
+function calculateAndFillModal(id, tglJatuhTempo) {
+    const hariIni = new Date();
+    hariIni.setHours(0,0,0,0);
+    
+    const jatuhTempo = new Date(tglJatuhTempo);
+    jatuhTempo.setHours(0,0,0,0);
+
+    let selisihHari = 0;
+    if (tglJatuhTempo && hariIni > jatuhTempo) {
+        const diffTime = Math.abs(hariIni - jatuhTempo);
+        selisihHari = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     }
 
-    const data = {
-        status: document.getElementById('status').value,
-        jenis_denda: document.getElementById('jenis_denda').value,
-        denda: document.getElementById('denda').value
-    };
+    const statusElem = document.getElementById('status');
+    const jenisElem = document.getElementById('jenis_denda');
+    const dendaElem = document.getElementById('denda');
 
-    const token = localStorage.getItem('token');
+    if (selisihHari > 0) {
+        statusElem.value = 'terlambat';
+        jenisElem.value = 'telat';
+        dendaElem.value = selisihHari * dendaPerHariAturan;
+    } else {
+        statusElem.value = 'dikembalikan';
+        jenisElem.value = '';
+        dendaElem.value = '0';
+    }
+
+    $('#modalAccDetail').modal('show');
+}
+
+// Submit modal
+document.getElementById('btnSubmitAccDetail').addEventListener('click', function() {
+    const statusVal = document.getElementById('status').value;
+    const dendaVal = parseFloat(document.getElementById('denda').value) || 0;
+    let jenisDendaVal = document.getElementById('jenis_denda').value;
+
+    // OTOMATISASI: Jika status terlambat, jenis_denda HARUS 'telat'
+    if (statusVal === 'terlambat' && !jenisDendaVal) {
+            jenisDendaVal = 'telat';
+        }
+
+    // Buat payload
+    const data = {
+        status: statusVal,
+        denda: dendaVal,
+        jenis_denda: jenisDendaVal || null
+    };
 
     fetch(accEndpoint, {
         method: 'PUT',
         headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         },
         body: JSON.stringify(data)
     })
-    .then(res => res.json())
-    .then(res => {
+    .then(async res => {
+        const result = await res.json();
+        if (!res.ok) {
+            // Tampilkan pesan error spesifik dari Laravel (errors.jenis_denda[0])
+            let msg = result.message;
+            if (result.errors && result.errors.jenis_denda) msg = result.errors.jenis_denda[0];
+            alert("Gagal: " + msg);
+            return;
+        }
         $('#modalAccDetail').modal('hide');
         fetchTransactions();
-    })
-    .catch(err => alert('Gagal konfirmasi'));
+    });
 });
+
+document.getElementById('status').addEventListener('change', function(){
+    const jenis = document.getElementById('jenis_denda');
+
+    if(this.value === 'terlambat'){
+        jenis.value = 'telat';
+    }
+});
+
 </script>
-
-
 @endsection

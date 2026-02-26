@@ -24,7 +24,6 @@
                     <th>Tanggal Kembali</th>
                     <th>Lama Pinjam</th>
                     <th>Status</th>
-                    <th>Keterangan</th>
                 </tr>
             </thead>
 
@@ -77,12 +76,13 @@ function renderRiwayat(data){
 
     let no=1;
 
-    function formatTanggal(tgl){
-        const d=new Date(tgl);
-        return d.toLocaleDateString('id-ID',{
-            year:'numeric',
-            month:'2-digit',
-            day:'2-digit'
+    function formatTanggal(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
         });
     }
 
@@ -129,7 +129,6 @@ function renderRiwayat(data){
                 <td>${detail.tanggal_kembali?formatTanggal(detail.tanggal_kembali):'-'}</td>
                 <td>${lama}</td>
                 <td>${badge}</td>
-                <td>${ket}</td>
             </tr>`;
         });
 

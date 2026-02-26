@@ -12,7 +12,7 @@
             <i class="fas fa-plus"></i> Tambah Buku
         </button>
         <button id="btnCetakBuku" class="btn btn-success">
-            <i class="fas fa-print"></i> Cetak Buku
+            <i class="fas fa-file-excel"></i> Export Excel
         </button>
     </div>
 </div>
@@ -731,6 +731,31 @@ function resetBookForm(){
     document.getElementById('book_id').value='';
     document.querySelector('#modalTambahBuku form').reset();
 }
+
+// ================= EXPORT EXCEL =================
+// tombol cetak buku akan memanggil endpoint yang sama seperti
+// `BookController@exportExcel`, lalu men-trigger unduhan file.
+document.getElementById('btnCetakBuku').addEventListener('click', async () => {
+    try {
+        const res = await fetch(`${API}/books/export/excel`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) throw new Error('Fetch export gagal');
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'data-buku.xlsx';
+        a.click();
+    } catch (err) {
+        console.error(err);
+        alert('Gagal export buku');
+    }
+});
 
 document.addEventListener('click', e=>{
     if(e.target.closest('[data-target="#modalTambahBuku"]'))

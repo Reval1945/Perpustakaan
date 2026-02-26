@@ -22,7 +22,7 @@ class VerifyReturnRequest extends FormRequest
 
             'jenis_denda' => [
                 'nullable',
-                Rule::in(['uang','buku']),
+                Rule::in(['telat','rusak','hilang']),
             ],
 
             'denda' => 'nullable|numeric|min:0',
@@ -35,8 +35,6 @@ class VerifyReturnRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            // Kalau status BUKAN dikembalikan normal,
-            // maka jenis_denda WAJIB
             if (in_array($this->status, ['terlambat', 'rusak', 'hilang'])
                 && !$this->jenis_denda
             ) {

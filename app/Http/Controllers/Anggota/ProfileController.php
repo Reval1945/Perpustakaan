@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Anggota;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProfileController extends Controller
 {
@@ -61,5 +64,20 @@ class ProfileController extends Controller
             'message' => 'Profil berhasil diupdate',
             'photo' => asset('storage/profile/'.$data['photo'] ?? $user->photo)
         ]);
+    }
+
+    // ProfileController.php
+    public function exportPdf(Request $request)
+    {
+        $user = $request->user(); // otomatis dari token login
+
+        $pdf = Pdf::loadView('laporan.member_card', [
+            'user' => $user
+        ])->setPaper([0, 0, 242.65, 153.07], 'portrait');
+        // ukuran kartu (ID Card)
+
+        return response($pdf->output(),200)
+            ->header('Content-Type','application/pdf')
+            ->header('Content-Disposition','inline; filename="kartu.pdf"');
     }
 }

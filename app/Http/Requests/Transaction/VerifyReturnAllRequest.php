@@ -23,7 +23,7 @@ class VerifyReturnAllRequest extends FormRequest
     {
         return [
             'status'      => 'required|in:dikembalikan,terlambat,rusak,hilang',
-            'jenis_denda' => 'nullable|in:uang,buku',
+            'jenis_denda' => 'nullable|in:telat,rusak,hilang',
             'denda'       => 'nullable|numeric|min:0',
             'catatan'     => 'nullable|string'
         ];
@@ -32,7 +32,7 @@ class VerifyReturnAllRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'jenis_denda.in' => 'Pilih jenis denda'
+            'jenis_denda.in' => 'Pilih jenis denda yang benar (telat/rusak/hilang)'
         ];
     }
 }

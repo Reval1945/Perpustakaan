@@ -4,116 +4,98 @@
 
 @section('content')
 
-<!-- PAGE HEADING -->
-<div class="d-flex align-items-center justify-content-between mb-4">
+<div class="d-flex align-items-center justify-content-between mb-5 mt-2">
     <div>
-        <h1 class="h3 mb-0 fw-bold text-dark">Dashboard</h1>
-        <p class="text-muted mb-0">Selamat datang kembali di perpustakaan digital</p>
+        <h1 class="h3 mb-1 fw-800 text-dark">Ringkasan Aktivitas</h1>
+        <p class="text-muted mb-0">Halo, selamat datang kembali di sistem perpustakaan.</p>
     </div>
-    <div class="bg-white px-4 py-2 rounded-3 shadow-xs">
-        <i class="far fa-calendar-alt text-primary me-2"></i>
-        <span class="fw-medium">{{ date('d F Y') }}</span>
+    <div class="d-none d-md-block">
+        <div class="date-display bg-white px-4 py-2 rounded-pill shadow-sm border">
+            <i class="far fa-calendar-alt text-primary me-2"></i>
+            <span class="fw-bold text-dark">{{ date('d M Y') }}</span>
+        </div>
     </div>
 </div>
 
-<!-- STATISTICS CARDS -->
-<div class="row g-4 mb-4">
+<div class="row g-4 mb-5">
     <div class="col-6 col-xl-3">
-        <div class="stat-card bg-white rounded-4 p-4">
-            <div class="d-flex align-items-center mb-3">
-                <div class="stat-icon bg-primary bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="fas fa-book-reader fa-2x text-primary"></i>
+        <div class="stat-card card-primary">
+            <div class="stat-body">
+                <div class="stat-icon">
+                    <i class="fas fa-book-reader"></i>
                 </div>
-                <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Total Pinjam</span>
-                    <h3 class="fw-bold mb-0" id="totalBuku">0</h3>
+                <div class="stat-content">
+                    <span class="stat-label">Total Pinjam</span>
+                    <h2 class="stat-number" id="totalBuku">0</h2>
                 </div>
             </div>
-            <div class="stat-footer">
-                <span class="text-success small">
-                    <i class="fas fa-arrow-up me-1"></i>+12%
-                </span>
-                <span class="text-muted small ms-2">vs bulan lalu</span>
+            <div class="stat-progress">
+                <div class="progress-bar" style="width: 70%"></div>
             </div>
         </div>
     </div>
 
     <div class="col-6 col-xl-3">
-        <div class="stat-card bg-white rounded-4 p-4">
-            <div class="d-flex align-items-center mb-3">
-                <div class="stat-icon bg-warning bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="fas fa-clock fa-2x text-warning"></i>
+        <div class="stat-card card-warning">
+            <div class="stat-body">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
                 </div>
-                <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Dipinjam</span>
-                    <h3 class="fw-bold mb-0" id="belumKembali">0</h3>
+                <div class="stat-content">
+                    <span class="stat-label">Dipinjam</span>
+                    <h2 class="stat-number" id="belumKembali">0</h2>
                 </div>
             </div>
-            <div class="stat-footer">
-                <span class="text-warning small">
-                    <i class="fas fa-hourglass-half me-1"></i>Menunggu
-                </span>
+            <div class="stat-status text-warning">
+                <i class="fas fa-circle-notch fa-spin me-1"></i> Aktif
             </div>
         </div>
     </div>
 
     <div class="col-6 col-xl-3">
-        <div class="stat-card bg-white rounded-4 p-4">
-            <div class="d-flex align-items-center mb-3">
-                <div class="stat-icon bg-success bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="fas fa-check-circle fa-2x text-success"></i>
+        <div class="stat-card card-success">
+            <div class="stat-body">
+                <div class="stat-icon">
+                    <i class="fas fa-check-double"></i>
                 </div>
-                <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Kembali</span>
-                    <h3 class="fw-bold mb-0" id="sudahKembali">0</h3>
+                <div class="stat-content">
+                    <span class="stat-label">Selesai</span>
+                    <h2 class="stat-number" id="sudahKembali">0</h2>
                 </div>
             </div>
-            <div class="stat-footer">
-                <span class="text-success small">
-                    <i class="fas fa-check-circle me-1"></i>Selesai
-                </span>
+            <div class="stat-status text-success">
+                <i class="fas fa-check-circle me-1"></i> Aman
             </div>
         </div>
     </div>
 
     <div class="col-6 col-xl-3">
-        <div class="stat-card bg-white rounded-4 p-4">
-            <div class="d-flex align-items-center mb-3">
-                <div class="stat-icon bg-danger bg-opacity-10 rounded-3 p-3 me-3">
-                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+        <div class="stat-card card-danger">
+            <div class="stat-body">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <div>
-                    <span class="text-muted small text-uppercase fw-semibold">Terlambat</span>
-                    <h3 class="fw-bold mb-0" id="terlambat">0</h3>
+                <div class="stat-content">
+                    <span class="stat-label">Terlambat</span>
+                    <h2 class="stat-number" id="terlambat">0</h2>
                 </div>
             </div>
-            <div class="stat-footer">
-                <span class="text-danger small">
-                    <i class="fas fa-exclamation-circle me-1"></i>Segera dikembalikan
-                </span>
+            <div class="stat-status text-danger">
+                <i class="fas fa-info-circle me-1"></i> Perlu Tindakan
             </div>
         </div>
     </div>
 </div>
 
-<!-- CHARTS ROW -->
-<div class="row g-4 mb-4">
+<div class="row g-4">
     <div class="col-xl-8">
-        <div class="card border-0 rounded-4 shadow-xs">
-            <div class="card-header bg-white border-0 pt-4 px-4">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h6 class="fw-bold mb-0">
-                        <i class="fas fa-chart-line text-primary me-2"></i>Aktivitas Peminjaman
-                    </h6>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-light rounded-3 px-3" type="button" data-bs-toggle="dropdown">
-                            6 Bulan <i class="fas fa-chevron-down ms-2 small"></i>
-                        </button>
-                    </div>
-                </div>
+        <div class="card main-card">
+            <div class="card-header-custom">
+                <h6 class="m-0 fw-bold"><i class="fas fa-chart-line me-2 text-primary"></i>Tren Peminjaman</h6>
+                <button class="btn btn-sm btn-light border rounded-pill px-3">Filter 6 Bulan</button>
             </div>
-            <div class="card-body p-4">
-                <div class="chart-area">
+            <div class="card-body">
+                <div class="chart-container">
                     <canvas id="myAreaChart"></canvas>
                 </div>
             </div>
@@ -121,79 +103,33 @@
     </div>
 
     <div class="col-xl-4">
-        <div class="card border-0 rounded-4 shadow-xs h-100">
-            <div class="card-header bg-white border-0 pt-4 px-4">
-                <h6 class="fw-bold mb-0">
-                    <i class="fas fa-chart-pie text-primary me-2"></i>Status Peminjaman
-                </h6>
+        <div class="card main-card">
+            <div class="card-header-custom">
+                <h6 class="m-0 fw-bold"><i class="fas fa-chart-pie me-2 text-primary"></i>Komposisi Status</h6>
             </div>
-            <div class="card-body p-4">
-                <div class="chart-pie">
+            <div class="card-body">
+                <div class="chart-container-pie">
                     <canvas id="myPieChart"></canvas>
                 </div>
-                <div class="mt-4">
-                    <div class="d-flex justify-content-center gap-4">
-                        <div class="text-center">
-                            <span class="d-block w-3 h-3 bg-success rounded-circle mx-auto mb-2"></span>
-                            <span class="small fw-medium">Kembali</span>
-                        </div>
-                        <div class="text-center">
-                            <span class="d-block w-3 h-3 bg-warning rounded-circle mx-auto mb-2"></span>
-                            <span class="small fw-medium">Dipinjam</span>
-                        </div>
-                        <div class="text-center">
-                            <span class="d-block w-3 h-3 bg-danger rounded-circle mx-auto mb-2"></span>
-                            <span class="small fw-medium">Terlambat</span>
-                        </div>
-                    </div>
+                <div class="legend-custom mt-4">
+                    <div class="legend-item"><span class="dot bg-success"></span> Kembali</div>
+                    <div class="legend-item"><span class="dot bg-warning"></span> Dipinjam</div>
+                    <div class="legend-item"><span class="dot bg-danger"></span> Telat</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- RECENT ACTIVITIES -->
-<div class="card border-0 rounded-4 shadow-xs">
-    <div class="card-header bg-white border-0 pt-4 px-4">
-        <div class="d-flex align-items-center justify-content-between">
-            <h6 class="fw-bold mb-0">
-                <i class="fas fa-history text-primary me-2"></i>Aktivitas Terkini
-            </h6>
-            <span class="badge bg-light text-dark rounded-pill px-3 py-2" id="totalRiwayat">0 Peminjaman</span>
-        </div>
-    </div>
-    <div class="card-body p-4">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="border-0 rounded-start">No</th>
-                        <th class="border-0">Buku</th>
-                        <th class="border-0">Tanggal Pinjam</th>
-                        <th class="border-0">Tanggal Kembali</th>
-                        <th class="border-0">Status</th>
-                        <th class="border-0 rounded-end">Denda</th>
-                    </tr>
-                </thead>
-                <tbody id="riwayatTableBody">
-                    <!-- Data will be populated by JavaScript -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- ALERT REMINDER -->
-<div class="alert alert-warning border-0 rounded-4 d-none position-fixed bottom-0 end-0 m-4 shadow-lg" id="alertBelumKembali" role="alert" style="z-index: 9999;">
+<div id="alertBelumKembali" class="toast-custom border-warning d-none">
     <div class="d-flex align-items-center">
-        <div class="flex-shrink-0 me-3">
-            <i class="fas fa-bell fa-2x text-warning"></i>
+        <div class="toast-icon bg-warning">
+            <i class="fas fa-bell text-white"></i>
         </div>
-        <div class="flex-grow-1">
-            <h6 class="fw-bold mb-1">Pengingat Pengembalian!</h6>
-            <p class="mb-0 small">Kamu memiliki <strong id="jumlahBelumKembali">0</strong> buku yang belum dikembalikan.</p>
+        <div class="ms-3">
+            <p class="mb-0 fw-bold text-dark">Ingat Pengembalian!</p>
+            <p class="mb-0 small text-muted">Ada <span id="jumlahBelumKembali">0</span> buku menunggu Anda.</p>
         </div>
-        <button type="button" class="btn-close ms-3" data-bs-dismiss="alert"></button>
     </div>
 </div>
 
@@ -361,277 +297,144 @@ function showError() {
     console.error('Error loading data');
 }
 
-function updateRiwayatTable(riwayat) {
-    const tbody = document.getElementById('riwayatTableBody');
-    if (!tbody) return;
-    
-    // Clear existing rows
-    tbody.innerHTML = '';
-    
-    // Add new rows
-    riwayat.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>
-                <span class="fw-medium text-secondary">#${String(index + 1).padStart(2, '0')}</span>
-            </td>
-            <td class="fw-medium">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-book text-primary me-2 opacity-50"></i>
-                    ${item.judul_buku || 'Unknown'}
-                </div>
-            </td>
-            <td>
-                <span class="small">
-                    <i class="far fa-calendar-alt text-muted me-1"></i>
-                    ${formatDate(item.tanggal_pinjam)}
-                </span>
-            </td>
-            <td>
-                <span class="small">
-                    <i class="far fa-calendar-check text-muted me-1"></i>
-                    ${item.tanggal_kembali ? formatDate(item.tanggal_kembali) : '-'}
-                </span>
-            </td>
-            <td>
-                ${getStatusBadge(item.status, item.terlambat)}
-            </td>
-            <td>
-                <span class="fw-medium ${item.denda > 0 ? 'text-danger' : 'text-success'}">
-                    ${item.denda ? formatRupiah(item.denda) : 'Rp 0'}
-                </span>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-function formatDate(dateString) {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    }).split('/').join('-');
-}
-
-function formatRupiah(amount) {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(amount);
-}
-
-function getStatusBadge(status, terlambat = false) {
-    if (status === 'dipinjam' || status === 'Dipinjam') {
-        if (terlambat) {
-            return '<span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill"><i class="fas fa-exclamation-circle me-1"></i>Terlambat</span>';
-        }
-        return '<span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill"><i class="fas fa-book-open me-1"></i>Dipinjam</span>';
-    } else if (status === 'dikembalikan' || status === 'Dikembalikan') {
-        return '<span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill"><i class="fas fa-check-circle me-1"></i>Kembali</span>';
-    }
-    return '<span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">' + status + '</span>';
-}
-
 // Load data when page loads
 document.addEventListener('DOMContentLoaded', loadDashboardStats);
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 :root {
-    --primary: #667eea;
-    --success: #1cc88a;
-    --warning: #f6c23e;
-    --danger: #e74a3b;
+    --primary: #4e73df;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --dark-blue: #1e293b;
 }
 
-/* Modern Styles */
 body {
-    background-color: #f8fafc;
+    background-color: #f1f5f9;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #334155;
 }
 
-/* Welcome Avatar */
-.welcome-avatar {
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
-    animation: float 6s ease-in-out infinite;
-}
+.fw-800 { font-weight: 800; }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-/* Stat Cards */
+/* Stat Card Styling */
 .stat-card {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0,0,0,0.02);
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    height: 100%;
     position: relative;
-    overflow: hidden;
-}
-
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary), var(--warning));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
 }
 
 .stat-card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 20px 30px -10px rgba(102, 126, 234, 0.15) !important;
-    border-color: transparent;
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
 }
 
-.stat-card:hover::before {
-    opacity: 1;
-}
+.stat-body { display: flex; align-items: center; }
 
-/* Stat Icons */
 .stat-icon {
-    transition: all 0.3s ease;
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 16px;
 }
 
-.stat-card:hover .stat-icon {
-    transform: scale(1.1) rotate(5deg);
+.card-primary .stat-icon { background: rgba(78,115,223,0.1); color: var(--primary); }
+.card-warning .stat-icon { background: rgba(245,158,11,0.1); color: var(--warning); }
+.card-success .stat-icon { background: rgba(16,185,129,0.1); color: var(--success); }
+.card-danger .stat-icon { background: rgba(239,68,68,0.1); color: var(--danger); }
+
+.stat-label { font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-number { font-size: 1.75rem; font-weight: 800; margin-bottom: 0; color: var(--dark-blue); }
+
+.stat-status { font-size: 0.75rem; font-weight: 600; margin-top: 12px; }
+
+/* Table Styling */
+.main-card {
+    border-radius: 24px;
+    border: none;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
 }
 
-/* Chart Containers */
-.chart-area {
-    position: relative;
-    height: 15rem;
-    width: 100%;
+.card-header-custom {
+    padding: 24px;
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-@media (min-width: 768px) {
-    .chart-area {
-        height: 20rem;
-    }
-}
-
-.chart-pie {
-    position: relative;
-    height: 15rem;
-    width: 100%;
-}
-
-/* Table Styles */
-.table {
-    font-size: 0.9rem;
-}
-
-.table thead th {
+.table-custom thead th {
+    background: #f8fafc;
+    border: none;
+    padding: 16px 24px;
     font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6c757d;
+}
+
+.table-custom tbody td {
+    padding: 18px 24px;
+    vertical-align: middle;
+    border-color: #f1f5f9;
+}
+
+/* Badge Styling */
+.badge-soft-primary {
+    background: rgba(78,115,223,0.1);
+    color: var(--primary);
+    padding: 8px 16px;
+    border-radius: 10px;
     font-weight: 600;
 }
 
-.table tbody tr {
-    transition: all 0.2s ease;
+/* Chart Container */
+.chart-container { height: 350px; }
+.chart-container-pie { height: 250px; }
+
+/* Legend */
+.legend-custom { display: flex; justify-content: center; gap: 20px; }
+.legend-item { font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; }
+.dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+
+/* Floating Toast */
+.toast-custom {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #ffffff;
+    padding: 16px 24px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    z-index: 1060;
+    border-left: 6px solid;
+    animation: slideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.table tbody tr:hover {
-    background-color: rgba(102, 126, 234, 0.02) !important;
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
-/* Badge Styles */
-.badge {
-    font-weight: 500;
-    font-size: 0.75rem;
-}
-
-/* Alert Styles */
-.alert-warning {
-    background-color: #fff3cd;
-    border-left: 4px solid #f6c23e;
-    max-width: 350px;
-}
-
-/* Background Opacity Helpers */
-.bg-opacity-10 {
-    --bs-bg-opacity: 0.1;
-}
-
-/* Gap Utility */
-.gap-4 {
-    gap: 1.5rem;
-}
-
-/* Shadow */
-.shadow-xs {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-}
-
-/* Rounded */
-.rounded-4 {
-    border-radius: 1rem !important;
-}
-
-/* Width Height Helpers */
-.w-3 {
-    width: 0.75rem;
-}
-
-.h-3 {
-    height: 0.75rem;
-}
-
-/* Fade In Animation */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.col-6, .col-xl-3, .col-xl-8, .col-xl-4 {
-    animation: fadeInUp 0.6s ease-out forwards;
-    opacity: 0;
-}
-
-.col-6:nth-child(1) { animation-delay: 0.1s; }
-.col-6:nth-child(2) { animation-delay: 0.2s; }
-.col-6:nth-child(3) { animation-delay: 0.3s; }
-.col-6:nth-child(4) { animation-delay: 0.4s; }
-.col-xl-8 { animation-delay: 0.5s; }
-.col-xl-4 { animation-delay: 0.6s; }
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #667eea;
+.row > div {
+    animation: fadeInUp 0.5s ease-out forwards;
 }
 </style>
 

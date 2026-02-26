@@ -140,8 +140,8 @@
                                 <i class="fas fa-user-edit fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Edit Profil
                             </a>
-                            <a class="dropdown-item" href="" target="_blank">
-                                <i class="fas fa-print fa-sm fa-fw mr-2 text-gray-400"></i>
+                           <a class="dropdown-item" href="javascript:void(0)" onclick="cetakKartu()">
+                                <i class="fas fa-file-pdf fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Cetak Kartu Anggota
                             </a>
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -354,6 +354,29 @@ document.addEventListener("DOMContentLoaded", function(){
             alert(data.message);
         });
     }
-
 });
+</script>
+<script>
+async function cetakKartu() {
+
+    const token = localStorage.getItem("token");
+
+    try{
+        const res = await fetch("http://127.0.0.1:8000/api/user/print-my-card",{
+            headers:{
+                "Authorization":`Bearer ${token}`,
+                "Accept":"application/pdf"
+            }
+        });
+
+        if(!res.ok) throw new Error("Gagal generate kartu");
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        window.open(url,"_blank");
+
+    }catch(err){
+        alert(err.message);
+    }
+}
 </script>

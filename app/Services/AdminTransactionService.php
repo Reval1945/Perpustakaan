@@ -90,34 +90,43 @@ class AdminTransactionService
     public function verifyReturnTransaction(Transactions $transaction, array $data)
     {
         return DB::transaction(function () use ($transaction, $data) {
-
             $transaction->load('details');
 
             foreach ($transaction->details as $detail) {
-
-                $today = Carbon::today();
-                $jatuhTempo = Carbon::parse($detail->tanggal_jatuh_tempo);
-
-                $hariTelat = max(0, $jatuhTempo->diffInDays($today, false));
-
+                // Kita bungkus payload agar konsisten dengan input yang dibutuhkan verifyReturnDetail
                 $payload = [
-                    'status' => $data['status'],
+                    'status'      => $data['status'],
                     'jenis_denda' => $data['jenis_denda'] ?? null,
                     'denda'       => $data['denda'] ?? 0,
+                    'catatan'     => $data['catatan'] ?? null,
                 ];
 
                 $this->verifyReturnDetail($detail, $payload);
             }
 
-            // reload detail terbaru dari DB
             $transaction->refresh();
             $transaction->load('details');
 
-            // update status transaksi sekali saja
-            if ($transaction->details->every(fn ($d) =>
-                in_array($d->status, ['dikembalikan','terlambat','rusak','hilang'])
-            )) {
-                $transaction->update(['status' => 'dikembalikan']);
+            // Update status transaksi utama jika semua buku sudah kembali/diproses
+            $statusSelesai = ['dikembalikan', 'terlambat', 'rusak', 'hilang'];
+            if ($transaction->details->every(fn ($d) => in_array($d->status, $statusSelesai))) {
+                $newStatus = 'dikembalikan';
+
+                if ($transaction->details->contains(fn ($d) => $d->status === 'rusak')) {
+                    $newStatus = 'rusak';
+                } elseif ($transaction->details->contains(fn ($d) => $d->status === 'hilang')) {
+                    $newStatus = 'hilang';
+                } elseif ($transaction->details->contains(fn ($d) => $d->status === 'terlambat')) {
+                    $newStatus = 'terlambat';
+                }
+
+                // update aggregate penalties and payment flag as well
+                $totalDenda = $transaction->details->sum('denda');
+                $transaction->update([
+                    'status'      => $newStatus,
+                    'total_denda' => $totalDenda,
+                    'lunas'       => $totalDenda <= 0,
+                ]);
             }
 
             return $transaction;
@@ -129,68 +138,92 @@ class AdminTransactionService
         $today = Carbon::now();
         $jatuhTempo = Carbon::parse($detail->tanggal_jatuh_tempo)->startOfDay();
 
-        if ($data['status'] === 'terlambat' && !$jatuhTempo->isPast()) {
+        // 1. Validasi Status Terlambat
+        if ($data['status'] === 'terlambat' && $today->lte($jatuhTempo)) {
             throw ValidationException::withMessages([
-                'status' => 'Pengembalian belum melewati jatuh tempo'
+                'status' => 'Buku belum melewati tanggal jatuh tempo, gunakan status "dikembalikan".'
             ]);
         }
 
-        $jumlahHariTelat = $today->greaterThan($jatuhTempo)
-            ? $jatuhTempo->diffInDays($today)
-            : 0;
+        // 2. Hitung jumlah hari telat (untuk record DB)
+        $jumlahHariTelat = $today->gt($jatuhTempo) ? $today->diffInDays($jatuhTempo) : 0;
 
-        $nominalPerHari = $data['denda'] ?? 0;
-        $totalDenda = $jumlahHariTelat * $nominalPerHari;
+        // 3. LOGIKA DENDA (Disederhanakan)
+        // Karena JS sudah menghitung (Hari x Tarif), di sini kita langsung ambil totalnya
+        $totalDenda = (float) ($data['denda'] ?? 0);
+        
+        // Tentukan jenis denda untuk ENUM database
+        if ($data['status'] === 'terlambat') {
+            $jenisDendaDB = 'telat';
+        } else {
+            $jenisDendaDB = $data['jenis_denda'] ?? null;
+        }
 
-        // mapping status detail → status stock
+        // 4. Mapping status stock
         $stockStatus = match ($data['status']) {
-            'dikembalikan' => 'tersedia',
-            'terlambat' => 'tersedia',
-            'rusak' => 'rusak',
+            'rusak'  => 'rusak',
             'hilang' => 'hilang',
+            default  => 'tersedia' // 'dikembalikan' & 'terlambat' buku jadi tersedia lagi
         };
 
-        DB::transaction(function () use ($detail, $data, $today, $jumlahHariTelat, $totalDenda, $stockStatus) {
+        return DB::transaction(function () use ($detail, $data, $today, $jumlahHariTelat, $totalDenda, $stockStatus, $jenisDendaDB) {
 
-            // update detail
+            // 5. Update detail
             $detail->update([
                 'status'            => $data['status'],
                 'tanggal_kembali'   => $today,
-                'jenis_denda'       => $jumlahHariTelat > 0 ? $data['jenis_denda'] : null,
+                'jenis_denda'       => ($totalDenda > 0) ? $jenisDendaDB : null,
                 'jumlah_hari_telat' => $jumlahHariTelat,
                 'denda'             => $totalDenda,
+                'status_denda'      => ($totalDenda > 0) ? 'belum_lunas' : 'lunas',
                 'catatan'           => $data['catatan'] ?? null,
             ]);
 
-            // update status eksemplar buku
+            // 6. Update status fisik buku (BookStock)
             if ($detail->book_stock_id) {
-                BookStock::where('id', $detail->book_stock_id)
-                    ->update([
-                        'status' => $stockStatus
-                    ]);
+                BookStock::where('id', $detail->book_stock_id)->update([
+                    'status' => $stockStatus
+                ]);
             }
-        });
 
-        return $detail;
+            // 7. synchronize header after a single detail was verified
+            $transaction = $detail->transaction->fresh('details');
+            $statuses = $transaction->details->pluck('status');
+
+            // compute header status based on detail statuses
+            if ($statuses->contains('rusak')) {
+                $transaction->status = 'rusak';
+            } elseif ($statuses->contains('hilang')) {
+                $transaction->status = 'hilang';
+            } elseif ($statuses->contains('terlambat')) {
+                $transaction->status = 'terlambat';
+            } elseif ($statuses->every(fn($s) => $s === 'dikembalikan')) {
+                $transaction->status = 'dikembalikan';
+            } elseif ($statuses->every(fn($s) => $s === 'dipinjam')) {
+                $transaction->status = 'dipinjam';
+            }
+
+            // update aggregate penalties too
+            $transaction->total_denda = $transaction->details->sum('denda');
+            $transaction->lunas = $transaction->total_denda <= 0;
+            $transaction->save();
+
+            return $detail;
+        });
     }
 
     public function verifikasiDetail(TransactionDetail $detail): void
     {
         DB::transaction(function () use ($detail) {
-
-            $detail->update([
-                'status' => 'dipinjam'
-            ]);
+            $detail->update(['status' => 'dipinjam']);
 
             $transaksi = $detail->transaction;
-
-            // 2. Ambil semua detail transaksi
             $details = $transaksi->details;
 
-            // 3. Tentukan status transaksi
+            // Cek apakah semua atau sebagian sudah dipinjam
             if ($details->every(fn ($d) => $d->status === 'dipinjam')) {
                 $transaksi->update(['status' => 'dipinjam']);
-            } elseif ($details->contains(fn ($d) => $d->status === 'dipinjam')) {
+            } else if ($details->contains(fn ($d) => $d->status === 'dipinjam')) {
                 $transaksi->update(['status' => 'sebagian_dipinjam']);
             }
         });

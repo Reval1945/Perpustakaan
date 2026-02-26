@@ -59,9 +59,9 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
     Route::get('/books/export/excel', [BookController::class, 'exportExcel']);
 
     //  ATURAN PEMINJAMAN
-    Route::resource('/aturan-peminjaman', AturanPeminjamanController::class);
     Route::get('/aturan-peminjaman/aktif', [AturanPeminjamanController::class, 'getAktif']);
-
+    Route::resource('/aturan-peminjaman', AturanPeminjamanController::class);
+    
     // TRANSAKSI
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/transactions', [TransactionController::class, 'AdminStore']);
@@ -113,6 +113,7 @@ Route::middleware(['auth:sanctum', 'role.manual:user'])->group(function () {
 
     Route::get('/me',[ProfileController::class,'me']);
     Route::post('/update-profile',[ProfileController::class,'update']);
+    Route::get('/user/print-my-card', [ProfileController::class, 'exportPdf']);
 
     // PENGUNJUNG
     Route::post('/pengunjung', [PengunjungController::class, 'store']);

@@ -580,8 +580,8 @@
             <a class="navbar-brand" href="#home">
                 <div class="logo-icon">
                     <i class="bi bi-book"></i>
-                </div>
-                Perpustakaan<span>SMKN 4</span>
+                </div> 
+                Perpustakaan <span> SMKN 4</span>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -609,7 +609,7 @@
                 
                 <div class="d-flex ms-lg-3">
                     <a href="/login" class="btn btn-outline-custom btn-custom me-2">Masuk</a>
-                    <a href="/pilihrole" class="btn btn-primary-custom btn-custom">Daftar</a>
+                    <a href="/register" class="btn btn-primary-custom btn-custom">Daftar</a>
                 </div>
             </div>
         </div>
@@ -622,7 +622,7 @@
                 <div class="col-lg-6 fade-in">
                     <div class="hero-content">
                         <h1>Jelajahi Dunia <span>Pengetahuan</span> di Perpustakaan Kami</h1>
-                        <p class="lead">Akses ribuan buku, jurnal, dan materi pembelajaran digital dari mana saja. Sistem perpustakaan modern untuk siswa dan guru SMKN 4 Bojonegoro.</p>
+                        <p class="lead">Akses buku, dan materi pembelajaran dari mana saja. Sistem perpustakaan modern untuk siswa dan guru SMKN 4 Bojonegoro.</p>
                         
                         <div class="d-flex flex-wrap gap-3 mb-4">
                             <a href="#collections" class="btn btn-primary-custom btn-custom">Jelajahi Koleksi</a>
