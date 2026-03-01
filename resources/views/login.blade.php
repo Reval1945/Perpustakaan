@@ -1,271 +1,566 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Masuk - Perpustakaan SMK4BJN</title>
 
-    <title>Login</title>
+    <!-- SB Admin 2 -->
+    <link href="{{ asset('template/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('template/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800,900" rel="stylesheet">
 
-    <!-- Custom fonts for this template -->
-    <link href="{{ asset('template/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{ asset('template/css/sb-admin-2.css') }}" rel="stylesheet">
-    
     <style>
-        /* Hanya style minimal untuk fungsionalitas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2C5AA0;
+            --primary-light: #4A7BC8;
+            --secondary: #F9A826;
+            --accent: #E63946;
+            --light: #F8F9FA;
+            --dark: #212529;
+            --gray: #6C757D;
+            --gray-light: #E9ECEF;
+            --border-color: #E0E0E0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --radius: 8px;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+        }
+
+        .container-fluid {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+        }
+
+        .row {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+        }
+
+        [class*="col-"] {
+            padding: 0;
+        }
+
+        /* LEFT SIDE */
+        .left-side {
+            background: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 80px;
+        }
+
+        .left-side h1 {
+            font-weight: 700;
+            font-size: 36px;
+            color: #000;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .left-side .subtitle {
+            color: var(--gray);
+            font-size: 16px;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #000;
+            margin-bottom: 8px;
+            display: block;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 48px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 0 16px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #B0B0B0;
+            font-size: 15px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
         .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
             cursor: pointer;
-            user-select: none;
+            font-size: 16px;
         }
-        
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px 0 32px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 3px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .remember-me label {
+            color: var(--gray);
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .forgot-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .forgot-link:hover {
+            color: #000;
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 48px;
+            background: var(--primary);
+            border: none;
+            border-radius: var(--radius);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-login i {
+            font-size: 14px;
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Register Link */
+        .register-section {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .register-text {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .register-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .register-link:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        /* RIGHT SIDE */
+        .right-side {
+            background: linear-gradient(135deg, var(--primary), #1e3a5f);
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background pattern */
+        .right-side::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0 L100 100 L0 100 Z" fill="rgba(255,255,255,0.03)"/><path d="M100 0 L0 100 L100 100 Z" fill="rgba(255,255,255,0.03)"/></svg>');
+            background-size: cover;
+        }
+
+        .right-content {
+            text-align: center;
+            max-width: 80%;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Icons container */
+        .icons-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .icon-circle:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .icon-circle:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .icon-circle i {
+            font-size: 30px;
+            color: white;
+        }
+
+        .right-content h2 {
+            font-weight: 700;
+            font-size: 32px;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .right-content p {
+            font-size: 15px;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            font-weight: 400;
+            max-width: 340px;
+        }
+
+        .badge-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .badge-item i {
+            font-size: 14px;
+        }
+
+        .badge-item .fa-circle {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .badge-item .fa-circle-check {
+            color: #4CAF50;
+        }
+
+        .secure-badge {
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0.7;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Loading Spinner */
         .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.2em;
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
         }
-        
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .d-none {
+            display: none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .left-side {
+                padding: 0 60px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .right-side {
+                display: none;
+            }
+            
+            .left-side {
+                padding: 0 40px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .left-side {
+                padding: 0 24px;
+            }
+            
+            .left-side h1 {
+                font-size: 32px;
+            }
+            
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
         }
     </style>
 </head>
 
-<body class="bg-gradient-primary">
+<body>
 
-    <div class="container-fluid">
-        <!-- Outer Row -->
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-xl-10 col-lg-12 col-md-9">
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block position-relative">
-                                <div class="bg-login-image position-absolute w-100 h-100" style="background: url('https://source.unsplash.com/random/600x800?technology,digital') center center no-repeat; background-size: cover;"></div>
-                                <div class="position-absolute w-100 h-100 d-flex flex-column justify-content-center align-items-center p-5" style="background: linear-gradient(135deg, rgba(78, 115, 223, 0.85) 0%, rgba(78, 115, 223, 0.7) 100%);">
-                                    <div class="text-center text-white">
-                                        <i class="fas fa-lock fa-4x mb-4"></i>
-                                        <h2 class="font-weight-bold mb-3">Masuk Aman</h2>
-                                        <p class="mb-0">Akses akun Anda dengan autentikasi yang aman</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <div class="mb-4">
-                                            <i class="fas fa-user-circle fa-3x text-primary"></i>
-                                        </div>
-                                        <h1 class="h4 text-gray-900 mb-2">Selamat Datang!</h1>
-                                        <p class="text-muted mb-4">Silakan masuk ke akun Anda</p>
-                                    </div>
-                                    
-                                    <!-- Alert untuk pesan error/success -->
-                                    @if(session('success'))
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    @endif
-                                    
-                                    @if(session('error'))
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    @endif
-                                    
-                                    @if ($errors->any())
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-exclamation-triangle mr-2"></i> Please check the form below for errors
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    @endif
+<div class="container-fluid">
+    <div class="row">
 
-                                    <form id="loginForm">
-                                        @csrf
+        <!-- SISI KIRI -->
+        <div class="col-lg-6 left-side">
 
-                                        <div class="form-group">
-                                            <label for="email" class="form-label font-weight-bold text-gray-700">Alamat Email</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-envelope text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="email"
-                                                    class="form-control form-control-user @error('email') is-invalid @enderror"
-                                                    id="email"
-                                                    name="email"
-                                                    placeholder="Enter your email address"
-                                                    required
-                                                    value="{{ old('email') }}"
-                                                >
-                                            </div>
-                                            @error('email')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+            <h1>Selamat Datang</h1>
+            <div class="subtitle">Silakan masukkan detail Anda</div>
 
-                                        <div class="form-group">
-                                            <label for="password" class="form-label font-weight-bold text-gray-700">Password</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-lock text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="password"
-                                                    class="form-control form-control-user @error('password') is-invalid @enderror"
-                                                    id="password"
-                                                    name="password"
-                                                    placeholder="Enter your password"
-                                                    required
-                                                >
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text password-toggle" id="togglePassword">
-                                                        <i class="fas fa-eye" id="eyeIcon"></i>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            @error('password')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+            <form id="loginForm">
+                @csrf
 
-                                        <button
-                                            type="submit"
-                                            class="btn btn-primary btn-user btn-block fs-3"
-                                            id="loginButton"
-                                        >
-                                            <span id="buttonText">Login</span>
-                                            <span id="loadingSpinner" class="spinner-border spinner-border-sm ml-2 d-none" role="status" aria-hidden="true"></span>
-                                        </button>
-                                        
-                                        <hr>
-                                    </form>
-                                    <hr>
-                                    <div class="text-center">
-                                        <a class="small" href="/register">Belum memiliki akun? Registrasi!</a>
-                                    </div>
-                                    
-                                    <div class="text-center mt-4">
-                                        <p class="small text-muted">
-                                            <i class="fas fa-shield-alt mr-1"></i> Your information is secure and encrypted
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="form-group">
+                    <label>Alamat Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="Masukkan email Anda" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Kata Sandi</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
+                        <span class="password-toggle" id="togglePassword">
+                            <i class="fas fa-eye" id="eyeIcon"></i>
+                        </span>
                     </div>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginButton">
+                    <i class="fas fa-lock"></i>
+                    <span id="buttonText">Masuk</span>
+                    <span id="loadingSpinner" class="d-none">
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                    </span>
+                </button>
+            </form>
+
+            <!-- Link Registrasi -->
+            <div class="register-section">
+                <span class="register-text">Belum punya akun?</span>
+                <a href="/register" class="register-link">Daftar sekarang</a>
+            </div>
+        </div>
+
+        <!-- SISI KANAN -->
+        <div class="col-lg-6 right-side">
+            <div class="right-content">
+                <!-- Ikon di atas -->
+                <div class="icons-container">
+                    <div class="icon-circle">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="icon-circle">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+
+                <h2>Sistem Digital<br>Perpustakaan</h2>
+                <p>
+                    Kelola peminjaman buku, data anggota, dan aktivitas
+                    perpustakaan secara modern, cepat, dan aman.
+                </p>
+                
+                <div class="badge-container">
+                    <div class="badge-item">
+                        <i class="far fa-circle"></i>
+                        <span>Akses 24/7</span>
+                    </div>
+                    <div class="badge-item">
+                        <i class="fas fa-circle-check"></i>
+                        <span>Real-time</span>
+                    </div>
+                </div>
+                
+                <div class="secure-badge">
+                    <i class="fas fa-shield-alt" style="margin-right: 5px;"></i>
+                    Aman & Terpercaya
                 </div>
             </div>
         </div>
+
     </div>
+</div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('template/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- JS -->
+<script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('template/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('template/js/sb-admin-2.min.js') }}"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('template/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+<script>
+// Toggle Kata Sandi
+document.getElementById('togglePassword').addEventListener('click', function () {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
 
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('template/js/sb-admin-2.min.js') }}"></script>
-    
-    <script>
-    $(document).ready(function () {
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+});
 
-        $('#loginForm').on('submit', async function (e) {
-            e.preventDefault();
+// Submit Form
+$('#loginForm').on('submit', async function (e) {
+    e.preventDefault();
 
-            // loading state
-            $('#loginButton').prop('disabled', true);
-            $('#buttonText').text('Logging in...');
-            $('#loadingSpinner').removeClass('d-none');
+    $('#loginButton').prop('disabled', true);
+    $('#buttonText').text('Memproses...');
+    $('#loadingSpinner').removeClass('d-none');
 
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: $('#email').val(),
-                        password: $('#password').val()
-                    })
-                });
-
-                if (!res.ok) {
-                    throw new Error('Login gagal');
-                }
-
-                const data = await res.json();
-                console.log(data);
-
-                // SIMPAN TOKEN
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
-
-                // REDIRECT SESUAI ROLE
-                if (data.user.role === 'admin') {
-                    window.location.href = '/admin/dashboard';
-                } else if (data.user.role === 'user') {
-                    window.location.href = '/anggota/dashboard';
-                } else if (data.user.role === 'superadmin') {
-                    window.location.href = '/superadmin/dashboard';
-                } else {
-                    alert('Role tidak dikenali');
-                }
-
-            } catch (err) {
-                alert('Email atau password salah');
-            } finally {
-                $('#loginButton').prop('disabled', false);
-                $('#buttonText').text('Login');
-                $('#loadingSpinner').addClass('d-none');
-            }
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                email: $('#email').val(),
+                password: $('#password').val()
+            })
         });
 
-    });
-    </script>
+        if (!res.ok) throw new Error();
 
-    // logic untuk icon mata password
-    <script>
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = document.getElementById('eyeIcon');
+        const data = await res.json();
 
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye');
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        if (data.user.role === 'admin') {
+            window.location.href = '/admin/dashboard';
+        } else if (data.user.role === 'user') {
+            window.location.href = '/anggota/dashboard';
+        } else if (data.user.role === 'superadmin') {
+            window.location.href = '/superadmin/dashboard';
         }
-    });
-    </script>
-</body>
 
+    } catch {
+        alert('Email atau kata sandi salah');
+    } finally {
+        $('#loginButton').prop('disabled', false);
+        $('#buttonText').text('Masuk');
+        $('#loadingSpinner').addClass('d-none');
+    }
+});
+</script>
+
+</body>
 </html>

@@ -1,433 +1,616 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Daftar - Perpustakaan SMK4BJN</title>
 
-    <title>Register</title>
+    <!-- SB Admin 2 -->
+    <link href="{{ asset('template/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('template/css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800,900" rel="stylesheet">
 
-    <!-- Custom fonts for this template -->
-    <link href="{{ asset('template/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{ asset('template/css/sb-admin-2.css') }}" rel="stylesheet">
-    
     <style>
-        /* Hanya style minimal untuk fungsionalitas */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2C5AA0;
+            --primary-light: #4A7BC8;
+            --secondary: #F9A826;
+            --accent: #E63946;
+            --light: #F8F9FA;
+            --dark: #212529;
+            --gray: #6C757D;
+            --gray-light: #E9ECEF;
+            --border-color: #E0E0E0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --radius: 8px;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+        }
+
+        .container-fluid {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+        }
+
+        .row {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+        }
+
+        [class*="col-"] {
+            padding: 0;
+        }
+
+        /* RIGHT SIDE - FORM */
+        .right-side {
+            background: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px 60px;
+            overflow: hidden;
+        }
+
+        .right-side h1 {
+            font-weight: 700;
+            font-size: 32px;
+            color: #000;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .right-side .subtitle {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #000;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 42px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 0 14px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #B0B0B0;
+            font-size: 13px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
         .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
             cursor: pointer;
-            user-select: none;
+            font-size: 16px;
+            z-index: 10;
         }
-        
+
+        .btn-register {
+            width: 100%;
+            height: 44px;
+            background: var(--primary);
+            border: none;
+            border-radius: var(--radius);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            margin-top: 5px;
+        }
+
+        .btn-register:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-register i {
+            font-size: 14px;
+        }
+
+        .btn-register:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Login Link */
+        .login-section {
+            text-align: center;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .login-text {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .login-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+
+        .login-link:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        /* LEFT SIDE - ILUSTRASI */
+        .left-side {
+            background: linear-gradient(135deg, var(--primary), #1e3a5f);
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-side::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0 L100 100 L0 100 Z" fill="rgba(255,255,255,0.03)"/><path d="M100 0 L0 100 L100 100 Z" fill="rgba(255,255,255,0.03)"/></svg>');
+            background-size: cover;
+        }
+
+        .left-content {
+            text-align: center;
+            max-width: 80%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .icons-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .icon-circle {
+            width: 65px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .icon-circle:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .icon-circle:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .icon-circle i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .left-content h2 {
+            font-weight: 700;
+            font-size: 30px;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .left-content p {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            font-weight: 400;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .badge-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .secure-badge {
+            font-size: 12px;
+            font-weight: 500;
+            opacity: 0.7;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 10px 14px;
+            border-radius: var(--radius);
+            margin-bottom: 18px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Optional field indicator */
+        .optional-badge {
+            color: var(--gray);
+            font-size: 10px;
+            font-weight: 400;
+            margin-left: 6px;
+            background: var(--gray-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: lowercase;
+        }
+
+        /* Error Feedback */
+        .invalid-feedback {
+            color: var(--accent);
+            font-size: 11px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .is-invalid {
+            border-color: var(--accent) !important;
+        }
+
+        .is-invalid:focus {
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+        }
+
+        /* Loading Spinner */
         .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.2em;
+            width: 16px;
+            height: 16px;
+            border-width: 2px;
         }
-        
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .d-none {
+            display: none;
+        }
+
+        /* Scale for different heights */
+        @media (max-height: 700px) {
+            .right-side { padding: 20px 60px; }
+            .form-control { height: 40px; }
+            .btn-register { height: 42px; }
+            .form-grid { gap: 14px 20px; }
+            .icons-container { gap: 20px; }
+            .icon-circle { width: 55px; height: 55px; }
+            .icon-circle i { font-size: 24px; }
+        }
+
+        @media (max-height: 600px) {
+            .right-side { padding: 15px 60px; }
+            .form-control { height: 38px; font-size: 13px; }
+            .btn-register { height: 40px; }
+            .right-side h1 { font-size: 28px; }
+            .subtitle { margin-bottom: 15px; }
+            .form-grid { gap: 10px 20px; margin-bottom: 15px; }
+            .login-section { margin-top: 12px; padding-top: 12px; }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .left-side { display: none; }
+            .right-side { padding: 30px; }
+        }
+
+        @media (max-width: 576px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .right-side { padding: 20px; }
         }
     </style>
 </head>
 
-<body class="bg-gradient-primary">
+<body>
 
-    <div class="container-fluid">
-        <!-- Outer Row -->
-        <div class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-xl-10 col-lg-12 col-md-9">
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block position-relative">
-                                <div class="bg-login-image position-absolute w-100 h-100" style="background: url('https://source.unsplash.com/random/600x800?technology,digital') center center no-repeat; background-size: cover;"></div>
-                                <div class="position-absolute w-100 h-100 d-flex flex-column justify-content-center align-items-center p-5" style="background: linear-gradient(135deg, rgba(78, 115, 223, 0.85) 0%, rgba(78, 115, 223, 0.7) 100%);">
-                                    <div class="text-center text-white">
-                                        <i class="fas fa-user-plus fa-4x mb-4"></i>
-                                        <h2 class="font-weight-bold mb-3">Buat Akun</h2>
-                                        <p class="mb-0">Bergabung dengan sistem kami dan mulai dengan autentikasi yang aman</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="p-5">
-                                    <div class="text-center">
-                                        <div class="mb-4">
-                                            <i class="fas fa-user-circle fa-3x text-primary"></i>
-                                        </div>
-                                        <h1 class="h4 text-gray-900 mb-2">Buat Akun Anda</h1>
-                                        <p class="text-muted mb-4">Bergabung dengan sistem kami dan mulai dengan autentikasi yang aman</p>
-                                    </div>
-                                    
-                                    <!-- Alert untuk pesan error/success -->
-                                    @if(session('success'))
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    @endif
-                                    
-                                    @if(session('error'))
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    @endif
-                                    
-                                    @if ($errors->any())
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-exclamation-triangle mr-2"></i> Harap periksa formulir di bawah ini untuk kesalahan
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    @endif
+<div class="container-fluid">
+    <div class="row">
 
-                                    <form class="user" id="registerForm">
-                                        @csrf
+        <!-- SISI KIRI - ILUSTRASI -->
+        <div class="col-lg-6 left-side">
+            <div class="left-content">
+                <div class="icons-container">
+                    <div class="icon-circle"><i class="fas fa-book"></i></div>
+                    <div class="icon-circle"><i class="fas fa-users"></i></div>
+                    <div class="icon-circle"><i class="fas fa-chart-line"></i></div>
+                </div>
 
-                                        <!-- Nama -->
-                                        <div class="form-group">
-                                            <label for="name" class="form-label font-weight-bold text-gray-700">Nama Lengkap</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-user text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    class="form-control form-control-user @error('name') is-invalid @enderror"
-                                                    id="name"
-                                                    name="name"
-                                                    placeholder="Enter your full name"
-                                                    required
-                                                    value="{{ old('name') }}"
-                                                >
-                                            </div>
-                                            @error('name')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Email -->
-                                        <div class="form-group">
-                                            <label for="email" class="form-label font-weight-bold text-gray-700">Alamat Email</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-envelope text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="email"
-                                                    class="form-control form-control-user @error('email') is-invalid @enderror"
-                                                    id="email"
-                                                    name="email"
-                                                    placeholder="Enter your email address"
-                                                    required
-                                                    value="{{ old('email') }}"
-                                                >
-                                            </div>
-                                            @error('email')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Password -->
-                                        <div class="form-group">
-                                            <label for="password" class="form-label font-weight-bold text-gray-700">Password</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-lock text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="password"
-                                                    class="form-control form-control-user @error('password') is-invalid @enderror"
-                                                    id="password"
-                                                    name="password"
-                                                    placeholder="Enter your password"
-                                                    required
-                                                >
-                                                <div class="input-group-append">
-                                                    <span class="input-group-text password-toggle" id="togglePassword">
-                                                        <i class="fas fa-eye" id="eyeIcon"></i>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            @error('password')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- NISN -->
-                                        <div class="form-group">
-                                            <label for="nisn" class="form-label font-weight-bold text-gray-700">NISN</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-id-card text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    class="form-control form-control-user @error('nisn') is-invalid @enderror"
-                                                    id="nisn"
-                                                    name="nisn"
-                                                    placeholder="Enter your NISN"
-                                                    required
-                                                    value="{{ old('nisn') }}"
-                                                >
-                                            </div>
-                                            @error('nisn')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- No Telp -->
-                                        <div class="form-group">
-                                            <label for="no_telp" class="form-label font-weight-bold text-gray-700">No Telp</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-phone text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    class="form-control form-control-user @error('no_telp') is-invalid @enderror"
-                                                    id="no_telp"
-                                                    name="phone"
-                                                    placeholder="Enter your phone number"
-                                                    required
-                                                    value="{{ old('no_telp') }}"
-                                                >
-                                            </div>
-                                            @error('no_telp')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Kelas -->
-                                        <div class="form-group">
-                                            <label for="kelas" class="form-label font-weight-bold text-gray-700">Kelas</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-school text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    class="form-control form-control-user @error('kelas') is-invalid @enderror"
-                                                    id="kelas"
-                                                    name="class"
-                                                    placeholder="Enter your class"
-                                                    required
-                                                    value="{{ old('kelas') }}"
-                                                >
-                                            </div>
-                                            @error('kelas')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- No Absen -->
-                                        <div class="form-group">
-                                            <label for="no_absen" class="form-label font-weight-bold text-gray-700">No Absen</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-list-ol text-primary"></i>
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="number"
-                                                    class="form-control form-control-user @error('no_absen') is-invalid @enderror"
-                                                    id="no_absen"
-                                                    name="roll_number"
-                                                    placeholder="Enter your absent number"
-                                                    required
-                                                    value="{{ old('no_absen') }}"
-                                                >
-                                            </div>
-                                            @error('no_absen')
-                                                <div class="invalid-feedback d-block">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-primary btn-user btn-block"
-                                            id="registerButton"
-                                        >
-                                            <span id="buttonText">Register</span>
-                                            <span id="loadingSpinner" class="spinner-border spinner-border-sm ml-2 d-none" role="status" aria-hidden="true"></span>
-                                        </button>
-                                    </form>
-                                    
-                                    <hr>
-                                    <div class="text-center">
-                                        <a class="small" href="/login">Sudah memiliki akun? Login!</a>
-                                    </div>
-                                    
-                                    <div class="text-center mt-4">
-                                        <p class="small text-muted">
-                                            <i class="fas fa-shield-alt mr-1"></i> Informasi Anda aman dan dienkripsi.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <h2>Bergabunglah<br>Dengan Kami</h2>
+                <p>
+                    Dapatkan akses ke ribuan koleksi buku digital dan nikmati kemudahan peminjaman online.
+                </p>
+                
+                <div class="badge-container">
+                    <div class="badge-item"><i class="far fa-circle"></i><span>Gratis</span></div>
+                    <div class="badge-item"><i class="fas fa-circle-check"></i><span>Mudah</span></div>
+                </div>
+                
+                <div class="secure-badge">
+                    <i class="fas fa-shield-alt" style="margin-right: 5px;"></i> Data Terenkripsi
                 </div>
             </div>
         </div>
+
+        <!-- SISI KANAN - FORM REGISTRASI 2 KOLOM -->
+        <div class="col-lg-6 right-side">
+            <h1>Buat Akun</h1>
+            <div class="subtitle">Isi data diri Anda untuk mendaftar</div>
+
+            @if(session('success'))
+            <div class="alert alert-success"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
+            @endif
+            
+            @if(session('error') || $errors->any())
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> 
+                @if(session('error')) {{ session('error') }} @else Harap periksa kembali data Anda @endif
+            </div>
+            @endif
+
+            <form id="registerForm">
+                @csrf
+
+                <div class="form-grid">
+                    <!-- Nama Lengkap -->
+                    <div class="form-group">
+                        <label><i class="fas fa-user" style="margin-right: 6px; color: var(--primary);"></i>Nama Lengkap</label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Nama lengkap" required value="{{ old('name') }}">
+                        @error('name')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope" style="margin-right: 6px; color: var(--primary);"></i>Email</label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Alamat email" required value="{{ old('email') }}">
+                        @error('email')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label><i class="fas fa-lock" style="margin-right: 6px; color: var(--primary);"></i>Kata Sandi</label>
+                        <div class="input-wrapper">
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Kata sandi" required>
+                            <span class="password-toggle" id="togglePassword"><i class="fas fa-eye" id="eyeIcon"></i></span>
+                        </div>
+                        @error('password')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                    </div>
+
+                    <!-- No Telepon -->
+                    <div class="form-group">
+                        <label><i class="fas fa-phone" style="margin-right: 6px; color: var(--primary);"></i>No Telepon</label>
+                        <input type="text" class="form-control @error('no_telp') is-invalid @enderror" id="no_telp" name="phone" placeholder="Nomor telepon" required value="{{ old('no_telp') }}">
+                        @error('no_telp')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                    </div>
+
+                    <!-- NISN (Opsional) -->
+                    <div class="form-group">
+                        <label><i class="fas fa-id-card" style="margin-right: 6px; color: var(--primary);"></i>NISN <span class="optional-badge">opsional</span></label>
+                        <input type="text" class="form-control @error('nisn') is-invalid @enderror" id="nisn" name="nisn" placeholder="NISN" value="{{ old('nisn') }}">
+                        @error('nisn')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                    </div>
+
+                    <!-- Kelas (Opsional) -->
+                    <div class="form-group">
+                        <label><i class="fas fa-school" style="margin-right: 6px; color: var(--primary);"></i>Kelas <span class="optional-badge">opsional</span></label>
+                        <input type="text" class="form-control @error('kelas') is-invalid @enderror" id="kelas" name="class" placeholder="Kelas" value="{{ old('kelas') }}">
+                        @error('kelas')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                    </div>
+
+                    <!-- No Absen (Opsional) -->
+                    <div class="form-group">
+                        <label><i class="fas fa-list-ol" style="margin-right: 6px; color: var(--primary);"></i>No Absen <span class="optional-badge">opsional</span></label>
+                        <input type="number" class="form-control @error('no_absen') is-invalid @enderror" id="no_absen" name="roll_number" placeholder="No absen" value="{{ old('no_absen') }}">
+                        @error('no_absen')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register" id="registerButton">
+                    <i class="fas fa-user-plus"></i>
+                    <span id="buttonText">Daftar</span>
+                    <span id="loadingSpinner" class="d-none"><span class="spinner-border spinner-border-sm"></span></span>
+                </button>
+            </form>
+
+            <div class="login-section">
+                <span class="login-text">Sudah punya akun?</span>
+                <a href="/login" class="login-link">Masuk</a>
+            </div>
+        </div>
+
     </div>
+</div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('template/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('template/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('template/js/sb-admin-2.min.js') }}"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('template/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('template/js/sb-admin-2.min.js') }}"></script>
-
-    <script>
-    $('#registerForm').submit(function(e) {
-        e.preventDefault();
-
-        $('#registerButton').prop('disabled', true);
-        $('#buttonText').text('Registering...');
-        $('#loadingSpinner').removeClass('d-none');
-
-        const payload = {
-            name: $('#name').val(),
-            email: $('#email').val(),
-            password: $('#password').val(),
-            class: $('#kelas').val(),
-            roll_number: $('#no_absen').val(),
-            phone: $('#no_telp').val(),
-            nisn: $('#nisn').val(),
-        };
-
-        fetch('http://localhost:8000/api/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.token) {
-                alert(data.message);
-
-                // simpan token (opsional)
-                localStorage.setItem('token', data.token);
-
-                window.location.href = '/login';
-            } else {
-                alert(data.message || 'Registrasi gagal');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Terjadi kesalahan server');
-        })
-        .finally(() => {
-            $('#registerButton').prop('disabled', false);
-            $('#buttonText').text('Register');
-            $('#loadingSpinner').addClass('d-none');
-        });
+<script>
+$(document).ready(function() {
+    $('#togglePassword').click(function() {
+        const passwordInput = $('#password');
+        const eyeIcon = $('#eyeIcon');
+        
+        if (passwordInput.attr('type') === 'password') {
+            passwordInput.attr('type', 'text');
+            eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            passwordInput.attr('type', 'password');
+            eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
     });
-    </script>
+    
+    $('.form-control').focus(function() {
+        $(this).removeClass('is-invalid');
+    });
+    
+    $('#name').focus();
+});
 
-    <script>
-        $(document).ready(function() {
-            // Toggle password visibility
-            $('#togglePassword').click(function() {
-                const passwordInput = $('#password');
-                const eyeIcon = $('#eyeIcon');
-                
-                if (passwordInput.attr('type') === 'password') {
-                    passwordInput.attr('type', 'text');
-                    eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
-                } else {
-                    passwordInput.attr('type', 'password');
-                    eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
-                }
-            });
-            
-            // Form submission loading state
-            $('#registerForm').submit(function() {
-                $('#registerButton').prop('disabled', true);
-                $('#buttonText').text('Registering...');
-                $('#loadingSpinner').removeClass('d-none');
-            });
-            
-            // Auto focus on name field
-            $('#name').focus();
-            
-            // Add animation to form elements
-            $('.form-group').addClass('animate__animated animate__fadeInUp');
-            
-            // Remove is-invalid class on input focus
-            $('.form-control').focus(function() {
-                $(this).removeClass('is-invalid');
-            });
-            
-            // Show password strength (optional feature)
-            $('#password').on('keyup', function() {
-                const password = $(this).val();
-                const strengthBar = $('#passwordStrength');
-                
-                if (password.length === 0) {
-                    strengthBar.removeClass().addClass('progress-bar bg-secondary');
-                    strengthBar.css('width', '0%');
-                } else if (password.length < 6) {
-                    strengthBar.removeClass().addClass('progress-bar bg-danger');
-                    strengthBar.css('width', '30%');
-                } else if (password.length < 10) {
-                    strengthBar.removeClass().addClass('progress-bar bg-warning');
-                    strengthBar.css('width', '60%');
-                } else {
-                    strengthBar.removeClass().addClass('progress-bar bg-success');
-                    strengthBar.css('width', '100%');
-                }
-            });
+$('#registerForm').on('submit', async function (e) {
+    e.preventDefault();
+
+    $('#registerButton').prop('disabled', true);
+    $('#buttonText').text('Memproses...');
+    $('#loadingSpinner').removeClass('d-none');
+
+    const payload = {
+        name: $('#name').val(),
+        email: $('#email').val(),
+        password: $('#password').val(),
+        phone: $('#no_telp').val(),
+        ...($('#nisn').val() && { nisn: $('#nisn').val() }),
+        ...($('#kelas').val() && { class: $('#kelas').val() }),
+        ...($('#no_absen').val() && { roll_number: $('#no_absen').val() })
+    };
+
+    try {
+        const res = await fetch('http://localhost:8000/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload)
         });
-    </script>
-</body>
 
+        const data = await res.json();
+
+        if (data.token) {
+            alert('Pendaftaran berhasil! Silakan login.');
+            window.location.href = '/login';
+        } else {
+            alert(data.message || 'Pendaftaran gagal');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Terjadi kesalahan server');
+    } finally {
+        $('#registerButton').prop('disabled', false);
+        $('#buttonText').text('Daftar');
+        $('#loadingSpinner').addClass('d-none');
+    }
+});
+</script>
+
+</body>
 </html>

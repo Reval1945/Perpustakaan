@@ -15,6 +15,7 @@ use App\Http\Controllers\Anggota\DashboardAnggotaController;
 use App\Http\Controllers\BookStockController;
 use App\Http\Controllers\Anggota\ProfileController;
 use App\Http\Controllers\Admin\ProfileAdminController;
+use App\Http\Controllers\Admin\DashboardAdminController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -34,12 +35,6 @@ Route::middleware(['auth:sanctum', 'role.manual:admin,superadmin'])->group(funct
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
     Route::get('/users/export/excel', [UserController::class, 'exportExcel']);
-    Route::get('/users/{id}/library-card', [UserController::class, 'exportLibraryCard']);
-});
-
-// LIBRARY CARD
-Route::middleware(['auth:sanctum', 'role.manual:user'])->group(function () {
-    Route::get('/me/library-card', [UserController::class, 'exportMyLibraryCard']);
 });
 
 // API FOR ROLE ADMIN
@@ -47,6 +42,9 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
 
     Route::get('/me1',[ProfileAdminController::class,'me']);
     Route::post('/update-profile1',[ProfileAdminController::class,'update']);
+
+    // dashboard statistics (used by admin dashboard view)
+    Route::get('/dashboard/statsadmin', [DashboardAdminController::class, 'stats']);
 
     // KATEGORI
     Route::resource('/categories', CategoryController::class);
@@ -68,6 +66,7 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
     Route::put('/transactions/{id}/verifikasi-pinjam', [TransactionController::class, 'verifikasiPinjam']);
     Route::put('/transactions/{id}/verifikasi-kembali', [TransactionController::class, 'verifikasiKembali']);
     Route::put('/transactions/{id}', [TransactionController::class, 'update']);
+    Route::get('/laporan/peminjaman/excel', [TransactionController::class, 'exportExcel']);
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);
 
@@ -81,6 +80,11 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
 
     // CETAK TRANSAKSI
     Route::get('/laporan/transaction-detail', [TransactionController::class, 'cetakPdf']);
+
+    // CETAK DENDA
+    Route::get('/laporan/denda/excel', [DendaController::class, 'exportExcel']);
+    Route::get('/laporan/denda/{id}', [DendaController::class, 'cetakPdf']);
+    Route::get('/laporan/denda', [DendaController::class, 'cetakPdf']);
 
     // DENDA
     Route::prefix('denda')->group(function () {
@@ -128,6 +132,4 @@ Route::middleware(['auth:sanctum', 'role.manual:user'])->group(function () {
     Route::delete('/transaksi-aktif', [TransactionController::class, 'resetAktif']);
     Route::get('/aturanpeminjaman/aktif', [AturanPeminjamanController::class, 'getAktif']);
     Route::get('/transaksi-me/export', [TransactionController::class, 'exportMyTransactions']);
-
-    // DENDA
 });

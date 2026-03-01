@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BookResource;
 use App\Http\Requests\Book\StoreBookRequest;
 use App\Http\Requests\Book\UpdateBookRequest;
-use App\Export\BooksExport;
+use App\Exports\BooksExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class BookController extends Controller

@@ -73,7 +73,7 @@ class ProfileController extends Controller
 
         $pdf = Pdf::loadView('laporan.member_card', [
             'user' => $user
-        ])->setPaper([0, 0, 242.65, 153.07], 'portrait');
+        ])->setPaper([0, 0, 242.65, 153.07], 'landscape');
         // ukuran kartu (ID Card)
 
         return response($pdf->output(),200)

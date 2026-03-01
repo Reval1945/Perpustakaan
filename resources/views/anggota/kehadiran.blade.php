@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h4 class="text-gray-800 mb-4">Kehadiran Pengunjung</h4>
+<h4 class="h3 mb-1 fw-800 text-dark">Kehadiran Pengunjung</h4>
 
 @if(session('success'))
 <div class="alert alert-success">
@@ -16,7 +16,7 @@
     <div class="col-md-6">
 
         <div class="card shadow">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header h3 mb-1 fw-800 text-dark">
                 <strong>Form Kehadiran Perpustakaan</strong>
             </div>
 

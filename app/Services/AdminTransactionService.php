@@ -99,6 +99,7 @@ class AdminTransactionService
                     'jenis_denda' => $data['jenis_denda'] ?? null,
                     'denda'       => $data['denda'] ?? 0,
                     'catatan'     => $data['catatan'] ?? null,
+                    'jumlah_hari_telat' => $data['jumlah_hari_telat'] ?? 0,
                 ];
 
                 $this->verifyReturnDetail($detail, $payload);
@@ -135,7 +136,8 @@ class AdminTransactionService
 
     public function verifyReturnDetail(TransactionDetail $detail, array $data)
     {
-        $today = Carbon::now();
+        // normalize to startOfDay to avoid off-by-one due to time portions
+        $today = Carbon::now()->startOfDay();
         $jatuhTempo = Carbon::parse($detail->tanggal_jatuh_tempo)->startOfDay();
 
         // 1. Validasi Status Terlambat
@@ -145,8 +147,15 @@ class AdminTransactionService
             ]);
         }
 
-        // 2. Hitung jumlah hari telat (untuk record DB)
-        $jumlahHariTelat = $today->gt($jatuhTempo) ? $today->diffInDays($jatuhTempo) : 0;
+        // 2. Hitung jumlah hari telat (untuk record DB) - pastikan non-negative.
+        // API boleh mengirimkan nilai ini (dihitung klien), namun untuk keamanan
+        // kita tetap pastikan non-negative dan minimal 0.
+        if (isset($data['jumlah_hari_telat'])) {
+            $jumlahHariTelat = max(0, (int) $data['jumlah_hari_telat']);
+        } else {
+            $jumlahHariTelat = $today->gt($jatuhTempo) ? (int) $today->diffInDays($jatuhTempo) : 0;
+            $jumlahHariTelat = max(0, $jumlahHariTelat);
+        }
 
         // 3. LOGIKA DENDA (Disederhanakan)
         // Karena JS sudah menghitung (Hari x Tarif), di sini kita langsung ambil totalnya

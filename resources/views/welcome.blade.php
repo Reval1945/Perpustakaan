@@ -597,9 +597,6 @@
                         <a class="nav-link" href="#features">Fitur</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#collections">Koleksi</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="#how-it-works">Cara Kerja</a>
                     </li>
                     <li class="nav-item">
@@ -677,82 +674,6 @@
                         </div>
                         <h3>Peminjaman Online</h3>
                         <p>Pinjam buku fisik secara online dan ambil di perpustakaan. Dapatkan notifikasi pengingat via email dan WhatsApp.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Collections Section -->
-    <section id="collections" class="collections-section py-5">
-        <div class="container">
-            <div class="section-title fade-in">
-                <h2>Koleksi Kami</h2>
-                <p>Jelajahi berbagai kategori buku yang tersedia di perpustakaan digital kami</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3 fade-in">
-                    <div class="collection-card">
-                        <div class="collection-img">
-                            <i class="bi bi-cpu"></i>
-                        </div>
-                        <div class="collection-content">
-                            <h3>Teknologi & Komputer</h3>
-                            <p class="text-muted">Buku-buku terbaru tentang pemrograman, jaringan, desain grafis, dan teknologi informasi.</p>
-                            <div class="collection-count">
-                                <span>1,250 buku</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 col-lg-3 fade-in">
-                    <div class="collection-card">
-                        <div class="collection-img">
-                            <i class="bi bi-briefcase"></i>
-                        </div>
-                        <div class="collection-content">
-                            <h3>Bisnis & Ekonomi</h3>
-                            <p class="text-muted">Koleksi buku manajemen, kewirausahaan, akuntansi, dan ekonomi untuk pengembangan skill bisnis.</p>
-                            <div class="collection-count">
-                                <span>890 buku</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 col-lg-3 fade-in">
-                    <div class="collection-card">
-                        <div class="collection-img">
-                            <i class="bi bi-book"></i>
-                        </div>
-                        <div class="collection-content">
-                            <h3>Sastra & Bahasa</h3>
-                            <p class="text-muted">Kumpulan karya sastra, novel, puisi, dan buku pembelajaran bahasa Indonesia serta asing.</p>
-                            <div class="collection-count">
-                                <span>1,540 buku</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 col-lg-3 fade-in">
-                    <div class="collection-card">
-                        <div class="collection-img">
-                            <i class="bi bi-flask"></i>
-                        </div>
-                        <div class="collection-content">
-                            <h3>Sains & Matematika</h3>
-                            <p class="text-muted">Buku referensi ilmiah, matematika, fisika, kimia, biologi, dan penelitian terbaru.</p>
-                            <div class="collection-count">
-                                <span>1,120 buku</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -837,47 +758,14 @@
                                     <p class="text-muted mb-0">Menyediakan akses yang setara bagi seluruh siswa dan guru tanpa terkecuali.</p>
                                 </div>
                             </div>
-                            
-                            <div class="about-feature-item">
-                                <div class="about-feature-icon">
-                                    <i class="bi bi-award"></i>
-                                </div>
-                                <div>
-                                    <h5>Kualitas Terjamin</h5>
-                                    <p class="text-muted mb-0">Memastikan kualitas koleksi dan layanan yang sesuai dengan standar pendidikan nasional.</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="col-lg-6 fade-in">
                     <div class="about-image mt-5 mt-lg-0 position-relative">
-                        <div class="about-badge">
-                            <i class="bi bi-star-fill me-2"></i>
-                            Perpustakaan Digital Terbaik 2024
-                        </div>
                         <img src="https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
                              alt="Perpustakaan SMKN 4" class="img-fluid rounded shadow">
-                        
-                        <div class="about-stats">
-                            <div class="about-stat">
-                                <div class="about-stat-number">10+</div>
-                                <div class="about-stat-label">Tahun Pengalaman</div>
-                            </div>
-                            <div class="about-stat">
-                                <div class="about-stat-number">5,000+</div>
-                                <div class="about-stat-label">Koleksi Buku</div>
-                            </div>
-                            <div class="about-stat">
-                                <div class="about-stat-number">2,500+</div>
-                                <div class="about-stat-label">Anggota Aktif</div>
-                            </div>
-                            <div class="about-stat">
-                                <div class="about-stat-number">98%</div>
-                                <div class="about-stat-label">Kepuasan Pengguna</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -893,7 +781,7 @@
                     <p>Daftar sekarang dan dapatkan akses ke seluruh koleksi buku, jurnal ilmiah, dan materi pembelajaran lainnya secara gratis untuk siswa dan guru SMKN 4 Bojonegoro.</p>
                     
                     <div class="d-flex flex-wrap justify-content-center gap-3">
-                        <a href="/pilihrole" class="btn btn-warning btn-custom btn-custom">Daftar Sekarang</a>
+                        <a href="/register" class="btn btn-warning btn-custom btn-custom">Daftar Sekarang</a>
                         <a href="#about" class="btn btn-outline-custom btn-custom" style="color: white; border-color: white;">Pelajari Lebih Lanjut</a>
                     </div>
                 </div>

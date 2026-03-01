@@ -8,15 +8,14 @@
     <h4 class="text-gray-800 fw-bold">Daftar Pengunjung</h4>
 
     <button id="btnCetakAnggota" class="btn btn-success shadow-sm">
-        <i class="fas fa-file-excel"></i> Export Excel
+        <i class="fas fa-print"></i> Export Excel
     </button>
 </div>
 
 
 <div class="card shadow">
-<div class="card-body">
 
-<div class="table-responsive">
+<div class="table">
 <table class="table table-bordered table-hover text-center align-middle">
 
 <thead class="bg-primary text-white">
@@ -37,8 +36,6 @@
 </tbody>
 
 </table>
-</div>
-
 </div>
 </div>
 

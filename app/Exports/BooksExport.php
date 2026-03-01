@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Pengunjung;
+use App\Models\Book;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -18,7 +18,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 
-class PengunjungExport implements 
+class BooksExport implements 
     FromCollection, 
     WithHeadings, 
     WithStyles, 
@@ -27,11 +27,41 @@ class PengunjungExport implements
     WithMapping,
     WithEvents
 {
+    protected array $filters;
     private $rowNumber = 0;
+
+    public function __construct(array $filters = [])
+    {
+        $this->filters = $filters;
+    }
 
     public function collection()
     {
-        return Pengunjung::latest()->get();
+        $query = Book::with('category')->latest();
+
+        $query->when($this->filters['judul'] ?? null, fn ($q, $v) =>
+            $q->where('judul', 'like', "%{$v}%")
+        );
+
+        $query->when($this->filters['kode_buku'] ?? null, fn ($q, $v) =>
+            $q->where('kode_buku', 'like', "%{$v}%")
+        );
+
+        $query->when($this->filters['rak'] ?? null, fn ($q, $v) =>
+            $q->where('rak', $v)
+        );
+
+        $query->when($this->filters['nomor_rak'] ?? null, fn ($q, $v) =>
+            $q->where('nomor_rak', $v)
+        );
+
+        $query->when($this->filters['category'] ?? null, function ($q, $v) {
+            $q->whereHas('category', function ($qc) use ($v) {
+                $qc->where('name', 'like', "%{$v}%");
+            });
+        });
+
+        return $query->get();
     }
 
     public function startCell(): string
@@ -39,16 +69,19 @@ class PengunjungExport implements
         return 'A9';
     }
 
-    public function map($row): array
+    public function map($book): array
     {
         $this->rowNumber++;
         return [
             $this->rowNumber,
-            $row->nama,
-            $row->kelas,
-            $row->nisn,
-            $row->keperluan,
-            $row->tanggal_kunjungan ? \Carbon\Carbon::parse($row->tanggal_kunjungan)->format('d/m/Y') : '-',
+            $book->kode_buku,
+            $book->judul,
+            $book->category->name ?? '-',
+            $book->penulis,
+            $book->penerbit,
+            $book->tahun,
+            $book->rak,
+            $book->nomor_rak,
         ];
     }
 
@@ -56,11 +89,14 @@ class PengunjungExport implements
     {
         return [
             'NO',
-            'NAMA',
-            'KELAS',
-            'NISN',
-            'KEPERLUAN',
-            'TANGGAL KUNJUNGAN',
+            'Kode Buku',
+            'Judul',
+            'Kategori',
+            'Penulis',
+            'Penerbit',
+            'Tahun Terbit',
+            'Rak',
+            'Nomor Rak',
         ];
     }
 
@@ -81,7 +117,7 @@ class PengunjungExport implements
             $drawingRight->setName('Logo Kanan');
             $drawingRight->setPath(public_path('template/img/logo.png'));
             $drawingRight->setHeight(65);
-            $drawingRight->setCoordinates('F1');
+            $drawingRight->setCoordinates('I1');
             $drawingRight->setOffsetX(-5);
             $drawingRight->setOffsetY(10);
             $drawings[] = $drawingRight;
@@ -111,21 +147,24 @@ class PengunjungExport implements
 
                 // 1. SETTING KERTAS A4
                 $sheet->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_A4);
-                $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_PORTRAIT);
+                $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
                 $sheet->getPageSetup()->setFitToPage(true);
                 $sheet->getPageSetup()->setFitToWidth(1);
                 $sheet->getPageSetup()->setFitToHeight(0);
 
                 // 2. ATUR LEBAR KOLOM MANUAL
                 $sheet->getColumnDimension('A')->setWidth(5);   // NO
-                $sheet->getColumnDimension('B')->setWidth(25);  // Nama
-                $sheet->getColumnDimension('C')->setWidth(15);  // Kelas
-                $sheet->getColumnDimension('D')->setWidth(18);  // NISN
-                $sheet->getColumnDimension('E')->setWidth(30);  // Keperluan
-                $sheet->getColumnDimension('F')->setWidth(20);  // Tanggal Kunjungan
+                $sheet->getColumnDimension('B')->setWidth(15);  // Kode Buku
+                $sheet->getColumnDimension('C')->setWidth(35);  // Judul
+                $sheet->getColumnDimension('D')->setWidth(20);  // Kategori
+                $sheet->getColumnDimension('E')->setWidth(25);  // Penulis
+                $sheet->getColumnDimension('F')->setWidth(25);  // Penerbit
+                $sheet->getColumnDimension('G')->setWidth(20);  // Tahun
+                $sheet->getColumnDimension('H')->setWidth(12);  // Rak
+                $sheet->getColumnDimension('I')->setWidth(12);  // Nomor Rak
 
                 // 3. MEMBERSIHKAN AREA KOP (Fill Putih)
-                $sheet->getStyle('A1:F8')->getFill()
+                $sheet->getStyle('A1:I8')->getFill()
                     ->setFillType(Fill::FILL_SOLID)
                     ->getStartColor()->setRGB('FFFFFF');
 
@@ -137,38 +176,38 @@ class PengunjungExport implements
                 $sheet->getRowDimension(9)->setRowHeight(25);
 
                 // 5. ISI KOP SURAT
-                $sheet->mergeCells('B1:E1');
+                $sheet->mergeCells('B1:I1');
                 $sheet->setCellValue('B1', 'PEMERINTAH PROVINSI JAWA TIMUR');
                 $sheet->getStyle('B1')->getFont()->setSize(10)->setBold(true);
 
-                $sheet->mergeCells('B2:E2');
+                $sheet->mergeCells('B2:I2');
                 $sheet->setCellValue('B2', 'DINAS PENDIDIKAN');
                 $sheet->getStyle('B2')->getFont()->setSize(11)->setBold(true);
 
-                $sheet->mergeCells('B3:E3');
+                $sheet->mergeCells('B3:I3');
                 $sheet->setCellValue('B3', 'SEKOLAH MENENGAH KEJURUAN NEGERI 4 BOJONEGORO');
                 $sheet->getStyle('B3')->getFont()->setSize(12)->setBold(true);
 
-                $sheet->mergeCells('B4:E5');
+                $sheet->mergeCells('B4:I5');
                 $sheet->setCellValue('B4', "Jl. Raya Surabaya - Bojonegoro, Desa Sukowati, Kec. Kapas, Bojonegoro, Jawa Timur\nWeb: www.smkn4bojonegoro.sch.id / Email: smkn4bojonegoro@yahoo.co.id");
                 $sheet->getStyle('B4')->getAlignment()->setWrapText(true);
                 $sheet->getStyle('B4')->getFont()->setSize(8)->setItalic(true);
 
-                $sheet->getStyle('B1:E5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('B1:E5')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                $sheet->getStyle('B1:I5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('B1:I5')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
                 // 6. GARIS DOUBLE & JUDUL
-                $sheet->getStyle('A6:F6')->getBorders()->getBottom()->setBorderStyle(Border::BORDER_DOUBLE);
-                $sheet->mergeCells('A8:F8');
-                $sheet->setCellValue('A8', 'LAPORAN DATA PENGUNJUNG');
+                $sheet->getStyle('A6:I6')->getBorders()->getBottom()->setBorderStyle(Border::BORDER_DOUBLE);
+                $sheet->mergeCells('A8:I8');
+                $sheet->setCellValue('A8', 'LAPORAN DATA BUKU');
                 $sheet->getStyle('A8')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle('A8')->getFont()->setBold(true)->setSize(14);
 
                 // 7. BORDER & ALIGNMENT TABEL
                 $lastRow = $sheet->getHighestRow();
-                $sheet->getStyle('A9:F' . $lastRow)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+                $sheet->getStyle('A9:I' . $lastRow)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
                 $sheet->getStyle('A10:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('C10:F' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('G10:H' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
                 // Hilangkan baris sisa yang mungkin tinggi karena logo
                 for ($i = 10; $i <= $lastRow; $i++) {

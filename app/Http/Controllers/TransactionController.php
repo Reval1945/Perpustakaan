@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\TransactionDetail;
 use App\Services\TransactionService;
 use App\Exports\MyTransactionsExport;
+use App\Exports\LaporanpeminjamanExport;
 use App\Interfaces\TransactionInterface;
 use App\Services\AdminTransactionService;
 use Illuminate\Validation\ValidationException;
@@ -55,7 +56,6 @@ class TransactionController extends Controller
             $userId,
             $request->validated()['book_ids']
         );
-
         return response()->json([
             'message' => 'Peminjaman diajukan, menunggu verifikasi admin',
             'data'    => $transaksi
@@ -197,6 +197,14 @@ class TransactionController extends Controller
         );
     }
 
+    public function exportExcel()
+    {
+        return Excel::download(
+            new LaporanpeminjamanExport(),
+            'laporan-peminjaman.xlsx'
+        );
+    }
+
     public function update(UpdateTransactionRequest $request, string $id)
     {
         try {
@@ -299,7 +307,7 @@ class TransactionController extends Controller
 
         $pdf = Pdf::loadView('laporan.transaction-detail', [
             'details' => $details
-        ])->setPaper('A4', 'landscape');
+        ])->setPaper('A4', 'portrait');
 
         return $pdf->stream('laporan-transaction-detail.pdf');
     }

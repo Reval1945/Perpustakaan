@@ -21,7 +21,7 @@
                     <th>No</th>
                     <th>Judul Buku</th>
                     <th>Tanggal Pinjam</th>
-                    <th>Tanggal Kembali</th>
+                    <th>Tanggal Jatuh Tempo</th>
                     <th>Sisa Waktu</th>
                     <th>Status</th>
                     <th>Aksi</th>

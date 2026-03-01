@@ -31,7 +31,7 @@
 
             <tbody id="transactionTable">
                 <tr>
-                    <td colspan="8" class="text-center text-muted">Loading data...</td>
+                    <td colspan="9" class="text-center text-muted">Loading data...</td>
                 </tr>
             </tbody>
 
@@ -49,6 +49,8 @@
 
             <div class="modal-body">
                 <input type="hidden" id="detailId">
+                <!-- store calculated days late for submission -->
+                <input type="hidden" id="jumlah_hari_telat" value="0">
 
                 <div class="form-group">
                 <label>Status</label>
@@ -69,8 +71,11 @@
             </div>
 
                 <div class="form-group">
-                <label>Denda</label>
-                <input type="number" id="denda" class="form-control" placeholder="Masukkan denda">
+                    <label>Denda</label>
+                    <input type="number" id="denda" class="form-control" placeholder="Masukkan denda">
+                    <small class="form-text text-muted" id="denda_keterangan" style="display:none;">
+                        <strong>Penjelasan:</strong> <span id="denda_formula"></span>
+                    </small>
                 </div>
             </div>
 
@@ -92,6 +97,33 @@ function formatTanggal(dateString) {
         month: 'long',
         year: 'numeric'
     });
+}
+
+function hitungDendaOtomatis(tanggalJatuhTempo, dendaPerHariAturan) {
+    if (!tanggalJatuhTempo) return 0;
+    
+    const hariIni = new Date();
+    hariIni.setHours(0,0,0,0);
+    
+    const jatuhTempo = new Date(tanggalJatuhTempo);
+    jatuhTempo.setHours(0,0,0,0);
+    
+    if (hariIni <= jatuhTempo) {
+        return 0; // Belum jatuh tempo, tidak ada denda
+    }
+    
+    const diffTime = Math.abs(hariIni - jatuhTempo);
+    const selisihHari = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return selisihHari * dendaPerHariAturan;
+}
+
+function formatCurrency(value) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(value);
 }
 
 function getVerificationType(trx) {
@@ -146,7 +178,7 @@ function fetchTransactions() {
         tbody.innerHTML = '';
 
         if (!res.data || res.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Tidak ada data peminjaman</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">Tidak ada data peminjaman</td></tr>`;
             return;
         }
 
@@ -158,7 +190,7 @@ function fetchTransactions() {
         );
 
         if (filteredData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Tidak ada data peminjaman</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">Tidak ada data peminjaman</td></tr>`;
             return;
         }
 
@@ -195,6 +227,9 @@ function fetchTransactions() {
                     </tr>
                 `;
             }).join('');
+
+            // Hitung denda otomatis untuk transaksi ini
+            const dendaOtomatis = hitungDendaOtomatis(trx.tanggal_jatuh_tempo, dendaPerHariAturan);
 
             const row = `
                 <!-- ROW UTAMA -->
@@ -239,7 +274,7 @@ function fetchTransactions() {
     })
     .catch(err => {
         console.error(err);
-        document.getElementById('transactionTable').innerHTML = `<tr><td colspan="8" class="text-center text-danger">Gagal load data</td></tr>`;
+        document.getElementById('transactionTable').innerHTML = `<tr><td colspan="9" class="text-center text-danger">Gagal load data</td></tr>`;
     });
 }
 
@@ -273,6 +308,7 @@ function renderActionButton(trx) {
                 class="btn btn-success btn-sm btn-acc mr-1" 
                 data-id="${trx.id}"
                 data-kembali="${trx.details[0]?.tanggal_kembali ?? ''}"
+                data-jatuh-tempo="${trx.tanggal_jatuh_tempo || ''}"
                 title="Konfirmasi Semua">
                 Konfirmasi
             </button>
@@ -297,8 +333,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function fetchDendaRule() {
     const token = localStorage.getItem('token');
-    fetch('http://127.0.0.1:8000/api/aturan-peminjaman/aktif', {
-        method: 'GET',
+    // Tambahkan return fetch agar bisa di-await jika perlu
+    return fetch('http://127.0.0.1:8000/api/aturan-peminjaman/aktif', {
         headers: { 
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json'
@@ -307,11 +343,12 @@ function fetchDendaRule() {
     .then(res => res.json())
     .then(res => {
         if (res.data && res.data.denda_per_hari) {
-            dendaPerHariAturan = parseFloat(res.data.denda_per_hari);
-            console.log("Denda per hari berhasil dimuat: ", dendaPerHariAturan);
+            // Gunakan Number() untuk memastikan tipe data angka
+            dendaPerHariAturan = Number(res.data.denda_per_hari);
+            console.log('Denda dimuat:', dendaPerHariAturan);
         }
     })
-    .catch(err => console.error("Gagal load aturan denda:", err));
+    .catch(err => console.error('Gagal load aturan:', err));
 }
 
 document.addEventListener('click', function(e) {
@@ -370,20 +407,32 @@ function calculateAndFillModal(id, tglJatuhTempo) {
         const diffTime = Math.abs(hariIni - jatuhTempo);
         selisihHari = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     }
+    // store in hidden field for use when submitting
+    document.getElementById('jumlah_hari_telat').value = selisihHari;
 
     const statusElem = document.getElementById('status');
     const jenisElem = document.getElementById('jenis_denda');
     const dendaElem = document.getElementById('denda');
+    const keteranganElem = document.getElementById('denda_keterangan');
+    const formulaElem = document.getElementById('denda_formula');
 
     if (selisihHari > 0) {
         statusElem.value = 'terlambat';
         jenisElem.value = 'telat';
-        dendaElem.value = selisihHari * dendaPerHariAturan;
+        const totalDenda = selisihHari * dendaPerHariAturan;
+        dendaElem.value = totalDenda;
+        
+        // Tampilkan penjelasan denda
+        keteranganElem.style.display = 'block';
+        formulaElem.textContent = `${selisihHari} hari × ${formatCurrency(dendaPerHariAturan)} = ${formatCurrency(totalDenda)}`;
     } else {
         statusElem.value = 'dikembalikan';
         jenisElem.value = '';
         dendaElem.value = '0';
+        keteranganElem.style.display = 'none';
     }
+    // update hidden count as well (in case recalculated through other interactions)
+    document.getElementById('jumlah_hari_telat').value = selisihHari;
 
     $('#modalAccDetail').modal('show');
 }
@@ -403,7 +452,8 @@ document.getElementById('btnSubmitAccDetail').addEventListener('click', function
     const data = {
         status: statusVal,
         denda: dendaVal,
-        jenis_denda: jenisDendaVal || null
+        jenis_denda: jenisDendaVal || null,
+        jumlah_hari_telat: parseInt(document.getElementById('jumlah_hari_telat').value) || 0
     };
 
     fetch(accEndpoint, {
@@ -431,9 +481,65 @@ document.getElementById('btnSubmitAccDetail').addEventListener('click', function
 
 document.getElementById('status').addEventListener('change', function(){
     const jenis = document.getElementById('jenis_denda');
+    const denda = document.getElementById('denda');
+    const keteranganElem = document.getElementById('denda_keterangan');
+    const formulaElem = document.getElementById('denda_formula');
 
     if(this.value === 'terlambat'){
         jenis.value = 'telat';
+        // hitung ulang denda berdasarkan tanggal jatuh tempo jika tersedia di modal
+        const tgl = document.getElementById('modalAccDetail')
+                     .querySelector('[data-jatuh-tempo]')?.dataset?.jatuhTempo;
+        if (tgl) {
+            const total = hitungDendaOtomatis(tgl, dendaPerHariAturan);
+            denda.value = total;
+            keteranganElem.style.display = total > 0 ? 'block' : 'none';
+            formulaElem.textContent = `${total === 0 ? 0 : `...`}`; // formula already set during open
+            // also update jumlah hari telat hidden
+            const hari = total / dendaPerHariAturan;
+            document.getElementById('jumlah_hari_telat').value = hari;
+        }
+    } else if(this.value === 'rusak'){
+        jenis.value = 'rusak';
+        document.getElementById('jumlah_hari_telat').value = 0;
+    } else if(this.value === 'hilang'){
+        jenis.value = 'hilang';
+        document.getElementById('jumlah_hari_telat').value = 0;
+    } else {
+        jenis.value = '';
+        denda.value = '0';
+        keteranganElem.style.display = 'none';
+        document.getElementById('jumlah_hari_telat').value = 0;
+    }
+});
+
+// Auto-calculate denda ketika jenis_denda berubah
+document.getElementById('jenis_denda').addEventListener('change', function(){
+    const denda = document.getElementById('denda');
+    const status = document.getElementById('status').value;
+    const keteranganElem = document.getElementById('denda_keterangan');
+    const formulaElem = document.getElementById('denda_formula');
+
+    if(this.value === 'telat' && status === 'terlambat'){
+        // hitung ulang berdasarkan tanggal jatuh tempo
+        const tgl = document.getElementById('modalAccDetail')
+                     .querySelector('[data-jatuh-tempo]')?.dataset?.jatuhTempo;
+        if (tgl) {
+            const selisih = hitungDendaOtomatis(tgl, dendaPerHariAturan) / dendaPerHariAturan;
+            const total = hitungDendaOtomatis(tgl, dendaPerHariAturan);
+            denda.value = total;
+            keteranganElem.style.display = total > 0 ? 'block' : 'none';
+            formulaElem.textContent = `${selisih} hari × ${formatCurrency(dendaPerHariAturan)} = ${formatCurrency(total)}`;
+            document.getElementById('jumlah_hari_telat').value = selisih;
+        }
+    } else if(this.value === 'rusak' || this.value === 'hilang'){
+        denda.value = '0';
+        keteranganElem.style.display = 'none';
+        document.getElementById('jumlah_hari_telat').value = 0;
+    } else {
+        denda.value = '0';
+        keteranganElem.style.display = 'none';
+        document.getElementById('jumlah_hari_telat').value = 0;
     }
 });
 

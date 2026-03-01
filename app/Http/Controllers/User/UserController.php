@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Models\User;
-use App\Export\UsersExport;
+use App\Exports\UsersExport;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Interfaces\UserInterface;
@@ -93,23 +93,5 @@ class UserController extends Controller
             new UsersExport($filters),
             'data-users.xlsx'
         );
-    }
-
-    public function exportLibraryCard(string $id)
-    {
-        $user = User::findOrFail($id);
-
-        $pdf = Pdf::loadView('pdf.library-card', compact('user'));
-
-        return $pdf->download('kartu-perpustakaan-'.$user->kode_user.'.pdf');
-    }
-
-    public function exportMyLibraryCard(Request $request)
-    {
-        $user = $request->user();
-
-        $pdf = Pdf::loadView('pdf.library-card', compact('user'));
-
-        return $pdf->download('kartu-perpustakaan-'.$user->kode_user.'.pdf');
     }
 }

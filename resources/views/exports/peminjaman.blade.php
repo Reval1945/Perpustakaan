@@ -1,0 +1,80 @@
+<table>
+    <tr>
+        <td rowspan="4" style="vertical-align: middle; text-align: center;">
+            <img src="{{ public_path('template/img/logo.png') }}" width="60" height="75">
+        </td>
+        <td colspan="3" style="text-align: center; font-family: Arial; font-size: 11pt; vertical-align: middle;">
+            PEMERINTAH PROVINSI JAWA TIMUR
+        </td>
+        <td rowspan="4" style="vertical-align: middle; text-align: center;">
+            <img src="{{ public_path('template/img/logo.png') }}" width="65" height="75">
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align: center; font-family: Arial; font-size: 12pt; font-weight: bold; vertical-align: middle;">
+            DINAS PENDIDIKAN
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align: center; font-family: Arial; font-size: 14pt; font-weight: bold; vertical-align: middle;">
+            SEKOLAH MENENGAH KEJURUAN NEGERI 4 BOJONEGORO
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align: center; font-family: Arial; font-size: 8pt; font-style: italic; vertical-align: middle;">
+            Jl. Raya Surabaya - Bojonegoro, Desa Sukowati, Kec. Kapas, Bojonegoro, Jawa Timur<br>
+            Web: www.smkn4bojonegoro.sch.id / Email: smkn4bojonegoro@yahoo.co.id
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="6" style="border-bottom: 3px double #000000; height: 5px;"></td>
+    </tr>
+
+    <tr><td colspan="6" style="height: 15px;"></td></tr>
+
+    <tr>
+        <td colspan="6" style="text-align: center; font-size: 12pt; font-weight: bold; height: 30px; vertical-align: middle;">
+            LAPORAN TRANSAKSI PEMINJAMAN BUKU
+        </td>
+    </tr>
+
+    <thead>
+        <tr style="background-color: #3498DB; color: #FFFFFF; font-weight: bold; text-align: center;">
+            <th style="border: 1px solid #000000; width: 50px;">NO</th>
+            <th style="border: 1px solid #000000; width: 150px;">NAMA PEMINJAM</th>
+            <th style="border: 1px solid #000000; width: 250px;">JUDUL BUKU</th>
+            <th style="border: 1px solid #000000; width: 120px;">TGL PINJAM</th>
+            <th style="border: 1px solid #000000; width: 120px;">TGL KEMBALI</th>
+            <th style="border: 1px solid #000000; width: 120px;">STATUS</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php $no = 1; @endphp
+        @forelse($details as $detail)
+            <tr>
+                <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">{{ $no++ }}</td>
+                <td style="border: 1px solid #000000; vertical-align: middle;">{{ $detail->transaction->user->name ?? '-' }}</td>
+                <td style="border: 1px solid #000000; vertical-align: middle;">{{ $detail->judul_buku }}</td>
+                <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">{{ $detail->transaction->tanggal_pinjam ? \Carbon\Carbon::parse($detail->transaction->tanggal_pinjam)->format('d/m/Y') : '-' }}</td>
+                <td style="border: 1px solid #000000; text-align: center; vertical-align: middle;">{{ $detail->tanggal_kembali ? \Carbon\Carbon::parse($detail->tanggal_kembali)->format('d/m/Y') : '-' }}</td>
+                <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-weight: bold;">
+                    {{ strtoupper(str_replace('_', ' ', $detail->status)) }}
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="6" style="border: 1px solid #000000; text-align: center;">Data tidak ditemukan</td>
+            </tr>
+        @endforelse
+    </tbody>
+    
+    <tfoot>
+        <tr><td colspan="6" style="height: 10px;"></td></tr>
+        <tr>
+            <td colspan="6" style="text-align: right; font-size: 8pt; font-style: italic;">
+                Dicetak pada: {{ date('d/m/Y H:i') }}
+            </td>
+        </tr>
+    </tfoot>
+</table>

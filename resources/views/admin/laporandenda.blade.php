@@ -4,12 +4,12 @@
 
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0 text-gray-800">Laporan Denda</h1>
-        <button class="btn btn-primary">
-            <i class="fas fa-print"></i> Cetak Laporan
-        </button>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0 text-gray-800">Laporan Denda</h1>
+    <button class="btn btn-success" onclick="cetakLaporan()">
+        <i class="fas fa-print"></i> Cetak Laporan
+    </button>
+</div>
 
 <div class="card shadow">
         <table class="table table-bordered table-hover align-middle">
@@ -18,55 +18,61 @@
                     <th width="50">No</th>
                     <th>Nama</th>
                     <th>Judul Buku</th>
-                    <th width="130">Tggl Pinjam</th>
-                    <th width="130">Tggl Kembali</th>
-                    <th width="110">Jenis Denda</th>
-                    <th width="110">Telat</th>
-                    <th width="110">Denda</th>
-                    <th width="130">Status Denda</th>
-                    <th width="110">Aksi</th>
+                    <th>Tggl Pinjam</th>
+                    <th>Tggl Kembali</th>
+                    <th>Jenis Denda</th>
+                    <th>Telat</th>
+                    <th>Denda</th>
+                    <th>Status Denda</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
 
             <tbody id="table-denda">
                 <tr>
-                    <td colspan="9" class="text-center">Loading...</td>
+                    <td colspan="10" class="text-center">Loading...</td>
                 </tr>
             </tbody>
         </table>
+</div>
 
-        <!-- MODEL EDIT DENDA -->
-        <div class="modal fade" id="modalEditDenda" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
+<div class="modal fade" id="modalEditDenda" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit Status Denda</h5>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-
             <div class="modal-body">
                 <input type="hidden" id="denda_id">
-
                 <div class="form-group">
-                <label>Status Denda</label>
-                <select id="status_denda" class="form-control">
-                    <option value="belum_lunas">Belum Lunas</option>
-                    <option value="lunas">Lunas</option>
-                </select>
+                    <label>Status Denda</label>
+                    <select id="status_denda" class="form-control">
+                        <option value="belum_lunas">Belum Lunas</option>
+                        <option value="lunas">Lunas</option>
+                    </select>
                 </div>
             </div>
-
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
                 <button class="btn btn-primary" id="btnUpdateDenda">Simpan</button>
             </div>
-            </div>
         </div>
-        </div>
-
+    </div>
 </div>
 
 <script>
+// Fungsi Format Tanggal Sesuai Permintaan
+function formatTanggal(dateString) {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+    });
+}
+
 function loadDenda() {
     const token = localStorage.getItem("token");
 
@@ -80,37 +86,28 @@ function loadDenda() {
     })
     .then(res => res.json())
     .then(result => {
-        window.dataDenda = result.data; // simpan global
-
+        window.dataDenda = result.data; 
         let tbody = document.getElementById("table-denda");
         tbody.innerHTML = "";
 
         if (!window.dataDenda || window.dataDenda.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="text-center">Tidak ada data denda</td>
-                </tr>
-            `;
+            tbody.innerHTML = `<tr><td colspan="10" class="text-center">Tidak ada data denda</td></tr>`;
             return;
         }
 
         window.dataDenda.forEach((item, index) => {
+            // Menggunakan fungsi formatTanggal
+            let tglPinjam = formatTanggal(item.transaction?.tanggal_pinjam);
+            let tglKembali = formatTanggal(item.tanggal_kembali);
 
-            let judul = item.judul_buku ?? "-";
+            // Ambil jumlah hari telat dari data database (jika ada)
+            let hariTelat = parseInt(item.jumlah_hari_telat) || 0;
 
-            let tglPinjam = item.transaction?.tanggal_pinjam
-                ? new Date(item.transaction.tanggal_pinjam).toLocaleDateString('id-ID')
-                : "-";
+            let telatBadge = (hariTelat > 0)
+                ? `<span class="text-danger" style="font-weight: bold;">${hariTelat} hari</span>`
+                : `<span class="text-success">Tepat waktu</span>`;
 
-            let tglKembali = item.tanggal_kembali
-                ? new Date(item.tanggal_kembali).toLocaleDateString('id-ID')
-                : "-";
-
-            let telat = item.jumlah_hari_telat > 0
-                ? `${item.jumlah_hari_telat} hari`
-                : "Tidak terlambat";
-
-            let denda = parseFloat(item.denda).toLocaleString('id-ID', {
+            let dendaFormatted = parseFloat(item.denda).toLocaleString('id-ID', {
                 style: 'currency',
                 currency: 'IDR'
             });
@@ -123,16 +120,19 @@ function loadDenda() {
                 <tr>
                     <td class="text-center">${index + 1}</td>
                     <td>${item.transaction?.user?.name ?? '-'}</td>
-                    <td>${judul}</td>
+                    <td>${item.judul_buku ?? "-"}</td>
                     <td class="text-center">${tglPinjam}</td>
                     <td class="text-center">${tglKembali}</td>
                     <td class="text-center">${item.jenis_denda ?? '-'}</td>
-                    <td class="text-center text-danger">${telat}</td>
-                    <td class="text-center">${denda}</td>
+                    <td class="text-center">${telatBadge}</td>
+                    <td class="text-center" style="font-weight: bold;">${dendaFormatted}</td>
                     <td class="text-center">${statusBadge}</td>
                     <td class="text-center">
                         <button class="btn btn-warning btn-sm btn-edit-denda" data-id="${item.id}">
                             <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-info btn-sm" onclick="cetakDendaSatu('${item.id}')" title="Cetak Baris Ini">
+                            <i class="fas fa-print"></i>
                         </button>
                     </td>
                 </tr>
@@ -142,44 +142,29 @@ function loadDenda() {
     .catch(err => {
         console.error(err);
         document.getElementById("table-denda").innerHTML = `
-            <tr>
-                <td colspan="9" class="text-center text-danger">
-                    Gagal memuat data denda
-                </td>
-            </tr>
+            <tr><td colspan="10" class="text-center text-danger">Gagal memuat data</td></tr>
         `;
     });
 }
 
-document.addEventListener("DOMContentLoaded", loadDenda);
-</script>
-
-<script>
+// Event Delegation untuk tombol Edit
 document.addEventListener("click", function(e) {
     const btn = e.target.closest(".btn-edit-denda");
     if (!btn) return;
 
     const id = btn.dataset.id;
-
     const item = window.dataDenda.find(d => d.id == id);
 
     document.getElementById("denda_id").value = id;
     document.getElementById("status_denda").value = item.status_denda;
-
     $("#modalEditDenda").modal("show");
 });
-</script>
 
-<script>
+// Update Status Denda
 document.getElementById("btnUpdateDenda").addEventListener("click", function() {
     const id = document.getElementById("denda_id").value;
     const status_denda = document.getElementById("status_denda").value;
     const token = localStorage.getItem("token");
-
-    if (!id) {
-        alert("ID denda tidak ditemukan!");
-        return;
-    }
 
     fetch(`http://127.0.0.1:8000/api/denda/details/${id}`, {
         method: "PUT",
@@ -189,27 +174,77 @@ document.getElementById("btnUpdateDenda").addEventListener("click", function() {
             "Authorization": "Bearer " + token,
             "X-Application": "perpus-admin"
         },
-        body: JSON.stringify({
-            status_denda: status_denda
-        })
+        body: JSON.stringify({ status_denda: status_denda })
     })
     .then(res => res.json())
     .then(result => {
-        if (result.message) {
-            alert(result.message);
-            $("#modalEditDenda").modal("hide");
-            loadDenda(); // reload tabel
-        } else {
-            alert("Update gagal!");
+        alert(result.message || "Berhasil diperbarui");
+        $("#modalEditDenda").modal("hide");
+        loadDenda();
+    })
+    .catch(err => alert("Terjadi kesalahan"));
+});
+
+// Cetak Laporan
+function cetakLaporan() {
+    fetch("http://127.0.0.1:8000/api/laporan/denda/excel", {
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token"),
         }
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "laporan-denda.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    })
+    .catch(err => console.error(err));
+}
+
+// Cetak Denda Per ID
+function cetakDendaSatu(id) {
+    const token = localStorage.getItem("token");
+    
+    if (!id) {
+        alert("ID Denda tidak ditemukan");
+        return;
+    }
+
+    fetch(`http://127.0.0.1:8000/api/laporan/denda/${id}`, {
+        method: "GET",
+        headers: {
+            "Accept": "application/pdf",
+            "Authorization": "Bearer " + token,
+            "X-Application": "perpus-admin"
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Gagal mengunduh PDF");
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `laporan-denda-${id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
     })
     .catch(err => {
         console.error(err);
-        alert("Terjadi kesalahan saat update denda");
+        alert("Gagal mencetak denda: " + err.message);
     });
-});
+}
+
+document.addEventListener("DOMContentLoaded", loadDenda);
 </script>
-
-
 
 @endsection

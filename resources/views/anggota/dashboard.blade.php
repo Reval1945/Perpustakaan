@@ -305,7 +305,6 @@ document.addEventListener('DOMContentLoaded', loadDashboardStats);
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --primary: #4e73df;
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;

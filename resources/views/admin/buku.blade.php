@@ -12,7 +12,7 @@
             <i class="fas fa-plus"></i> Tambah Buku
         </button>
         <button id="btnCetakBuku" class="btn btn-success">
-            <i class="fas fa-file-excel"></i> Export Excel
+            <i class="fas fa-print"></i> Export Excel
         </button>
     </div>
 </div>
@@ -24,118 +24,148 @@
 <!-- Modal Tambah Buku -->
 <div class="modal fade" id="modalTambahBuku" tabindex="-1" role="dialog" aria-labelledby="modalTambahBukuLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content border-0">
+        <div class="modal-content border-0 shadow">
 
-            <!-- Header -->
-            <div class="modal-header bg-primary text-white">
+            <!-- Header dengan gradient dan icon lebih menarik -->
+            <div class="modal-header bg-primary text-white py-3">
                 <h5 class="modal-title font-weight-bold" id="modalTambahBukuLabel">
-                    <i class="fas fa-book-medical mr-2"></i> Tambah Buku
+                    <i class="fas fa-plus-circle mr-2"></i> Tambah/Edit Buku
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="text-white">&times;</span>
                 </button>
             </div>
 
-            <!-- Body -->
-            <div class="modal-body">
+            <!-- Body dengan padding lebih lega -->
+            <div class="modal-body p-4">
                 <form>
-
                     <input type="hidden" id="book_id">
 
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-book mr-1 text-primary"></i> Judul Buku
-                        </label>
-                        <input type="text" id="judul" class="form-control form-control-lg" placeholder="Masukkan judul buku">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-book mr-1 text-primary"></i> Sinopsis
-                        </label>
-                        <input type="text" id="sinopsis" class="form-control form-control-lg" placeholder="Masukkan sinopsis buku">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-book mr-1 text-primary"></i> Kode Buku
-                        </label>
-                        <input type="text" id="kode_buku" class="form-control form-control-lg" placeholder="Masukkan kode buku">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-book mr-1 text-primary"></i> Penulis
-                        </label>
-                        <input type="text" id="penulis" class="form-control form-control-lg" placeholder="Masukkan judul buku">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-building mr-1 text-primary"></i> Penerbit
-                        </label>
-                        <input type="text" id="penerbit" class="form-control" placeholder="Masukkan penerbit">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-building mr-1 text-primary"></i> Tahun Terbit
-                        </label>
-                        <input type="text" id="tahun" class="form-control" placeholder="Masukkan penerbit">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-tags mr-1 text-primary"></i> Kategori
-                        </label>
-                        <select id="category_id" class="form-control">
-                            <option value="">-- Pilih Kategori --</option>
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label class="font-weight-bold">
-                                <i class="fas fa-archive mr-1 text-primary"></i> Rak Buku
-                            </label>
-                            <input type="text" id="rak" class="form-control" placeholder="Contoh: A-03">
+                    <!-- Grid system untuk form yang lebih rapi -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-primary">
+                                    <i class="fas fa-book mr-1"></i> Judul Buku
+                                </label>
+                                <input type="text" id="judul" class="form-control" placeholder="Masukkan judul buku" required>
+                                <small class="form-text text-muted">Wajib diisi</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-primary">
+                                    <i class="fas fa-barcode mr-1"></i> Kode Buku
+                                </label>
+                                <input type="text" id="kode_buku" class="form-control" placeholder="Contoh: BK-001" required>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group col-md-6">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-archive mr-1 text-primary"></i> Nomor Rak
-                        </label>
-                        <input type="text" id="nomor_rak" class="form-control" placeholder="Contoh: 03">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-primary">
+                                    <i class="fas fa-user-edit mr-1"></i> Penulis
+                                </label>
+                                <input type="text" id="penulis" class="form-control" placeholder="Nama penulis">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-primary">
+                                    <i class="fas fa-building mr-1"></i> Penerbit
+                                </label>
+                                <input type="text" id="penerbit" class="form-control" placeholder="Nama penerbit">
+                            </div>
+                        </div>
                     </div>
 
+                    <!-- Sinopsis dengan textarea -->
                     <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-image mr-1 text-primary"></i> Cover Buku
+                        <label class="font-weight-bold text-primary">
+                            <i class="fas fa-align-left mr-1"></i> Sinopsis
+                        </label>
+                        <textarea id="sinopsis" class="form-control" rows="3" placeholder="Masukkan sinopsis buku..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-primary">
+                                    <i class="fas fa-calendar-alt mr-1"></i> Tahun Terbit
+                                </label>
+                                <input type="number" id="tahun" class="form-control" placeholder="2024" min="1900" max="2099">
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-primary">
+                                    <i class="fas fa-tags mr-1"></i> Kategori
+                                </label>
+                                <select id="category_id" class="form-control">
+                                    <option value="" selected disabled>-- Pilih Kategori --</option>
+                                    <option value="1">Fiksi</option>
+                                    <option value="2">Non-Fiksi</option>
+                                    <option value="3">Pendidikan</option>
+                                    <option value="4">Komik</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-6 pr-1">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-primary">
+                                            <i class="fas fa-archive mr-1"></i> Rak
+                                        </label>
+                                        <input type="text" id="rak" class="form-control" placeholder="A">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 pl-1">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-primary">
+                                            <i class="fas fa-hashtag mr-1"></i> No. Rak
+                                        </label>
+                                        <input type="text" id="nomor_rak" class="form-control" placeholder="03">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload file dengan tampilan lebih baik -->
+                    <div class="form-group">
+                        <label class="font-weight-bold text-primary">
+                            <i class="fas fa-image mr-1"></i> Cover Buku
                         </label>
                         <div class="custom-file">
-                            <input type="file" id="image" class="custom-file-input">
-                            <label class="custom-file-label" for="image">Pilih file</label>
+                            <input type="file" id="image" class="custom-file-input" accept="image/*">
+                            <label class="custom-file-label" for="image">Pilih file gambar (jpg, png)</label>
                         </div>
+                        <small class="form-text text-muted">Format: JPG, PNG. Maks: 2MB</small>
                     </div>
 
                 </form>
             </div>
 
-            <!-- Footer -->
-            <div class="modal-footer">
-                <button class="btn btn-outline-secondary" data-dismiss="modal">
-                    <i class="fas fa-times mr-1"></i> Batal
+            <!-- Footer dengan tombol yang lebih proporsional -->
+            <div class="modal-footer bg-light py-3">
+                <button type="button" class="btn btn-outline-secondary px-4" data-dismiss="modal">
+                    <i class="fas fa-times mr-2"></i> Batal
                 </button>
-                <button id="btnSaveBook" class="btn btn-primary px-4">
-                    <i class="fas fa-save mr-1"></i> Simpan
+                <button type="button" id="btnSaveBook" class="btn btn-primary px-5">
+                    <i class="fas fa-save mr-2"></i> Simpan
                 </button>
             </div>
 
         </div>
     </div>
 </div>
-
 <!-- Modal Kelola Stok -->
 <div class="modal fade" id="modalTambahStok">
     <div class="modal-dialog">
@@ -172,39 +202,47 @@
     </div>
 </div>
 
+
 <!-- MODAL VIEW -->
 <div class="modal fade" id="modalViewBook" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <!-- Modal Header -->
-      <div class="modal-header bg-light">
+      <div class="modal-header bg-primary text-white py-3">
         <div class="w-100">
-          <h5 class="modal-title font-weight-bold text-dark mb-1" id="modalJudul"></h5>
-          <small class="text-muted">
-            <i class="fas fa-book-open mr-1"></i>
+          <h5 class="modal-title font-weight-bold mb-1" id="modalJudul">
+            <i class="fas fa-book mr-2"></i>
+            <span id="modalJudulText"></span>
+          </h5>
+          <small class="text-white-50">
+            <i class="fas fa-info-circle mr-1"></i>
             Detail Informasi Buku
           </small>
         </div>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       
-      <div class="modal-body">
+      <div class="modal-body p-4">
         <div class="row">
           <!-- Cover Card -->
           <div class="col-md-4 mb-4 mb-md-0">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow h-100">
               <div class="card-body p-0">
-                <div class="p-3 border-bottom">
-                  <img id="modalCover" class="img-fluid rounded" 
-                       style="height: 250px; object-fit: cover; width: 100%;">
+                <div class="p-3 bg-light rounded-top">
+                  <img id="modalCover" class="img-fluid rounded mx-auto d-block" 
+                       style="height: 250px; object-fit: contain; width: 100%;"
+                       alt="Cover Buku">
                 </div>
                 <div class="p-3">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span class="font-weight-bold text-muted">Stok Tersedia</span>
-                    <span id="modalStok" class="badge badge-primary badge-pill px-3 py-2 font-weight-normal">0</span>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="font-weight-bold text-muted">
+                      <i class="fas fa-cubes mr-1"></i>Stok
+                    </span>
+                    <span id="modalStok" class="badge badge-primary badge-pill px-3 py-2">0</span>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -212,15 +250,16 @@
           
           <!-- Details Card -->
           <div class="col-md-8">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow h-100">
               <div class="card-body">
-                <!-- Info Grid -->
-                <div class="row mb-4">
+                <!-- Info Grid dengan penambahan penulis dan tahun -->
+                <div class="row">
+                  <!-- Baris 1: Penerbit dan Kategori -->
                   <div class="col-md-6 mb-3">
-                    <div class="card border h-100">
+                    <div class="card border bg-light h-100">
                       <div class="card-body py-3">
                         <div class="d-flex align-items-center">
-                          <div class="rounded-circle bg-light p-2 mr-3">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
                             <i class="fas fa-building text-primary"></i>
                           </div>
                           <div>
@@ -233,10 +272,10 @@
                   </div>
                   
                   <div class="col-md-6 mb-3">
-                    <div class="card border h-100">
+                    <div class="card border bg-light h-100">
                       <div class="card-body py-3">
                         <div class="d-flex align-items-center">
-                          <div class="rounded-circle bg-light p-2 mr-3">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
                             <i class="fas fa-tag text-primary"></i>
                           </div>
                           <div>
@@ -248,11 +287,45 @@
                     </div>
                   </div>
                   
+                  <!-- Baris 2: Penulis dan Tahun Terbit -->
                   <div class="col-md-6 mb-3">
-                    <div class="card border h-100">
+                    <div class="card border bg-light h-100">
                       <div class="card-body py-3">
                         <div class="d-flex align-items-center">
-                          <div class="rounded-circle bg-light p-2 mr-3">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
+                            <i class="fas fa-user-edit text-primary"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Penulis</small>
+                            <span id="modalPenulis" class="font-weight-bold text-dark">-</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6 mb-3">
+                    <div class="card border bg-light h-100">
+                      <div class="card-body py-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
+                            <i class="fas fa-calendar-alt text-primary"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Tahun Terbit</small>
+                            <span id="modalTahun" class="font-weight-bold text-dark">-</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Baris 3: Lokasi Rak dan Status -->
+                  <div class="col-md-6 mb-3">
+                    <div class="card border bg-light h-100">
+                      <div class="card-body py-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
                             <i class="fas fa-th-large text-primary"></i>
                           </div>
                           <div>
@@ -265,33 +338,33 @@
                   </div>
                   
                   <div class="col-md-6 mb-3">
-                    <div class="card border h-100">
-                        <div class="card-body py-3">
+                    <div class="card border bg-light h-100">
+                      <div class="card-body py-3">
                         <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-light p-2 mr-3">
-                            <span id="statusIcon"></span>
-                            </div>
-                            <div>
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
+                            <span id="statusIcon" class="d-flex align-items-center justify-content-center" style="width: 20px; height: 20px;"></span>
+                          </div>
+                          <div>
                             <small class="text-muted d-block">Status</small>
                             <span id="statusText" class="font-weight-bold"></span>
-                            </div>
+                          </div>
                         </div>
-                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                <!-- Description Card -->
-                <div class="card border">
-                  <div class="card-header bg-light border-bottom py-2">
+                <!-- Sinopsis Card -->
+                <div class="card border mt-2">
+                  <div class="card-header bg-primary text-white py-2">
                     <h6 class="mb-0 font-weight-bold">
-                      <i class="fas fa-align-left mr-2 text-primary"></i>
-                      Sipnosis Buku
+                      <i class="fas fa-align-left mr-2"></i>
+                      Sinopsis Buku
                     </h6>
                   </div>
                   <div class="card-body">
-                    <div id="modalDeskripsi" class="p-2" 
-                         style="min-height: 100px; max-height: 150px; overflow-y: auto;">
+                    <div id="modalDeskripsi" class="p-2 text-justify" 
+                         style="min-height: 100px; max-height: 120px; overflow-y: auto; background-color: #f8f9fa; border-radius: 5px;">
                     </div>
                   </div>
                 </div>
@@ -302,14 +375,24 @@
       </div>
       
       <!-- Modal Footer -->
-      <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+      <div class="modal-footer bg-light py-3">
+        <button type="button" class="btn btn-outline-secondary px-4" data-dismiss="modal">
           <i class="fas fa-times mr-2"></i>Tutup
         </button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Script untuk menampilkan nama file yang dipilih (opsional) -->
+<script>
+    // Script untuk menampilkan nama file pada custom file input
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+        var fileName = e.target.files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+</script>
 
 
 <!-- DATA BUKU -->
@@ -525,6 +608,8 @@ document.addEventListener('click', async e=>{
         document.getElementById('modalKategori').innerText = book.kategori ?? '-';
         document.getElementById('modalRak').innerText = `${book.rak} - ${book.nomor_rak}`;
         document.getElementById('modalStok').innerText = book.available_stock ?? 0;
+        document.getElementById('modalPenulis').innerText = book.penulis ?? '-';
+        document.getElementById('modalTahun').innerText = book.tahun ?? '-';
         document.getElementById('modalDeskripsi').innerText = book.sinopsis ?? '-';
         document.getElementById('modalCover').src = book.image ?? 'https://via.placeholder.com/300x400?text=No+Image';
 

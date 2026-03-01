@@ -4,20 +4,19 @@
 
 @section('content')
 
-    <!-- Page Heading -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0 text-gray-800">Laporan Peminjaman</h1>
-        <button class="btn btn-primary" onclick="cetakLaporan()">
-            <i class="fas fa-print"></i> Cetak Laporan PDF
+        <h1 class="h3 mb-0 text-gray-800">Laporan Transaksi</h1>
+        <button class="btn btn-success" onclick="cetakLaporan()">
+            <i class="fas fa-print"></i> Cetak Laporan
         </button>
     </div>
 
-    <!-- Table -->
     <div class="card shadow">
+        <div class="card-body">
             <table class="table table-bordered table-hover">
                 <thead class="bg-primary text-white text-center">
                     <tr>
-                        <th>No</th>
+                        <th width="50">No</th>
                         <th>Nama Peminjam</th>
                         <th>Judul Buku</th>
                         <th>Tanggal Pinjam</th>
@@ -31,90 +30,97 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
     </div>
 
     <script>
+        // Fungsi Format Tanggal Sesuai Permintaan
+        function formatTanggal(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
-            fetch("http://localhost:8000/api/transaction-details", {
+            fetch("http://127.0.0.1:8000/api/transaction-details", {
                 headers: {
                     "Authorization": "Bearer " + localStorage.getItem("token"),
                     "Accept": "application/json"
                 }
             })
+            .then(res => res.json())
+            .then(data => {
+                let tbody = document.getElementById("laporan-body");
+                tbody.innerHTML = "";
 
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data);
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6">Tidak ada data transaksi</td></tr>`;
+                    return;
+                }
 
-                    let tbody = document.getElementById("laporan-body");
-                    tbody.innerHTML = "";
+                data.data.forEach((item, index) => {
+                    let nama = item.transaction?.user?.name ?? '-';
+                    let judul = item.judul_buku ?? '-';
+                    
+                    // Menggunakan fungsi formatTanggal baru
+                    let tglPinjam = formatTanggal(item.transaction?.tanggal_pinjam);
+                    let tglKembali = item.tanggal_kembali ? formatTanggal(item.tanggal_kembali) : "-";
 
-                    data.data.forEach((item, index) => {
+                    let status = item.status;
+                    let badge = "";
 
-                        let nama = item.transaction.user.name;
-                        let judul = item.judul_buku;
-                        let tglPinjam = formatDate(item.transaction.tanggal_pinjam);
-                        let tglKembali = item.tanggal_kembali 
-                            ? formatDate(item.tanggal_kembali) 
-                            : "-";
+                    if (status === "dikembalikan") {
+                        badge = `<span class="badge badge-success px-2">Dikembalikan</span>`;
+                    } else if (status === "dipinjam") {
+                        badge = `<span class="badge badge-warning px-2">Dipinjam</span>`;
+                    } else if (status === "terlambat") {
+                        badge = `<span class="badge badge-danger px-2">Terlambat</span>`;
+                    } else if (status === "menunggu_verifikasi") {
+                        badge = `<span class="badge badge-warning px-2">Menunggu Verifikasi</span>`;
+                    }
 
-                        let status = item.status;
-                        let badge = "";
-
-                        if (status === "dikembalikan") {
-                            badge = `<span class="badge badge-success">Dikembalikan</span>`;
-                        } else if (status === "dipinjam") {
-                            badge = `<span class="badge badge-warning">Dipinjam</span>`;
-                        } else if (status === "terlambat") {
-                            badge = `<span class="badge badge-danger">Terlambat</span>`;
-                        } else if (status === "menunggu_verifikasi") {
-                            badge = `<span class="badge badge-success">Menunggu verifikasi</span>`;
-                        }
-
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${nama}</td>
-                                <td>${judul}</td>
-                                <td>${tglPinjam}</td>
-                                <td>${tglKembali}</td>
-                                <td>${badge}</td>
-                            </tr>
-                        `;
-                    });
-                })
-                .catch(err => {
-                    console.error(err);
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td class="text-left">${nama}</td>
+                            <td class="text-left">${judul}</td>
+                            <td>${tglPinjam}</td>
+                            <td>${tglKembali}</td>
+                            <td>${badge}</td>
+                        </tr>
+                    `;
                 });
-
-            function formatDate(dateStr) {
-                let d = new Date(dateStr);
-                return d.toLocaleDateString("id-ID");
-            }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById("laporan-body").innerHTML = `
+                    <tr><td colspan="6" class="text-danger">Gagal memuat data</td></tr>
+                `;
+            });
         });
-    </script>
 
-    <script>
-    function cetakLaporan() {
-        fetch("http://localhost:8000/api/laporan/transaction-detail", {
-            headers: {
-                "Authorization": "Bearer " + localStorage.getItem("token"),
-                "Accept": "application/pdf"
-            }
-        })
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "laporan-peminjaman.pdf";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-        })
-        .catch(err => console.error(err));
-    }
+        function cetakLaporan() {
+            fetch("http://127.0.0.1:8000/api/laporan/peminjaman/excel", {
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token"),
+                }
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "laporan-peminjaman.xlsx";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            })
+            .catch(err => console.error(err));
+        }
     </script>
-
 
 @endsection

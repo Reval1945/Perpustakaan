@@ -14,34 +14,41 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <!-- Modal Header -->
-      <div class="modal-header bg-light">
+      <div class="modal-header bg-primary text-white py-3">
         <div class="w-100">
-          <h5 class="modal-title font-weight-bold text-dark mb-1" id="modalJudul"></h5>
-          <small class="text-muted">
-            <i class="fas fa-book-open mr-1"></i>
+          <h5 class="modal-title font-weight-bold mb-1" id="modalJudul">
+            <i class="fas fa-book mr-2"></i>
+            <span id="modalJudulText"></span>
+          </h5>
+          <small class="text-white-50">
+            <i class="fas fa-info-circle mr-1"></i>
             Detail Informasi Buku
           </small>
         </div>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       
-      <div class="modal-body">
+      <div class="modal-body p-4">
         <div class="row">
           <!-- Cover Card -->
           <div class="col-md-4 mb-4 mb-md-0">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow h-100">
               <div class="card-body p-0">
-                <div class="p-3 border-bottom">
-                  <img id="modalCover" class="img-fluid rounded" 
-                       style="height: 250px; object-fit: cover; width: 100%;">
+                <div class="p-3 bg-light rounded-top">
+                  <img id="modalCover" class="img-fluid rounded mx-auto d-block" 
+                       style="height: 250px; object-fit: contain; width: 100%;"
+                       alt="Cover Buku">
                 </div>
                 <div class="p-3">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span class="font-weight-bold text-muted">Stok Tersedia</span>
-                    <span id="modalStok" class="badge badge-primary badge-pill px-3 py-2 font-weight-normal">0</span>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="font-weight-bold text-muted">
+                      <i class="fas fa-cubes mr-1"></i>Stok
+                    </span>
+                    <span id="modalStok" class="badge badge-primary badge-pill px-3 py-2">0</span>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -49,15 +56,16 @@
           
           <!-- Details Card -->
           <div class="col-md-8">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow h-100">
               <div class="card-body">
-                <!-- Info Grid -->
-                <div class="row mb-4">
+                <!-- Info Grid dengan penambahan penulis dan tahun -->
+                <div class="row">
+                  <!-- Baris 1: Penerbit dan Kategori -->
                   <div class="col-md-6 mb-3">
-                    <div class="card border h-100">
+                    <div class="card border bg-light h-100">
                       <div class="card-body py-3">
                         <div class="d-flex align-items-center">
-                          <div class="rounded-circle bg-light p-2 mr-3">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
                             <i class="fas fa-building text-primary"></i>
                           </div>
                           <div>
@@ -70,10 +78,10 @@
                   </div>
                   
                   <div class="col-md-6 mb-3">
-                    <div class="card border h-100">
+                    <div class="card border bg-light h-100">
                       <div class="card-body py-3">
                         <div class="d-flex align-items-center">
-                          <div class="rounded-circle bg-light p-2 mr-3">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
                             <i class="fas fa-tag text-primary"></i>
                           </div>
                           <div>
@@ -85,11 +93,45 @@
                     </div>
                   </div>
                   
+                  <!-- Baris 2: Penulis dan Tahun Terbit -->
                   <div class="col-md-6 mb-3">
-                    <div class="card border h-100">
+                    <div class="card border bg-light h-100">
                       <div class="card-body py-3">
                         <div class="d-flex align-items-center">
-                          <div class="rounded-circle bg-light p-2 mr-3">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
+                            <i class="fas fa-user-edit text-primary"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Penulis</small>
+                            <span id="modalPenulis" class="font-weight-bold text-dark">-</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6 mb-3">
+                    <div class="card border bg-light h-100">
+                      <div class="card-body py-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
+                            <i class="fas fa-calendar-alt text-primary"></i>
+                          </div>
+                          <div>
+                            <small class="text-muted d-block">Tahun Terbit</small>
+                            <span id="modalTahun" class="font-weight-bold text-dark">-</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Baris 3: Lokasi Rak dan Status -->
+                  <div class="col-md-6 mb-3">
+                    <div class="card border bg-light h-100">
+                      <div class="card-body py-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
                             <i class="fas fa-th-large text-primary"></i>
                           </div>
                           <div>
@@ -102,33 +144,33 @@
                   </div>
                   
                   <div class="col-md-6 mb-3">
-                    <div class="card border h-100">
-                        <div class="card-body py-3">
+                    <div class="card border bg-light h-100">
+                      <div class="card-body py-3">
                         <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-light p-2 mr-3">
-                            <span id="statusIcon"></span>
-                            </div>
-                            <div>
+                          <div class="rounded-circle bg-white p-2 mr-3 shadow-sm">
+                            <span id="statusIcon" class="d-flex align-items-center justify-content-center" style="width: 20px; height: 20px;"></span>
+                          </div>
+                          <div>
                             <small class="text-muted d-block">Status</small>
                             <span id="statusText" class="font-weight-bold"></span>
-                            </div>
+                          </div>
                         </div>
-                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                <!-- Description Card -->
-                <div class="card border">
-                  <div class="card-header bg-light border-bottom py-2">
+                <!-- Sinopsis Card -->
+                <div class="card border mt-2">
+                  <div class="card-header bg-primary text-white py-2">
                     <h6 class="mb-0 font-weight-bold">
-                      <i class="fas fa-align-left mr-2 text-primary"></i>
-                      Sipnosis Buku
+                      <i class="fas fa-align-left mr-2"></i>
+                      Sinopsis Buku
                     </h6>
                   </div>
                   <div class="card-body">
-                    <div id="modalDeskripsi" class="p-2" 
-                         style="min-height: 100px; max-height: 150px; overflow-y: auto;">
+                    <div id="modalDeskripsi" class="p-2 text-justify" 
+                         style="min-height: 100px; max-height: 120px; overflow-y: auto; background-color: #f8f9fa; border-radius: 5px;">
                     </div>
                   </div>
                 </div>
@@ -139,8 +181,8 @@
       </div>
       
       <!-- Modal Footer -->
-      <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+      <div class="modal-footer bg-light py-3">
+        <button type="button" class="btn btn-outline-secondary px-4" data-dismiss="modal">
           <i class="fas fa-times mr-2"></i>Tutup
         </button>
       </div>
@@ -208,12 +250,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="mt-auto d-flex">
                             <button class="btn btn-info btn-sm flex-fill mr-1"
                                 onclick="viewBook('${book.id}')">
-                                View
+                                <i class="fas fa-eye"></i>
                             </button>
 
                             <button class="btn btn-success btn-sm flex-fill mr-1"
                                     onclick="pinjamBook('${book.id}')">
-                                Pinjam
+                                <i class="fas fa-cart-plus"></i>
                             </button>
 
                         </div>
@@ -279,6 +321,8 @@ function viewBook(id) {
     document.getElementById('modalPenerbit').innerText = book.penerbit;
     document.getElementById('modalKategori').innerText = book.kategori ?? '-';
     document.getElementById('modalRak').innerText = `${book.rak} - ${book.nomor_rak}`;
+    document.getElementById('modalPenulis').innerText = book.penulis ?? '-';
+    document.getElementById('modalTahun').innerText = book.tahun ?? '-';
     document.getElementById('modalStok').innerText = book.available_stock ?? 0;
     document.getElementById('modalDeskripsi').innerText = book.sinopsis ?? 'Sipnosis buku tidak tersedia.';
     document.getElementById('modalCover').src = image;

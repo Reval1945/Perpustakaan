@@ -3,54 +3,237 @@
 @section('title', 'Data Anggota')
 
 @section('content')
+<style>
+    :root {
+        --primary: #2C5AA0;
+        --primary-light: #4A7BC8;
+        --primary-soft: #e8f0fe;
+        --success: #10b981;
+        --danger: #ef4444;
+        --dark: #1e293b;
+        --gray: #64748b;
+        --gray-light: #f1f5f9;
+        --border: #e2e8f0;
+    }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="text-gray-800">Daftar Anggota</h4>
-    <div>
+    /* Content Header */
+    .content-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        border: 1px solid var(--border);
+    }
+
+    .content-header h4 {
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    /* Table */
+    .table-responsive {
+        background: white;
+        border-radius: 16px;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        border: 1px solid var(--border);
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead tr {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background: var(--primary) !important;
+        color: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 0.75rem;
+        border: none;
+        white-space: nowrap;
+    }
+
+    .table thead th:first-child {
+        border-radius: 12px 0 0 12px;
+    }
+
+    .table thead th:last-child {
+        border-radius: 0 12px 12px 0;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s;
+    }
+
+    .table tbody tr:hover {
+        background: var(--primary-soft);
+    }
+
+    .table tbody td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        color: var(--dark);
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* Badge */
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 30px;
+        font-weight: 500;
+        font-size: 0.75rem;
+        letter-spacing: 0.3px;
+    }
+
+    .badge-success {
+        background: var(--success);
+        color: white;
+    }
+
+    /* Form Controls */
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .form-group label i {
+        color: var(--primary);
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.7rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(44,90,160,0.1);
+    }
+
+    .form-control-lg {
+        padding: 0.9rem 1.2rem;
+        font-size: 1rem;
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1rem;
+    }
+
+    /* Input Group */
+    .input-group {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .input-group .form-control {
+        border-right: none;
+    }
+
+    .input-group-append .btn {
+        border: 1px solid var(--border);
+        border-left: none;
+        border-radius: 0 12px 12px 0;
+        background: white;
+        color: var(--gray);
+        padding: 0.7rem 1rem;
+    }
+
+    .input-group-append .btn:hover {
+        background: var(--gray-light);
+        color: var(--primary);
+    }
+
+    /* Action Buttons Container */
+    .action-buttons {
+        display: flex;
+        gap: 0.4rem;
+        justify-content: center;
+    }
+
+    /* Form Row */
+    .form-row {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+    }
+
+    .form-row > .col-md-6 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+</style>
+
+<div class="content-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+    <div class="mb-3 mb-md-0">
+        <h4 class="text-gray-800">
+            <i class="fas fa-users mr-2" style="color: var(--primary);"></i>
+            Daftar Anggota
+        </h4>
+    </div>
+    
+    <div class="d-flex flex-column flex-sm-row shadow-sm" style="border-radius: 30px; background: #f8fafc; padding: 5px; border: 1px solid var(--border);">
+        <div class="input-group" style="width: 300px;">
+            <div class="input-group-prepend">
+                <span class="input-group-text border-0 bg-transparent">
+                    <i class="fas fa-search text-gray"></i>
+                </span>
+            </div>
+            <input type="text" id="searchInput" class="form-control border-0 bg-transparent" placeholder="Cari Nama, NISN, atau Kelas" style="box-shadow: none;">
+        </div>
+    </div>
+
+    <div class="mt-3 mt-md-0">
         <button id="btnTambahAnggota" class="btn btn-primary" data-toggle="modal" data-target="#modalTambahAnggota">
-            <i class="fas fa-plus"></i> Tambah Anggota
+            <i class="fas fa-plus mr-1"></i> Tambah Anggota
         </button>
         <button id="btnCetakAnggota" class="btn btn-success">
-            <i class="fas fa-print"></i> Cetak Anggota
+            <i class="fas fa-print mr-1"></i> Cetak Anggota
         </button>
     </div>
 </div>
 
 <div class="table-responsive">
-    <table class="table table-bordered text-center">
-        <thead class="bg-primary text-white text-center">
+    <table class="table text-center">
+        <thead>
             <tr>
                 <th>Kode User</th>
                 <th>Nama</th>
                 <th>Kelas</th>
                 <th>NISN</th>
                 <th>Email</th>
+                <th>No Telepon</th>
                 <th>Role</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>
-                    <button 
-                        type="button"
-                        class="btn btn-warning btn-sm btn-edit"
-                        data-id="${user.id}">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button 
-                        type="button"
-                        class="btn btn-warning btn-sm"
-                        data-id="${user.id}">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button 
-                        class="btn btn-danger btn-sm btn-delete"
-                        data-id="${user.id}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
+            <!-- Data akan diisi oleh JavaScript -->
         </tbody>
     </table>
 </div>
@@ -58,15 +241,15 @@
 <!-- Modal Tambah Anggota -->
 <div class="modal fade" id="modalTambahAnggota" tabindex="-1" role="dialog" aria-labelledby="modalTambahAnggotaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content border-0">
+        <div class="modal-content">
 
             <!-- Header -->
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title font-weight-bold" id="modalTambahAnggotaLabel">
-                    <i class="fas fa-user-plus mr-2"></i> Tambah Anggota
+                    <i class="fas fa-user-plus mr-2"></i> Tambah/Edit Anggota
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="text-white">&times;</span>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span class="text-white">&times;</span>
                 </button>
             </div>
 
@@ -74,6 +257,7 @@
             <div class="modal-body">
                 <form>
                     <input type="hidden" id="user_id">
+
                     <div class="form-group">
                         <label class="font-weight-bold">
                             <i class="fas fa-user mr-1 text-primary"></i> Nama Lengkap
@@ -82,26 +266,32 @@
                     </div>
 
                     <div class="form-row">
+                        <!-- NISN -->
                         <div class="form-group col-md-6">
                             <label class="font-weight-bold">
                                 <i class="fas fa-id-card mr-1 text-primary"></i> NISN
                             </label>
                             <input id="nisn" type="number" class="form-control" placeholder="Masukkan NISN">
+                            <small class="text-muted">Opsional</small>
                         </div>
 
+                        <!-- No Absen -->
                         <div class="form-group col-md-6">
                             <label class="font-weight-bold">
                                 <i class="fas fa-list-ol mr-1 text-primary"></i> No Absen
                             </label>
                             <input id="roll_number" type="number" class="form-control" placeholder="Nomor absen">
+                            <small class="text-muted">Opsional</small>
                         </div>
                     </div>
 
+                    <!-- Kelas -->
                     <div class="form-group">
                         <label class="font-weight-bold">
                             <i class="fas fa-school mr-1 text-primary"></i> Kelas
                         </label>
                         <input id="class" type="text" class="form-control" placeholder="Contoh: XI RPL 1">
+                        <small class="text-muted">Opsional</small>
                     </div>
 
                     <div class="form-group">
@@ -128,7 +318,7 @@
                         <input id="email" type="email" class="form-control" placeholder="contoh@email.com">
                     </div>
 
-                    <!-- Password dengan Icon Mata -->
+                    <!-- Password -->
                     <div class="form-group">
                         <label class="font-weight-bold">
                             <i class="fas fa-lock mr-1 text-primary"></i> Password
@@ -136,7 +326,7 @@
                         <div class="input-group">
                             <input type="password" class="form-control" id="passwordInput" placeholder="Masukkan password">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <button class="btn" type="button" id="togglePassword">
                                     <i class="fas fa-eye-slash" id="iconPassword"></i>
                                 </button>
                             </div>
@@ -174,6 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const filteredUsers = semuaUsers.filter(user =>
                 user.name.toLowerCase().includes(keyword) ||
                 (user.roll_number ?? '').toString().includes(keyword) ||
+                (user.nisn ?? '').toString().includes(keyword) ||
                 (user.kode_user ?? '').toLowerCase().includes(keyword) ||
                 (user.class ?? '').toLowerCase().includes(keyword) ||
                 (user.email ?? '').toLowerCase().includes(keyword)
@@ -221,29 +412,34 @@ function renderTable(users) {
         .forEach(user => {
             tbody.innerHTML += `
                 <tr>
-                    <td>${user.kode_user}</td>
+                    <td><span style="font-weight: 600; color: var(--primary);">${user.kode_user}</span></td>
                     <td>${user.name}</td>
                     <td>${user.class ?? '-'}</td>
-                    <td>${user.nisn}</td>
+                    <td>${user.nisn ?? '-'}</td>
                     <td>${user.email}</td>
+                    <td>${user.phone ?? '-'}</td>
                     <td>
                         <span class="badge badge-success">
                             ${user.role}
                         </span>
                     </td>
                     <td>
-                        <button 
-                            type="button"
-                            class="btn btn-warning btn-sm btn-edit"
-                            data-id="${user.id}">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button 
-                            type="button"
-                            class="btn btn-danger btn-sm btn-delete"
-                            data-id="${user.id}">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="action-buttons">
+                            <button 
+                                type="button"
+                                class="btn btn-warning btn-sm btn-edit"
+                                data-id="${user.id}"
+                                title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button 
+                                type="button"
+                                class="btn btn-danger btn-sm btn-delete"
+                                data-id="${user.id}"
+                                title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -363,14 +559,60 @@ document.addEventListener('DOMContentLoaded', function () {
         fetchUsers();
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Inisialisasi toggle password untuk modal
+    initPasswordToggle();
+    
+    // Re-inisialisasi ketika modal dibuka (untuk mengatasi jika DOM berubah)
+    $('#modalTambahAnggota').on('shown.bs.modal', function() {
+        initPasswordToggle();
+    });
+});
+
+function initPasswordToggle() {
+    const togglePassword = document.querySelector('#togglePassword');
+    const passwordInput = document.querySelector('#passwordInput');
+    const iconPassword = document.querySelector('#iconPassword');
+    
+    if (togglePassword && passwordInput && iconPassword) {
+        // Hapus event listener lama dengan mengganti elemen baru
+        const newTogglePassword = togglePassword.cloneNode(true);
+        togglePassword.parentNode.replaceChild(newTogglePassword, togglePassword);
+        
+        // Dapatkan referensi baru
+        const newToggle = document.querySelector('#togglePassword');
+        const newIcon = document.querySelector('#iconPassword');
+        const newInput = document.querySelector('#passwordInput');
+        
+        // Tambah event listener baru
+        newToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (newInput.type === 'password') {
+                newInput.type = 'text';
+                newIcon.classList.remove('fa-eye-slash');
+                newIcon.classList.add('fa-eye');
+            } else {
+                newInput.type = 'password';
+                newIcon.classList.remove('fa-eye');
+                newIcon.classList.add('fa-eye-slash');
+            }
+        });
+    }
+}
 </script>
 
 <!-- CETAK -->
 <script>
+// hanya cetak anggota dengan role "user"
 document.getElementById('btnCetakAnggota').addEventListener('click', () => {
     const token = localStorage.getItem('token');
+    // tambahkan query param role=user supaya backend hanya mengeluarkan data role user
+    const url = 'http://127.0.0.1:8000/api/users/export/excel?role=user';
 
-    fetch('http://127.0.0.1:8000/api/users/export/excel', {
+    fetch(url, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`
