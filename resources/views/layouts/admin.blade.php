@@ -20,6 +20,7 @@
             --primary: #2C5AA0;
             --primary-light: #4A7BC8;
             --primary-soft: #e8f0fe;
+            --warning-soft: #fffbeb;
             --success: #10b981;
             --danger: #ef4444;
             --dark: #1e293b;
@@ -465,11 +466,12 @@
 </a>
 
 <!-- JS -->
- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('template/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('template/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 <script src="{{ asset('template/js/sb-admin-2.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     document.getElementById("togglePassword").addEventListener("click", function () {
@@ -507,7 +509,7 @@
 </div>
 <script>
 if (!localStorage.getItem('token')) {
-    window.location.href = '/login';
+    window.location.href = '/';
 }
 
 document.getElementById('btnLogout').addEventListener('click', function () {
@@ -519,7 +521,7 @@ document.getElementById('btnLogout').addEventListener('click', function () {
         }
     }).finally(() => {
         localStorage.removeItem('token');
-        window.location.href = '/login';
+        window.location.href = '/';
     });
 });
 
@@ -553,19 +555,52 @@ document.addEventListener("DOMContentLoaded", function(){
 
     loadUser();
 
-
-    // =====================
-    // PREVIEW FOTO
+    // PREVIEW FOTO & VALIDASI
     // =====================
     const inputPhoto = document.getElementById('inputPhoto');
 
+    // Inisialisasi Toast SweetAlert2
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'center',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+
     if(inputPhoto){
-        inputPhoto.addEventListener('change', e=>{
+        inputPhoto.addEventListener('change', e => {
             const file = e.target.files[0];
             if(!file) return;
 
-            document.getElementById('previewPhoto').src =
-                URL.createObjectURL(file);
+            // 1. Validasi Ukuran (2MB = 2048 * 1024 bytes)
+            const maxSize = 2 * 1024 * 1024; 
+            if(file.size > maxSize) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Ukuran file terlalu besar! Maksimal 2MB.'
+                });
+                inputPhoto.value = ""; // Reset input
+                return;
+            }
+
+            // 2. Validasi Format
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if(!allowedTypes.includes(file.type)) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Format tidak didukung! Gunakan JPG atau PNG.'
+                });
+                inputPhoto.value = ""; // Reset input
+                return;
+            }
+
+            // Jika lolos validasi, tampilkan preview
+            document.getElementById('previewPhoto').src = URL.createObjectURL(file);
+            
+            // Update label input file
+            const fileName = file.name;
+            document.querySelector('.custom-file-label').innerText = fileName;
         });
     }
 
@@ -585,15 +620,30 @@ document.addEventListener("DOMContentLoaded", function(){
             console.log([...form]); // ← DEBUG
 
             const res = await fetch('/api/update-profile1',{
-                method:'POST',
-                headers:{ Authorization:'Bearer '+token },
+               method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Accept': 'application/json'
+                },
                 body:form
             });
 
             const data = await res.json();
             console.log(data);
 
-            alert(data.message);
+            if (res.ok) {
+                Toast.fire({
+                    icon: 'success',
+                    title: data.message || 'Profil berhasil diperbarui'
+                });
+                $('#modalProfile').modal('hide');
+                loadUser(); 
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: data.message || 'Gagal memperbarui profil'
+                });
+            }
         });
     }
 

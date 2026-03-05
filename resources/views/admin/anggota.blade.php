@@ -3,346 +3,174 @@
 @section('title', 'Data Anggota')
 
 @section('content')
-<style>
-    :root {
-        --primary: #2C5AA0;
-        --primary-light: #4A7BC8;
-        --primary-soft: #e8f0fe;
-        --success: #10b981;
-        --danger: #ef4444;
-        --dark: #1e293b;
-        --gray: #64748b;
-        --gray-light: #f1f5f9;
-        --border: #e2e8f0;
-    }
-
-    /* Content Header */
-    .content-header {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 16px;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        border: 1px solid var(--border);
-    }
-
-    .content-header h4 {
-        font-weight: 700;
-        color: var(--dark);
-        margin: 0;
-    }
-
-    /* Table */
-    .table-responsive {
-        background: white;
-        border-radius: 16px;
-        padding: 1rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        border: 1px solid var(--border);
-    }
-
-    .table {
-        margin-bottom: 0;
-    }
-
-    .table thead tr {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .table thead th {
-        background: var(--primary) !important;
-        color: white;
-        font-weight: 600;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 1rem 0.75rem;
-        border: none;
-        white-space: nowrap;
-    }
-
-    .table thead th:first-child {
-        border-radius: 12px 0 0 12px;
-    }
-
-    .table thead th:last-child {
-        border-radius: 0 12px 12px 0;
-    }
-
-    .table tbody tr {
-        transition: all 0.2s;
-    }
-
-    .table tbody tr:hover {
-        background: var(--primary-soft);
-    }
-
-    .table tbody td {
-        padding: 1rem 0.75rem;
-        vertical-align: middle;
-        color: var(--dark);
-        font-size: 0.9rem;
-        border-bottom: 1px solid var(--border);
-    }
-
-    /* Badge */
-    .badge {
-        padding: 0.5rem 1rem;
-        border-radius: 30px;
-        font-weight: 500;
-        font-size: 0.75rem;
-        letter-spacing: 0.3px;
-    }
-
-    .badge-success {
-        background: var(--success);
-        color: white;
-    }
-
-    /* Form Controls */
-    .form-group {
-        margin-bottom: 1.2rem;
-    }
-
-    .form-group label {
-        font-weight: 600;
-        color: var(--dark);
-        font-size: 0.85rem;
-        margin-bottom: 0.4rem;
-        display: block;
-    }
-
-    .form-group label i {
-        color: var(--primary);
-        font-size: 0.9rem;
-    }
-
-    .form-control {
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 0.7rem 1rem;
-        font-size: 0.95rem;
-        transition: all 0.2s;
-        background: white;
-    }
-
-    .form-control:focus {
-        border-color: var(--primary);
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(44,90,160,0.1);
-    }
-
-    .form-control-lg {
-        padding: 0.9rem 1.2rem;
-        font-size: 1rem;
-    }
-
-    select.form-control {
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 1rem center;
-        background-size: 1rem;
-    }
-
-    /* Input Group */
-    .input-group {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .input-group .form-control {
-        border-right: none;
-    }
-
-    .input-group-append .btn {
-        border: 1px solid var(--border);
-        border-left: none;
-        border-radius: 0 12px 12px 0;
-        background: white;
-        color: var(--gray);
-        padding: 0.7rem 1rem;
-    }
-
-    .input-group-append .btn:hover {
-        background: var(--gray-light);
-        color: var(--primary);
-    }
-
-    /* Action Buttons Container */
-    .action-buttons {
-        display: flex;
-        gap: 0.4rem;
-        justify-content: center;
-    }
-
-    /* Form Row */
-    .form-row {
-        margin-left: -0.5rem;
-        margin-right: -0.5rem;
-    }
-
-    .form-row > .col-md-6 {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-</style>
-
-<div class="content-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-    <div class="mb-3 mb-md-0">
-        <h4 class="text-gray-800">
-            <i class="fas fa-users mr-2" style="color: var(--primary);"></i>
-            Daftar Anggota
-        </h4>
-    </div>
-    
-    <div class="d-flex flex-column flex-sm-row shadow-sm" style="border-radius: 30px; background: #f8fafc; padding: 5px; border: 1px solid var(--border);">
-        <div class="input-group" style="width: 300px;">
-            <div class="input-group-prepend">
-                <span class="input-group-text border-0 bg-transparent">
-                    <i class="fas fa-search text-gray"></i>
-                </span>
-            </div>
-            <input type="text" id="searchInput" class="form-control border-0 bg-transparent" placeholder="Cari Nama, NISN, atau Kelas" style="box-shadow: none;">
-        </div>
-    </div>
-
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0" style="color: var(--dark); font-weight: 700;">
+        Daftar Anggota
+    </h1>
     <div class="mt-3 mt-md-0">
-        <button id="btnTambahAnggota" class="btn btn-primary" data-toggle="modal" data-target="#modalTambahAnggota">
-            <i class="fas fa-plus mr-1"></i> Tambah Anggota
+        <button id="btnTambahAnggota" class="btn btn-main btn-primary shadow-sm" style="padding: 0.5rem 1.5rem;">
+            <i class="fas fa-plus fa-sm mr-2"></i> Tambah Anggota
         </button>
-        <button id="btnCetakAnggota" class="btn btn-success">
-            <i class="fas fa-print mr-1"></i> Cetak Anggota
+        <button id="btnCetakAnggota" class="btn btn-main btn-success shadow-sm" style="padding: 0.5rem 1.5rem;">
+            <i class="fas fa-print fa-sm mr-2"></i> Cetak Daftar Anggota
         </button>
     </div>
 </div>
 
-<div class="table-responsive">
-    <table class="table text-center">
-        <thead>
-            <tr>
-                <th>Kode User</th>
-                <th>Nama</th>
-                <th>Kelas</th>
-                <th>NISN</th>
-                <th>Email</th>
-                <th>No Telepon</th>
-                <th>Role</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data akan diisi oleh JavaScript -->
-        </tbody>
-    </table>
+<div class="card shadow-sm mb-4" style="border: none; border-radius: 16px;">
+    <div class="card-body py-3">
+        <div class="row align-items-center">
+            <div class="col-md-6 col-lg-4">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-white" style="border-color: var(--border); border-radius: 30px 0 0 30px;">
+                            <i class="fas fa-search" style="color: var(--gray);"></i>
+                        </span>
+                    </div>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Cari Nama, NISN, atau Kelas..." style="border-color: var(--border); border-radius: 0 30px 30px 0; border-left: none;">
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-8 text-md-right mt-3 mt-md-0">
+                <span id="searchResultInfo" style="color: var(--gray); font-size: 0.9rem;">
+                    <i class="fas fa-users mr-1"></i> <span id="userCount">0</span> anggota ditemukan
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm" style="border: none; border-radius: 16px;">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead style="background: var(--gray-light);">
+                    <tr>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; width: 50px;">No</th>
+                        <th class="py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Kode</th>
+                        <th class="py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Nama Lengkap</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">NISN</th> 
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Kelas</th>
+                        <th class="py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Kontak</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="user-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Tambah Anggota -->
-<div class="modal fade" id="modalTambahAnggota" tabindex="-1" role="dialog" aria-labelledby="modalTambahAnggotaLabel" aria-hidden="true">
+<div class="modal fade" id="modalTambahAnggota" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content">
-
-            <!-- Header -->
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title font-weight-bold" id="modalTambahAnggotaLabel">
-                    <i class="fas fa-user-plus mr-2"></i> Tambah/Edit Anggota
+        <div class="modal-content border-0 shadow" style="border-radius: 18px; overflow: hidden;">
+            
+            <div class="modal-header border-0 pb-0 pt-3 px-4">
+                <h5 class="modal-title font-weight-bold text-gray-800" id="modalTitle">
+                    <i class="fas fa-user-edit text-primary mr-2"></i> Formulir Anggota
                 </h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span class="text-white">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
-            <!-- Body -->
-            <div class="modal-body">
-                <form>
+            <div class="modal-body p-4 pt-2">
+                <form id="formAnggota">
                     <input type="hidden" id="user_id">
 
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-user mr-1 text-primary"></i> Nama Lengkap
+                    <div class="form-group mb-3">
+                        <label class="text-overline text-primary d-block mb-1 font-weight-bold" style="font-size: 0.85rem;">
+                            <i class="fas fa-user mr-1"></i> Nama Lengkap <span class="text-danger">*</span>
                         </label>
-                        <input id="name" type="text" class="form-control form-control-lg" placeholder="Masukkan nama lengkap">
+                        <input type="text" id="name" class="form-control rounded-pill border-0 bg-light" placeholder="Masukkan nama lengkap" required style="height: 40px;">
                     </div>
 
-                    <div class="form-row">
-                        <!-- NISN -->
-                        <div class="form-group col-md-6">
-                            <label class="font-weight-bold">
-                                <i class="fas fa-id-card mr-1 text-primary"></i> NISN
-                            </label>
-                            <input id="nisn" type="number" class="form-control" placeholder="Masukkan NISN">
-                            <small class="text-muted">Opsional</small>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="text-overline text-primary d-block mb-1 font-weight-bold" style="font-size: 0.85rem;">
+                                    <i class="fas fa-id-card mr-1"></i> NISN <span class="optional-badge">opsional</span></label>
+                                </label>
+                                <input type="number" id="nisn" class="form-control rounded-pill border-0 bg-light" placeholder="10 digit NISN" style="height: 40px;">
+                            </div>
                         </div>
-
-                        <!-- No Absen -->
-                        <div class="form-group col-md-6">
-                            <label class="font-weight-bold">
-                                <i class="fas fa-list-ol mr-1 text-primary"></i> No Absen
-                            </label>
-                            <input id="roll_number" type="number" class="form-control" placeholder="Nomor absen">
-                            <small class="text-muted">Opsional</small>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="text-overline text-primary d-block mb-1 font-weight-bold" style="font-size: 0.85rem;">
+                                    <i class="fas fa-list-ol mr-1"></i> No Absen <span class="optional-badge">opsional</span></label>
+                                </label>
+                                <input type="number" id="roll_number" class="form-control rounded-pill border-0 bg-light" placeholder="Contoh: 01" style="height: 40px;">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Kelas -->
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-school mr-1 text-primary"></i> Kelas
-                        </label>
-                        <input id="class" type="text" class="form-control" placeholder="Contoh: XI RPL 1">
-                        <small class="text-muted">Opsional</small>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="text-overline text-primary d-block mb-1 font-weight-bold" style="font-size: 0.85rem;">
+                                    <i class="fas fa-school mr-1"></i> Kelas <span class="optional-badge">opsional</span></label>
+                                </label>
+                                <input type="text" id="class" class="form-control rounded-pill border-0 bg-light" placeholder="Contoh: XI RPL 1" style="height: 40px;">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="text-overline text-primary d-block mb-1 font-weight-bold" style="font-size: 0.85rem;">
+                                    <i class="fas fa-user-tag mr-1"></i> Role
+                                </label>
+                                <select id="role" class="form-control rounded-pill border-0 bg-light" style="height: 40px; appearance: none;">
+                                    <option value="user" selected>Anggota</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-user-tag mr-1 text-primary"></i> Role
-                        </label>
-                        <select id="role" class="form-control">
-                            <option value="">-- Pilih Role --</option>
-                            <option value="user">Anggota</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="text-overline text-primary d-block mb-1 font-weight-bold" style="font-size: 0.85rem;">
+                                    <i class="fas fa-phone mr-1"></i> No Telepon
+                                </label>
+                                <input type="text" id="phone" class="form-control rounded-pill border-0 bg-light" placeholder="08xxxxxxxxxx" style="height: 40px;">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="text-overline text-primary d-block mb-1 font-weight-bold" style="font-size: 0.85rem;">
+                                    <i class="fas fa-envelope mr-1"></i> Email <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" id="email" class="form-control rounded-pill border-0 bg-light" placeholder="alamat@email.com" required style="height: 40px;">
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-phone mr-1 text-primary"></i> No Telepon
-                        </label>
-                        <input id="phone" type="text" class="form-control" placeholder="08xxxxxxxxxx">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-envelope mr-1 text-primary"></i> Email
-                        </label>
-                        <input id="email" type="email" class="form-control" placeholder="contoh@email.com">
-                    </div>
-
-                    <!-- Password -->
-                    <div class="form-group">
-                        <label class="font-weight-bold">
-                            <i class="fas fa-lock mr-1 text-primary"></i> Password
+                    <div class="form-group mb-0">
+                        <label class="text-overline text-primary d-block mb-1 font-weight-bold" style="font-size: 0.85rem;">
+                            <i class="fas fa-lock mr-1"></i> Password
                         </label>
                         <div class="input-group">
-                            <input type="password" class="form-control" id="passwordInput" placeholder="Masukkan password">
+                            <input type="password" id="passwordInput" class="form-control border-0 bg-light shadow-none" placeholder="Masukkan password" style="height: 40px; border-top-left-radius: 50px; border-bottom-left-radius: 50px;">
                             <div class="input-group-append">
-                                <button class="btn" type="button" id="togglePassword">
-                                    <i class="fas fa-eye-slash" id="iconPassword"></i>
+                                <button class="btn btn-light border-0 px-3 shadow-none" type="button" id="togglePassword" onclick="togglePwd()" style="height: 40px; border-top-right-radius: 50px; border-bottom-right-radius: 50px; background-color: #f8f9fa;">
+                                    <i class="fas fa-eye-slash text-muted" id="iconPassword"></i>
                                 </button>
                             </div>
                         </div>
+                        <small class="form-text text-muted ml-3 mt-2" style="font-size: 0.75rem;">
+                            * Kosongkan jika tidak ingin mengubah password saat edit.
+                        </small>
                     </div>
 
                 </form>
             </div>
 
-            <!-- Footer -->
-            <div class="modal-footer">
-                <button class="btn btn-outline-secondary" data-dismiss="modal">
-                    <i class="fas fa-times mr-1"></i> Batal
+            <div class="modal-footer border-0 bg-light p-3">
+                <button type="button" class="btn btn-light rounded px-3 shadow-sm font-weight-bold" data-dismiss="modal" style="height: 38px; font-size: 0.85rem;">
+                    Batal
                 </button>
-                <button id="btnSimpanUser" type="button" class="btn btn-primary px-4">
-                    <i class="fas fa-save mr-1"></i> Simpan
+                <button type="button" id="btnSimpanUser" class="btn btn-primary rounded px-4 shadow-sm font-weight-bold" style="height: 38px; font-size: 0.85rem;">
+                    <i class="fas fa-save mr-1"></i> Simpan Data
                 </button>
             </div>
 
@@ -350,185 +178,117 @@
     </div>
 </div>
 
-<!-- FETCH DATA USER -->
+<style>
+:root {
+    --primary-soft: #e8f0fe;
+    --dark: #1e293b;
+    --gray: #64748b;
+    --gray-light: #f1f5f9;
+    --border: #e2e8f0;
+    --danger: #ef4444;
+}
+
+.btn-main{
+    height: 45px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: none;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.optional-badge {
+    color: var(--gray);
+    font-size: 10px;
+    font-weight: 400;
+    margin-left: 6px;
+    background: var(--gray-light);
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: lowercase;
+}
+
+body { background-color: #f8fafc; }
+.form-control { border-radius: 10px; border: 1px solid var(--border); padding: 0.6rem 1rem; }
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(44,90,160,0.1); }
+.table thead th { border: none; font-weight: 600; }
+.table td { vertical-align: middle; border-top: 1px solid var(--border); }
+.badge { font-weight: 600; }
+.card { transition: transform 0.2s; }
+</style>
+
 <script>
 let semuaUsers = [];
+const API_URL = 'http://127.0.0.1:8000/api/users';
 
-document.addEventListener('DOMContentLoaded', () => {
-    fetchUsers();
-
-    const searchInputAnggota = document.getElementById('searchInput');
-    if(searchInputAnggota){
-        searchInputAnggota.addEventListener('input', function() {
-            const keyword = this.value.toLowerCase();
-            const filteredUsers = semuaUsers.filter(user =>
-                user.name.toLowerCase().includes(keyword) ||
-                (user.roll_number ?? '').toString().includes(keyword) ||
-                (user.nisn ?? '').toString().includes(keyword) ||
-                (user.kode_user ?? '').toLowerCase().includes(keyword) ||
-                (user.class ?? '').toLowerCase().includes(keyword) ||
-                (user.email ?? '').toLowerCase().includes(keyword)
-            );
-            renderTable(filteredUsers);
-        });
-    }
-});
-
-function fetchUsers() {
-    const token = localStorage.getItem('token');
-    fetch('http://127.0.0.1:8000/api/users', {
-        headers: { 
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(res => res.json())
-    .then(res => {
-        semuaUsers = res.data.filter(u => u.role === 'user'); // hanya user
-        renderTable(semuaUsers);
-    });
-}
-
-document.getElementById('searchInput')?.addEventListener('input', function() {
-    const keyword = this.value.toLowerCase();
-
-    const filteredUsers = semuaUsers.filter(user =>
-        user.name.toLowerCase().includes(keyword) ||
-        (user.roll_number ?? '').toString().includes(keyword) ||
-        (user.kode_user ?? '').toLowerCase().includes(keyword) ||
-        (user.class ?? '').toLowerCase().includes(keyword) ||
-        (user.email ?? '').toLowerCase().includes(keyword)
-    );
-
-    renderTable(filteredUsers);
-});
-
-function renderTable(users) {
-    const tbody = document.querySelector('tbody');
-    tbody.innerHTML = '';
-
-    users
-        .filter(user => user.role === 'user') // hanya role user
-        .forEach(user => {
-            tbody.innerHTML += `
-                <tr>
-                    <td><span style="font-weight: 600; color: var(--primary);">${user.kode_user}</span></td>
-                    <td>${user.name}</td>
-                    <td>${user.class ?? '-'}</td>
-                    <td>${user.nisn ?? '-'}</td>
-                    <td>${user.email}</td>
-                    <td>${user.phone ?? '-'}</td>
-                    <td>
-                        <span class="badge badge-success">
-                            ${user.role}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            <button 
-                                type="button"
-                                class="btn btn-warning btn-sm btn-edit"
-                                data-id="${user.id}"
-                                title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button 
-                                type="button"
-                                class="btn btn-danger btn-sm btn-delete"
-                                data-id="${user.id}"
-                                title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        });
-}
-
-</script>
-
-<!-- FETCH CRUD USER -->
-<!-- UPDATE -->
-<script>
-    document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.btn-edit');
-    if (!btn) return;
-
-    const id = btn.dataset.id;
-    const token = localStorage.getItem('token');
-
-    fetch(`http://127.0.0.1:8000/api/users/${id}`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(res => res.json())
-    .then(res => {
-        const user = res.data;
-
-        document.getElementById('user_id').value = user.id;
-        document.getElementById('name').value = user.name;
-        document.getElementById('email').value = user.email;
-        document.getElementById('role').value = user.role;
-        document.getElementById('class').value = user.class ?? '';
-        document.getElementById('nisn').value = user.nisn;
-        document.getElementById('roll_number').value = user.roll_number ?? '';
-        document.getElementById('phone').value = user.phone ?? '';
-
-        $('#modalTambahAnggota').modal('show');
-    });
-});
-
-</script>
-
-<!-- DELETE -->
-<script>
-document.getElementById('btnTambahAnggota').addEventListener('click', () => {
-    document.getElementById('user_id').value = '';
-    document.querySelector('#modalTambahAnggota form').reset();
-    $('#modalTambahAnggota').modal('show');
-});
-document.addEventListener('DOMContentLoaded', function () {
-
-    document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.btn-delete');
-        if (!btn) return;
-
-        console.log('DELETE CLICKED');
-
-        const id = btn.dataset.id;
+// --- 1. AMBIL DATA (FETCH) ---
+async function fetchUsers() {
+    const tbody = document.getElementById('user-table-body');
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2 text-gray">Sinkronisasi data...</p></td></tr>`;
+    
+    try {
         const token = localStorage.getItem('token');
-
-        if (!confirm('Yakin ingin menghapus user ini?')) return;
-
-        fetch(`http://127.0.0.1:8000/api/users/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then(res => {
-            console.log('STATUS:', res.status);
-            if (!res.ok) throw new Error('Gagal hapus');
-            fetchUsers();
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Gagal menghapus user');
+        const res = await fetch(API_URL, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
         });
+        const result = await res.json();
+        semuaUsers = (result.data || []).filter(u => u.role === 'user');
+        renderTable(semuaUsers);
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">Gagal memuat data anggota.</td></tr>`;
+    }
+}
+
+// --- 2. RENDER TABEL ---
+function renderTable(users) {
+    const tbody = document.getElementById('user-table-body');
+    tbody.innerHTML = '';
+    document.getElementById('userCount').innerText = users.length;
+
+    if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-gray">Tidak ada data anggota.</td></tr>`;
+        return;
+    }
+
+    // Tambahkan parameter index di sini
+    users.forEach((user, index) => {
+        tbody.innerHTML += `
+            <tr>
+                <td class="text-center align-middle text-muted" style="font-size: 0.9rem;">${index + 1}</td>
+                <td class="align-middle">
+                    <span class="badge badge-light text-primary p-2" style="font-weight: 700;">${user.kode_user}</span>
+                </td>
+                <td class="align-middle text-dark font-weight-bold">${user.name}</td>
+                <td class="text-center align-middle">
+                    <span class="text-muted" style="font-size: 0.9rem; font-family: monospace;" >${user.nisn ?? '-'}</span>
+                </td>
+                <td class="text-center align-middle">
+                    <span class="badge badge-pill border px-3" style="color: var(--gray);">${user.class ?? '-'}</span>
+                </td>
+                <td class="align-middle">
+                    <small>
+                        <i class="fas fa-envelope mr-1 text-gray"></i>${user.email}<br>
+                        <i class="fas fa-phone mr-1 text-gray"></i>${user.phone ?? '-'}
+                    </small>
+                </td>
+                <td class="text-center align-middle">
+                    <button class="btn btn-sm btn-light mr-1 btn-edit" data-id="${user.id}" style="border-radius: 8px; border: 1px solid var(--border);"><i class="fas fa-edit text-warning"></i></button>
+                    <button class="btn btn-sm btn-delete" data-id="${user.id}" style="background:#fee2e2;color:#ef4444;border-radius:10px;"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
     });
+}
 
-});
-</script>
-
-<!-- CREATE AND SAVE -->
-<script>
-    document.getElementById('btnSimpanUser').addEventListener('click', () => {
+// --- 3. SIMPAN & UPDATE ---
+document.getElementById('btnSimpanUser').addEventListener('click', async () => {
     const id = document.getElementById('user_id').value;
     const token = localStorage.getItem('token');
-
+    
     const data = {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
@@ -537,105 +297,158 @@ document.addEventListener('DOMContentLoaded', function () {
         nisn: document.getElementById('nisn').value,
         roll_number: document.getElementById('roll_number').value,
         phone: document.getElementById('phone').value,
-        password: document.getElementById('passwordInput').value
     };
 
-    const url = id
-        ? `http://127.0.0.1:8000/api/users/${id}`
-        : `http://127.0.0.1:8000/api/users`;
+    const pwd = document.getElementById('passwordInput').value;
+    if (pwd) data.password = pwd;
 
-    const method = id ? 'PUT' : 'POST';
+    if (!data.name || !data.email) {
+        return Swal.fire('Oops!', 'Nama dan Email wajib diisi.', 'warning');
+    }
 
-    fetch(url, {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(data)
-    })
-    .then(() => {
+    Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    try {
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/${id}` : API_URL;
+
+        const res = await fetch(url, {
+            method: method,
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const resData = await res.json();
+        if (!res.ok) throw new Error(resData.message || 'Gagal menyimpan data');
+
+        Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Data telah disimpan.', timer: 1500, showConfirmButton: false });
         $('#modalTambahAnggota').modal('hide');
         fetchUsers();
-    });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Inisialisasi toggle password untuk modal
-    initPasswordToggle();
-    
-    // Re-inisialisasi ketika modal dibuka (untuk mengatasi jika DOM berubah)
-    $('#modalTambahAnggota').on('shown.bs.modal', function() {
-        initPasswordToggle();
-    });
-});
-
-function initPasswordToggle() {
-    const togglePassword = document.querySelector('#togglePassword');
-    const passwordInput = document.querySelector('#passwordInput');
-    const iconPassword = document.querySelector('#iconPassword');
-    
-    if (togglePassword && passwordInput && iconPassword) {
-        // Hapus event listener lama dengan mengganti elemen baru
-        const newTogglePassword = togglePassword.cloneNode(true);
-        togglePassword.parentNode.replaceChild(newTogglePassword, togglePassword);
-        
-        // Dapatkan referensi baru
-        const newToggle = document.querySelector('#togglePassword');
-        const newIcon = document.querySelector('#iconPassword');
-        const newInput = document.querySelector('#passwordInput');
-        
-        // Tambah event listener baru
-        newToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            if (newInput.type === 'password') {
-                newInput.type = 'text';
-                newIcon.classList.remove('fa-eye-slash');
-                newIcon.classList.add('fa-eye');
-            } else {
-                newInput.type = 'password';
-                newIcon.classList.remove('fa-eye');
-                newIcon.classList.add('fa-eye-slash');
-            }
-        });
+    } catch (err) {
+        Swal.fire('Gagal', err.message, 'error');
     }
-}
-</script>
+});
 
-<!-- CETAK -->
-<script>
-// hanya cetak anggota dengan role "user"
-document.getElementById('btnCetakAnggota').addEventListener('click', () => {
+// --- 4. AMBIL DATA UNTUK EDIT ---
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.btn-edit');
+    if (!btn) return;
+
+    const id = btn.dataset.id;
     const token = localStorage.getItem('token');
-    // tambahkan query param role=user supaya backend hanya mengeluarkan data role user
-    const url = 'http://127.0.0.1:8000/api/users/export/excel?role=user';
+    
+    Swal.fire({ title: 'Memuat data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`
+    try {
+        const res = await fetch(`${API_URL}/${id}`, { 
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } 
+        });
+        const result = await res.json();
+        const user = result.data;
+
+        document.getElementById('user_id').value = user.id;
+        document.getElementById('name').value = user.name;
+        document.getElementById('email').value = user.email;
+        document.getElementById('class').value = user.class ?? '';
+        document.getElementById('nisn').value = user.nisn ?? '';
+        document.getElementById('roll_number').value = user.roll_number ?? '';
+        document.getElementById('phone').value = user.phone ?? '';
+        document.getElementById('passwordInput').value = ''; 
+        
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit mr-2"></i>Edit Data Anggota';
+        Swal.close();
+        $('#modalTambahAnggota').modal('show');
+    } catch (err) {
+        Swal.fire('Error', 'Gagal mengambil data anggota', 'error');
+    }
+});
+
+// --- 5. HAPUS DATA ---
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.btn-delete');
+    if (!btn) return;
+
+    const id = btn.dataset.id;
+    const token = localStorage.getItem('token');
+
+    const result = await Swal.fire({
+        title: 'Hapus Anggota?',
+        text: "Data yang dihapus tidak dapat dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+    });
+
+    if (result.isConfirmed) {
+        Swal.fire({ title: 'Menghapus...', didOpen: () => Swal.showLoading() });
+        try {
+            const res = await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error();
+            Swal.fire('Terhapus!', 'Data anggota berhasil dihapus.', 'success');
+            fetchUsers();
+        } catch (err) { 
+            Swal.fire('Gagal', 'Gagal menghapus data.', 'error'); 
         }
-    })
-    .then(res => {
+    }
+});
+
+// --- 7. FUNGSI CETAK EXCEL ---
+document.getElementById('btnCetakAnggota').addEventListener('click', async () => {
+    const token = localStorage.getItem('token');
+    
+    Swal.fire({ title: 'Menyiapkan file...', text: 'Mohon tunggu sebentar', didOpen: () => Swal.showLoading() });
+
+    try {
+        const res = await fetch('http://127.0.0.1:8000/api/users/export/excel?role=user', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
         if (!res.ok) throw new Error('Gagal export');
-        return res.blob();
-    })
-    .then(blob => {
+
+        const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'data-anggota.xlsx';
+        a.download = `data-anggota-${new Date().getTime()}.xlsx`;
         document.body.appendChild(a);
         a.click();
         a.remove();
         window.URL.revokeObjectURL(url);
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Gagal mencetak data anggota');
-    });
+        Swal.close();
+    } catch (err) {
+        Swal.fire('Gagal Cetak', 'Terjadi kesalahan saat mengekspor data.', 'error');
+    }
 });
+
+// --- 8. UI EVENT LAINNYA ---
+document.getElementById('btnTambahAnggota').addEventListener('click', () => {
+    document.getElementById('user_id').value = '';
+    document.getElementById('formAnggota').reset();
+    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus mr-2"></i>Tambah Anggota Baru';
+    $('#modalTambahAnggota').modal('show');
+});
+
+document.getElementById('searchInput').addEventListener('input', function() {
+    const kw = this.value.toLowerCase();
+    const filtered = semuaUsers.filter(u => 
+        u.name.toLowerCase().includes(kw) || 
+        (u.nisn ?? '').toString().includes(kw) ||
+        (u.class ?? '').toLowerCase().includes(kw)
+    );
+    renderTable(filtered);
+});
+
+// Jalankan Fetch saat halaman siap
+document.addEventListener('DOMContentLoaded', fetchUsers);
 </script>
 @endsection

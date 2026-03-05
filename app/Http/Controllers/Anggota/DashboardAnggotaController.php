@@ -30,9 +30,11 @@ class DashboardAnggotaController extends Controller
             $q->where('user_id', $userId);
         })->where('status', 'dipinjam')->count();
 
-        $sudahKembali = TransactionDetail::whereHas('transaction', function($q) use ($userId) {
+       $sudahKembali = TransactionDetail::whereHas('transaction', function($q) use ($userId) {
             $q->where('user_id', $userId);
-        })->where('status', 'dikembalikan')->count();
+        })
+        ->whereIn('status', ['dikembalikan', 'terlambat'])
+        ->count();
 
         $terlambat = TransactionDetail::whereHas('transaction', function($q) use ($userId) {
             $q->where('user_id', $userId);

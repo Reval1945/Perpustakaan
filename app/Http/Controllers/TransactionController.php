@@ -193,11 +193,11 @@ class TransactionController extends Controller
 
         return Excel::download(
             new MyTransactionsExport($userId),
-            'daftar_peminjaman.xlsx'
+            'riwayat_peminjaman.xlsx'
         );
     }
 
-    public function exportExcel()
+    public function exportLaporanPeminjaman()
     {
         return Excel::download(
             new LaporanpeminjamanExport(),

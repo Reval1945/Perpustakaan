@@ -148,8 +148,6 @@ class AdminTransactionService
         }
 
         // 2. Hitung jumlah hari telat (untuk record DB) - pastikan non-negative.
-        // API boleh mengirimkan nilai ini (dihitung klien), namun untuk keamanan
-        // kita tetap pastikan non-negative dan minimal 0.
         if (isset($data['jumlah_hari_telat'])) {
             $jumlahHariTelat = max(0, (int) $data['jumlah_hari_telat']);
         } else {

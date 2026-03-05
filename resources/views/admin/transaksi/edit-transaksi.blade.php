@@ -6,11 +6,9 @@
 <div class="container-fluid">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="text-gray-800">Edit Pengembalian Buku</h4>
-
-        <a href="{{ url()->previous() }}" class="btn btn-secondary btn-sm">
-            ← Kembali
-        </a>
+        <h1 class="h3 mb-0" style="color: var(--dark); font-weight: 700;">
+            Edit Jatuh Tempo
+        </h1>
     </div>
 
     <div class="card shadow-sm">
@@ -20,14 +18,14 @@
             <div class="mb-3">
                 <strong>Tanggal Pinjam :</strong>
                 <div class="text-primary font-weight-bold">
-                    {{ \Carbon\Carbon::parse($trx->tanggal_pinjam)->translatedFormat('d F Y') }}
+                    {{ \Carbon\Carbon::parse($trx->tanggal_pinjam)->locale('id')->translatedFormat('d F Y') }}
                 </div>
             </div>
 
             <hr>
 
             <h6 class="font-weight-bold mb-3">
-                Perpanjangan / Verifikasi Pengembalian
+                Perpanjangan
             </h6>
 
             <!-- INPUT JATUH TEMPO -->
@@ -39,17 +37,13 @@
                        value="{{ \Carbon\Carbon::parse($trx->tanggal_jatuh_tempo)->format('Y-m-d') }}">
             </div>
 
-            <div class="alert alert-info small">
-                Kosongkan tanggal jika hanya ingin verifikasi tanpa perpanjangan.
-            </div>
-
             <div class="text-right">
                 <a href="{{ url()->previous() }}" class="btn btn-secondary">
                     Batal
                 </a>
 
                 <button id="btnSave" class="btn btn-primary">
-                    Simpan / Verifikasi
+                    Simpan
                 </button>
             </div>
 
@@ -116,7 +110,7 @@ document.getElementById("btnSave").addEventListener("click", async ()=>{
     }
 
     btn.disabled=false;
-    btn.innerText="Simpan / Verifikasi";
+    btn.innerText="Simpan";
 });
 </script>
 @endsection

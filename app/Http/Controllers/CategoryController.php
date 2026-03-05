@@ -19,6 +19,11 @@ class CategoryController extends Controller
         $this->repository = $repository;
     }
 
+    public function showKategori()
+    {
+        return view('admin.kategori');
+    }
+
     public function index()
     {
         try {

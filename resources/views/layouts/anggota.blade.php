@@ -342,50 +342,6 @@
                     <i class="fa fa-bars"></i>
                 </button>
 
-                @php
-                    use App\Models\Category;
-                    $categoryId = request('category');
-                    $search = request('search');
-                    $allCategories = Category::all();
-                @endphp
-
-                @if (!Request::routeIs('anggota.dashboard'))
-
-                    @if (Request::routeIs('anggota.buku') || Request::routeIs('anggota.daftarpinjam') || Request::routeIs('anggota.riwayatpinjam'))
-                        <form class="d-none d-sm-inline-block form-inline mr-2 my-2 my-md-0 mw-100 navbar-search" id="searchForm">
-                            <div class="input-group">
-                                <input type="text" name="search" id="searchInput"
-                                    class="form-control bg-light border-0 small"
-                                    placeholder="Cari...">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="submit">Cari</button>
-                                </div>
-                            </div>
-                        </form>
-                    @endif
-
-                    @if (Request::routeIs('anggota.buku'))
-                        <div class="dropdown ml-2" id="category-filter">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button"
-                                id="categoryDropdown" data-toggle="dropdown">
-                                Semua Kategori
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#" data-category="">Semua</a>
-                                @foreach($allCategories as $cat)
-                                    <a class="dropdown-item" href="#" data-category="{{ $cat->name }}">
-                                        {{ $cat->name }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
-                    @if (Request::routeIs('anggota.daftarpinjam') || Request::routeIs('anggota.riwayatpinjam'))
-                        <input type="date" id="filterTanggal" class="form-control" style="width:170px;">
-                    @endif
-                @endif
-
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
@@ -487,6 +443,7 @@
 <script src="{{ asset('template/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 <script src="{{ asset('template/js/sb-admin-2.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Logout Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1">
@@ -509,7 +466,7 @@
 
 <script>
 if (!localStorage.getItem('token')) {
-    window.location.href = '/login';
+    window.location.href = '/';
 }
 
 document.getElementById('btnLogout').addEventListener('click', function () {
@@ -521,7 +478,7 @@ document.getElementById('btnLogout').addEventListener('click', function () {
         }
     }).finally(() => {
         localStorage.removeItem('token');
-        window.location.href = '/login';
+        window.location.href = '/';
     });
 });
 
@@ -588,6 +545,7 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     }
 
+     loadUser();
 
     // =====================
     // SUBMIT PROFILE
@@ -620,25 +578,60 @@ document.addEventListener("DOMContentLoaded", function(){
 });
 
 async function cetakKartu() {
-
     const token = localStorage.getItem("token");
 
-    try{
-        const res = await fetch("http://127.0.0.1:8000/api/user/print-my-card",{
-            headers:{
-                "Authorization":`Bearer ${token}`,
-                "Accept":"application/pdf"
+    // Tampilkan loading state
+    Swal.fire({
+        title: 'Memproses Kartu...',
+        text: 'Mohon tunggu sebentar sementara kami menyiapkan Kartu Anda.',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        const res = await fetch("http://127.0.0.1:8000/api/user/print-my-card", {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "application/pdf"
             }
         });
 
-        if(!res.ok) throw new Error("Gagal generate kartu");
+        if (!res.ok) throw new Error("Gagal generate kartu. Silakan coba lagi nanti.");
 
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
-        window.open(url,"_blank");
+        
+        // Tutup loading
+        Swal.close();
 
-    }catch(err){
-        alert(err.message);
+        // Buka PDF di tab baru
+        window.open(url, "_blank");
+
+        // Opsional: Berikan notifikasi sukses kecil (toast)
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+        
+        Toast.fire({
+            icon: 'success',
+            title: 'Kartu berhasil dibuat'
+        });
+
+    } catch (err) {
+        // Tampilkan pesan error jika gagal
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err.message,
+            confirmButtonColor: '#3085d6'
+        });
     }
 }
 </script>

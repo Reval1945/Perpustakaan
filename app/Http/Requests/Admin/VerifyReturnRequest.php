@@ -27,7 +27,6 @@ class VerifyReturnRequest extends FormRequest
 
             'denda' => 'nullable|numeric|min:0',
 
-            // jumlah hari telat dihitung di frontend (opsional) atau di service
             'jumlah_hari_telat' => 'nullable|integer|min:0',
 
             'catatan' => 'nullable|string|max:255',

@@ -490,7 +490,7 @@
 
                     <!-- Password -->
                     <div class="form-group">
-                        <label><i class="fas fa-lock" style="margin-right: 6px; color: var(--primary);"></i>Kata Sandi</label>
+                        <label><i class="fas fa-lock" style="margin-right: 6px; color: var(--primary);"></i>Password</label>
                         <div class="input-wrapper">
                             <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Kata sandi" required>
                             <span class="password-toggle" id="togglePassword"><i class="fas fa-eye" id="eyeIcon"></i></span>

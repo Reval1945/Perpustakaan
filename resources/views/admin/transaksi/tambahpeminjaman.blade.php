@@ -3,262 +3,266 @@
 @section('title', 'Tambah Peminjaman')
 
 @section('content')
-
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0" style="color: var(--dark); font-weight: 700;">Tambah Peminjaman</h1>
     <div>
-        <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#modalBuku">
-            <i class="fas fa-plus"></i> Tambah Peminjaman
-        </button>
-
-        <button class="btn btn-success mr-2" id="btnReset">
-            <i class="fas fa-undo"></i> Reset
-        </button>
-
-        <button class="btn btn-warning" id="btnAjukan">
-            <i class="fas fa-paper-plane"></i> Ajukan Peminjaman
-        </button>
+        <div class="button-group-wrapper d-flex align-items-center">
+            <button class="btn-main btn-white text-primary" data-toggle="modal" data-target="#modalBuku">
+                <i class="fas fa-plus"></i> <span>Tambah Buku</span>
+            </button>
+            <button class="btn-main btn-white text-danger shadow-none border" id="btnReset">
+                <i class="fas fa-undo"></i> <span>Reset</span>
+            </button>
+            <button class="btn-main btn-primary shadow-sm" id="btnAjukan">
+                <i class="fas fa-paper-plane"></i> <span>Ajukan Pinjaman</span>
+            </button>
+        </div>
     </div>
-
-    <button class="btn btn-info" data-toggle="modal" data-target="#modalAnggota">
-        <i class="fas fa-user-plus"></i> Tambah Anggota
-    </button>
 </div>
 
 <div class="row">
-
-    <!-- ================= CARD BUKU CONTAINER ================= -->
-    <div id="bookContainer" class="col-lg-8"></div>
-
-    <!-- ================= TEMPLATE CARD BUKU (HIDDEN) ================= -->
-    <div class="card shadow-sm mb-4 book-card d-none" id="bookTemplate">
-
-        <div class="d-flex align-items-center p-3">
-            <img id="modalCover"
-                width="80" class="rounded mr-3">
-
-            <div>
-                <h5 class="judulText">Judul Buku</h5>
-                <small class="text-muted penerbitText">Penerbit</small>
-            </div>
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="mb-0 font-weight-bold" style="color: var(--dark);">Daftar Buku yang Dipilih</h5>
         </div>
 
-        <div class="p-3 bg-light border-top">
-            <div class="row text-sm">
-
-                <div class="col-md-6">
-                    <label>Rak</label>
-                    <input type="text" class="form-control rak" readonly>
+        <div id="bookContainer">
+            <div id="emptyState" class="card shadow-sm border-0 text-center py-5" style="border-radius: 16px;">
+                <div class="card-body">
+                    <i class="fas fa-book fa-3x mb-3 text-light"></i>
+                    <p class="text-muted">Belum ada buku yang dipilih.<br>Silahkan cari dan pilih buku dari katalog.</p>
                 </div>
-
-                <div class="col-md-6">
-                    <label>Stok</label>
-                    <input type="text" class="form-control stok" readonly>
-                </div>
-
-                <div class="col-md-6 mt-2">
-                    <label>Tanggal Pinjam</label>
-                    <input type="date" class="form-control tgl_pinjam" readonly>
-                </div>
-
-                <div class="col-md-6 mt-2">
-                    <label>Tanggal Jatuh Tempo</label>
-                    <div class="d-flex align-items-center">
-                        <input type="date" class="form-control mr-2 tgl_kembali" readonly>
-                        <button type="button" class="btn btn-danger btn-hapus-buku">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 
-
-    <!-- ================= CARD ANGGOTA ================= -->
     <div class="col-lg-4">
-        <div class="card shadow-sm mb-4">
-
-            <div class="p-3 bg-primary text-white rounded-top">
-                <h5 class="mb-0"><i class="fas fa-user mr-1"></i> Form Peminjam</h5>
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: 16px;">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="mb-0 font-weight-bold" style="color: var(--dark);">Informasi Peminjam</h5>
             </div>
-
-            <div class="p-3">
-                <div class="form-group">
-                    <label>Nama Anggota</label>
-                    <input type="text" id="namaAnggota" class="form-control" placeholder="Nama anggota">
+            <div class="card-body px-4 pb-4">
+                <div class="text-center mb-4">
+                    <div class="avatar-placeholder mx-auto mb-3 bg-light d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; border-radius: 50%;">
+                        <i class="fas fa-user text-muted fa-2x"></i>
+                    </div>
+                    <button class="btn btn-sm btn-light border px-3 shadow-sm" data-toggle="modal" data-target="#modalAnggota" style="border-radius: 20px;">
+                        <i class="fas fa-search mr-1"></i> Cari Anggota
+                    </button>
                 </div>
 
-                <div class="form-group">
-                    <label>Kelas</label>
-                    <input type="text" id="kelasAnggota" class="form-control" placeholder="Kelas">
+                <div class="form-group mb-3">
+                    <label class="small font-weight-bold text-muted text-uppercase">Nama Anggota</label>
+                    <input type="text" id="namaAnggota" class="form-control bg-light border-0" placeholder="Pilih anggota..." readonly style="border-radius: 10px;">
                 </div>
 
-                <div class="form-group">
-                    <label>NISN</label>
-                    <input type="text" id="nisnAnggota" class="form-control" placeholder="NISN">
+                <div class="form-group mb-3">
+                    <label class="small font-weight-bold text-muted text-uppercase">Kelas</label>
+                    <input type="text" id="kelasAnggota" class="form-control bg-light border-0" placeholder="-" readonly style="border-radius: 10px;">
                 </div>
+
+                <div class="form-group mb-0">
+                    <label class="small font-weight-bold text-muted text-uppercase">NISN</label>
+                    <input type="text" id="nisnAnggota" class="form-control bg-light border-0" placeholder="-" readonly style="border-radius: 10px;">
+                </div>
+                
+                <input type="hidden" id="user_id">
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- INPUT AJUKAN PEMINJAMAN -->
-<input type="hidden" id="user_id">
-<input type="hidden" id="book_ids">
+<div class="card shadow-sm border-0 mb-3 book-card d-none" id="bookTemplate" style="border-radius: 16px;">
+    <div class="card-body p-3">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <img id="modalCover" width="70" height="100" class="rounded shadow-sm" style="object-fit: cover;">
+            </div>
+            <div class="col">
+                <h6 class="judulText mb-1 font-weight-bold text-dark">Judul Buku</h6>
+                <small class="text-muted d-block mb-2 penerbitText">Penerbit</small>
+                <div class="row no-gutters">
+                    <div class="col-md-5 mr-2">
+                        <label class="small font-weight-bold text-muted mb-0">Rak</label>
+                        <input type="text" class="form-control form-control-sm bg-light border-0 rak" readonly>
+                    </div>
+                    <div class="col-md-3 mr-2">
+                        <label class="small font-weight-bold text-muted mb-0">Stok</label>
+                        <input type="text" class="form-control form-control-sm bg-light border-0 stok" readonly>
+                    </div>
+                </div>
+                <div class="row no-gutters mt-2">
+                    <div class="col-md-5 mr-2">
+                        <label class="small font-weight-bold text-muted mb-0">Tgl Pinjam</label>
+                        <input type="date" class="form-control form-control-sm tgl_pinjam" readonly>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="small font-weight-bold text-muted mb-0">Jatuh Tempo</label>
+                        <input type="date" class="form-control form-control-sm tgl_kembali" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-danger btn-sm border-0 btn-hapus-buku" style="border-radius: 10px; padding: 10px;">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- ================= MODAL PILIH BUKU ================= -->
 <div class="modal fade" id="modalBuku" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Tambah Buku Peminjaman</h5>
+        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+            <div class="modal-header border-0 px-4 pt-4">
+                <h5 class="modal-title font-weight-bold">Katalog Buku</h5>
                 <button class="close" data-dismiss="modal">&times;</button>
             </div>
-
-            <div class="modal-body">
-
-                <input type="text" id="searchBuku" class="form-control mb-4" placeholder="Cari Judul Buku...">
-
-                <div class="row" id="listBuku">
-                    <div class="col-12 text-center text-muted">Loading buku...</div>
+            <div class="modal-body px-4">
+                <div class="input-group mb-4 shadow-sm" style="border-radius: 30px; overflow: hidden;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-white border-0 pl-4"><i class="fas fa-search text-muted"></i></span>
+                    </div>
+                    <input type="text" id="searchBuku" class="form-control border-0 py-4" placeholder="Cari judul buku, penerbit atau kategori...">
                 </div>
-
-                <!-- INFO & PAGINATION -->
-                <div class="d-flex justify-content-between align-items-center mt-3 px-2">
-                    <small class="text-muted">Menampilkan 1 sampai 4 dari 4 buku</small>
-                    <div>
-                        <button class="btn btn-light btn-sm"><i class="fas fa-chevron-left"></i></button>
-                        <span class="mx-2">Halaman 1 dari 1</span>
-                        <button class="btn btn-light btn-sm"><i class="fas fa-chevron-right"></i></button>
+                
+                <div class="row" id="listBuku" style="max-height: 500px; overflow-y: auto;">
+                    <div class="col-12 text-center text-muted py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2">Memuat buku...</p>
                     </div>
                 </div>
-
             </div>
-
-            <div class="modal-footer d-flex justify-content-end">
-                <div>
-                    <button class="btn btn-secondary mr-1" data-dismiss="modal">Batal</button>\
-                </div>
-
+            <div class="modal-footer border-0 pb-4 pr-4">
+                <button class="btn btn-light px-4" data-dismiss="modal" style="border-radius: 10px;">Tutup</button>
             </div>
-
         </div>
     </div>
 </div>
 
-<!-- ================= MODAL PILIH ANGGOTA ================= -->
-<div class="modal fade" id="modalAnggota">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content shadow">
-
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Pilih Anggota</h5>
+<div class="modal fade" id="modalAnggota" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+            <div class="modal-header border-0 px-4 pt-4 bg-primary text-white" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title font-weight-bold">Daftar Anggota</h5>
                 <button class="close text-white" data-dismiss="modal">&times;</button>
             </div>
-
-            <div class="modal-body">
-                <input type="text" class="form-control mb-3" placeholder="Cari Nama / NISN...">
-
+            <div class="modal-body px-4 pb-4">
+                <div class="input-group mb-3 mt-2 shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-white border-0"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" id="searchUser" class="form-control border-0" placeholder="Cari Nama atau NISN...">
+                </div>
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover text-center">
-                        <thead class="bg-primary text-white">
-                            <tr>
-                                <th>No</th>
-                                <th>NISN</th>
-                                <th>Nama</th>
-                                <th>Kelas</th>
-                                <th>Status</th>
-                                <th>Pilih</th>
+                    <table class="table table-hover">
+                        <thead class="bg-light">
+                            <tr class="small text-muted text-uppercase">
+                                <th class="border-0">Anggota</th>
+                                <th class="border-0">NISN</th>
+                                <th class="border-0">Kelas</th>
+                                <th class="border-0 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="listAnggota">
-                            <tr>
-                                <td colspan="6">Loading anggota...</td>
-                            </tr>
-                        </tbody>
+                        <tbody id="listAnggota"></tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
+<style>
+:root {
+    --primary: #2C5AA0;
+    --dark: #1e293b;
+    --gray: #64748b;
+    --gray-light: #f8fafc;
+    --border: #e2e8f0;
+}
+
+ .button-group-wrapper {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn-white { background: white; border: 1px solid #e3e6f0; }
+.btn-main {
+        height: 45px; padding: 0 20px; border-radius: 12px; border: none;
+        display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.85rem;
+        transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+.form-control:focus { border-color: var(--primary); box-shadow: none; }
+.book-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important; }
+
+/* Scrollbar Style */
+#listBuku::-webkit-scrollbar { width: 6px; }
+#listBuku::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+</style>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-
     const API_BASE = "http://127.0.0.1:8000/api";
     const token = localStorage.getItem("token");
     let selectedBooks = [];
-    let allBooks = []; // Menampung data buku global untuk filter
+    let allBooks = [];
+    let allUsers = [];
 
     /* ================= FETCH HELPER ================= */
     async function getJSON(url){
-        const res = await fetch(API_BASE + url,{
-            headers:{
-                "Accept":"application/json",
-                "Authorization":"Bearer "+token
+        const res = await fetch(API_BASE + url, {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer " + token
             }
         });
-
         if(!res.ok) throw new Error(res.status);
         return await res.json();
     }
 
     /* ================= ATURAN PINJAM ================= */
     async function getMaxHari(){
-        try{
-            let json = await getJSON("/aturan-peminjaman");
-            let aktif = json.data.find(a=>a.aktif === true);
-            return aktif ? aktif.maks_hari_pinjam : 3;
-        }catch{
+        try {
+            let json = await getJSON("/aturan-peminjaman/aktif");
+            return json.data ? json.data.maks_hari_pinjam : 3;
+        } catch {
             return 3;
         }
     }
 
     /* ================= LOAD & RENDER BUKU ================= */
     async function loadBooks(){
-        try{
+        try {
             let json = await getJSON("/books");
             allBooks = json.data;
             renderBooks(allBooks);
-        }catch(err){
-            console.error(err);
-            document.getElementById("listBuku").innerHTML =
-                `<div class="col-12 text-danger text-center">Gagal load buku</div>`;
+        } catch(err) {
+            document.getElementById("listBuku").innerHTML = `<div class="col-12 text-danger text-center py-5">Gagal memuat katalog buku</div>`;
         }
     }
 
     function renderBooks(data){
         const container = document.getElementById("listBuku");
-        
         if(data.length === 0){
-            container.innerHTML = `<div class="col-12 text-center text-muted">Buku tidak ditemukan</div>`;
+            container.innerHTML = `<div class="col-12 text-center text-muted py-5">Buku tidak ditemukan</div>`;
             return;
         }
 
-        let html = data.map(book => {
+        container.innerHTML = data.map(book => {
             const stok = book.available_stock ?? 0;
-            const image = book.image 
-                ? book.image 
-                : 'https://via.placeholder.com/300x400?text=No+Image';
+            const image = book.image || 'https://via.placeholder.com/300x400?text=No+Image';
 
             return `
                 <div class="col-md-3 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <img src="${image}" class="card-img-top" style="height:200px; object-fit:cover">
-                        <div class="card-body d-flex flex-column p-2">
-                            <h6 class="font-weight-bold mb-1" style="font-size: 0.9rem;">${book.judul}</h6>
-                            <p class="small mb-1 text-muted">Penerbit: ${book.penerbit}</p>
-                            <div class="mb-2">
-                                <span class="badge badge-info">${book.kategori || 'Umum'}</span>
-                                <span class="badge ${stok > 0 ? 'badge-light' : 'badge-danger'}">Stok: ${stok}</span>
-                            </div>
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                        <img src="${image}" class="card-img-top" style="height:300px; object-fit:cover">
+                        <div class="card-body p-3 d-flex flex-column">
+                            <h6 class="font-weight-bold mb-1 text-truncate" title="${book.judul}">${book.judul}</h6>
+                            <p class="small text-muted mb-2">${book.penerbit}</p>
                             <div class="mt-auto">
-                                <button class="btn btn-success btn-sm btn-block" 
+                                <span class="badge ${stok > 0 ? 'badge-success' : 'badge-danger'} mb-2">Stok: ${stok}</span>
+                                <button class="btn btn-primary btn-sm btn-block" style="border-radius: 8px;"
                                     onclick="addSelectedBook({
                                         id: '${book.id}',
                                         judul: '${book.judul.replace(/'/g, "\\'")}',
@@ -266,8 +270,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                         rak: '${book.rak}-${book.nomor_rak}',
                                         stok: ${stok},
                                         image: '${image}'
-                                    })">
-                                    Pilih
+                                    })" ${stok <= 0 ? 'disabled' : ''}>
+                                    ${stok > 0 ? 'Pilih Buku' : 'Stok Habis'}
                                 </button>
                             </div>
                         </div>
@@ -275,28 +279,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
         }).join("");
-
-        container.innerHTML = html;
     }
 
-    /* ================= LOGIKA PILIH BUKU (PINDAH KE FORM) ================= */
-    // Fungsi ini dipanggil dari atribut onclick di renderBooks
+    /* ================= LOGIKA PILIH BUKU ================= */
     window.addSelectedBook = async function(book) {
-        if(selectedBooks.includes(book.id))
-            return alert("Buku ini sudah masuk dalam daftar pinjam");
+        if(selectedBooks.includes(book.id)) return alert("Buku sudah terpilih!");
 
-        if(book.stok <= 0)
-            return alert("Maaf, stok buku sedang habis");
-
-        let maxHari = await getMaxHari();
-        let today = new Date();
-        let kembali = new Date(today);
+        const maxHari = await getMaxHari();
+        const today = new Date();
+        const kembali = new Date(today);
         kembali.setDate(today.getDate() + maxHari);
 
         selectedBooks.push(book.id);
+        document.getElementById("emptyState").classList.add("d-none");
 
-        let template = document.getElementById("bookTemplate");
-        let clone = template.cloneNode(true);
+        const template = document.getElementById("bookTemplate");
+        const clone = template.cloneNode(true);
 
         clone.classList.remove("d-none");
         clone.removeAttribute("id");
@@ -305,109 +303,125 @@ document.addEventListener("DOMContentLoaded", function () {
         clone.querySelector(".judulText").innerText = book.judul;
         clone.querySelector(".penerbitText").innerText = "Penerbit: " + book.penerbit;
         clone.querySelector(".rak").value = book.rak;
-        clone.querySelector(".stok").value = book.stok + " Buku";
+        clone.querySelector(".stok").value = book.stok;
         clone.querySelector(".tgl_pinjam").value = today.toISOString().split('T')[0];
         clone.querySelector(".tgl_kembali").value = kembali.toISOString().split('T')[0];
 
         clone.querySelector(".btn-hapus-buku").onclick = () => {
             clone.remove();
             selectedBooks = selectedBooks.filter(id => id !== book.id);
+            if(selectedBooks.length === 0) document.getElementById("emptyState").classList.remove("d-none");
         };
 
         document.getElementById("bookContainer").appendChild(clone);
         $('#modalBuku').modal('hide');
     };
 
-    /* ================= SEARCHING ================= */
+    /* ================= SEARCHING BUKU ================= */
     document.getElementById("searchBuku").addEventListener("input", function(){
-        let keyword = this.value.toLowerCase();
-        let filtered = allBooks.filter(book =>
-            book.judul.toLowerCase().includes(keyword) ||
-            book.penerbit.toLowerCase().includes(keyword) ||
-            (book.rak && book.rak.toLowerCase().includes(keyword))
+        const keyword = this.value.toLowerCase();
+        const filtered = allBooks.filter(b => 
+            b.judul.toLowerCase().includes(keyword) || 
+            b.penerbit.toLowerCase().includes(keyword)
         );
         renderBooks(filtered);
     });
 
-    /* ================= LOAD USERS ================= */
+    /* ================= LOAD & SEARCH USER ================= */
     async function loadUsers(){
-        try{
+        try {
             let json = await getJSON("/users");
-
-            let html = json.data
-            .filter(u => u.role === "user")
-            .map((u, i) => `
-                <tr data-id="${u.id}" data-nama="${u.name}" data-kelas="${u.class}" data-nisn="${u.nisn}">
-                    <td>${i+1}</td>
-                    <td>${u.nisn ?? '-'}</td>
-                    <td>${u.name}</td>
-                    <td>${u.class ?? '-'}</td>
-                    <td><span class="badge badge-success">Aktif</span></td>
-                    <td><button class="btn btn-warning btn-sm pilihAnggota">Pilih</button></td>
-                </tr>
-            `).join("");
-
-            document.getElementById("listAnggota").innerHTML = html;
+            allUsers = json.data.filter(u => u.role === "user");
+            renderUsers(allUsers);
         } catch {
-            document.getElementById("listAnggota").innerHTML =
-                `<tr><td colspan="6" class="text-center text-danger">Gagal load anggota</td></tr>`;
+            document.getElementById("listAnggota").innerHTML = `<tr><td colspan="4" class="text-center py-4">Gagal memuat anggota</td></tr>`;
         }
     }
 
-    /* ================= EVENT PILIH ANGGOTA ================= */
-    $(document).on("click", ".pilihAnggota", function(){
-        let row = $(this).closest("tr");
-        $("#namaAnggota").val(row.data("nama"));
-        $("#kelasAnggota").val(row.data("kelas"));
-        $("#nisnAnggota").val(row.data("nisn"));
-        $("#user_id").val(row.data("id"));
+    function renderUsers(data){
+        document.getElementById("listAnggota").innerHTML = data.map((u, i) => `
+            <tr>
+                <td>
+                    <div class="font-weight-bold">${u.name}</div>
+                    <div class="small text-muted">${u.email || ''}</div>
+                </td>
+                <td class="align-middle">${u.nisn ?? '-'}</td>
+                <td class="align-middle">${u.class ?? '-'}</td>
+                <td class="text-center align-middle">
+                    <button class="btn btn-sm btn-primary px-3 btn-pilih-user" 
+                        data-id="${u.id}" data-nama="${u.name}" data-kelas="${u.class}" data-nisn="${u.nisn}"
+                        style="border-radius: 20px;">Pilih</button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    $(document).on("click", ".btn-pilih-user", function(){
+        const d = $(this).data();
+        $("#namaAnggota").val(d.nama);
+        $("#kelasAnggota").val(d.kelas || '-');
+        $("#nisnAnggota").val(d.nisn || '-');
+        $("#user_id").val(d.id);
         $("#modalAnggota").modal("hide");
     });
 
-    /* ================= AJUKAN PINJAM ================= */
-    document.getElementById("btnAjukan").addEventListener("click", async function(){
-        let userId = document.getElementById("user_id").value;
-
-        if(!userId) return alert("Pilih anggota terlebih dahulu");
-        if(selectedBooks.length === 0) return alert("Pilih minimal 1 buku");
-
-        try {
-            let res = await fetch(API_BASE + "/transactions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({
-                    user_id: userId,
-                    book_ids: selectedBooks
-                })
-            });
-
-            let json = await res.json();
-            if(!res.ok) return alert(json.message || "Gagal transaksi");
-
-            alert("Peminjaman berhasil");
-            resetForm();
-        } catch {
-            alert("Terjadi kesalahan server");
-        }
+    document.getElementById("searchUser").addEventListener("input", function(){
+        const key = this.value.toLowerCase();
+        const filtered = allUsers.filter(u => 
+            u.name.toLowerCase().includes(key) || (u.nisn && u.nisn.includes(key))
+        );
+        renderUsers(filtered);
     });
 
-    /* ================= RESET ================= */
-    function resetForm(){
-        selectedBooks = [];
-        document.getElementById("bookContainer").innerHTML = "";
-        $("#namaAnggota, #kelasAnggota, #nisnAnggota, #user_id").val("");
-    }
+    /* ================= AJUKAN & RESET ================= */
+    document.getElementById("btnAjukan").addEventListener("click", async function(){
+        const userId = document.getElementById("user_id").value;
+        if(!userId) return Swal.fire('Gagal', 'Pilih anggota terlebih dahulu!', 'error');
+        if(selectedBooks.length === 0) return Swal.fire('Gagal', 'Pilih minimal satu buku untuk dipinjam!', 'error');
 
-    document.getElementById("btnReset").onclick = resetForm;
+        Swal.fire({
+            title: 'Konfirmasi Peminjaman',
+            text: "Apakah data peminjaman sudah benar?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#2C5AA0',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Ajukan!',
+            cancelButtonText: 'Batal'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+                try {
+                    const res = await fetch(API_BASE + "/transactions", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+                        body: JSON.stringify({ user_id: userId, book_ids: selectedBooks })
+                    });
+                    const json = await res.json();
+                    if(!res.ok) throw new Error(json.message);
+                    
+                    Swal.fire('Berhasil!', 'Peminjaman telah berhasil diajukan.', 'success').then(() => location.reload());
+                } catch(err) {
+                    Swal.fire('Gagal', err.message, 'error');
+                }
+            }
+        });
+    });
 
-    /* ================= MODAL INITIALIZATION ================= */
+    document.getElementById("btnReset").onclick = () => {
+        Swal.fire({
+            title: 'Reset Form?',
+            text: "Semua buku dan anggota yang dipilih akan dihapus.",
+            icon: 'warning',
+            confirmButtonColor: '#ef4444',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Reset',
+            cancelButtonText: 'Batal'
+        }).then((result) => { if(result.isConfirmed) location.reload(); });
+    };
+
     $('#modalBuku').on('show.bs.modal', loadBooks);
     $('#modalAnggota').on('show.bs.modal', loadUsers);
-
 });
 </script>
 @endsection

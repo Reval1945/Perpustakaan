@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Barryvdh\DomPDF\Facade\Pdf;
 
-class ProfileAdminController extends Controller
+class ProfileSAController extends Controller
 {
     public function me(Request $request)
     {
@@ -59,7 +62,7 @@ class ProfileAdminController extends Controller
 
         return response()->json([
             'message' => 'Profil berhasil diupdate',
-            'photo' => asset('storage/profile/'.($data['photo'] ?? $user->photo))
+            'photo' => asset('storage/profile/'.$data['photo'] ?? $user->photo)
         ]);
     }
 }

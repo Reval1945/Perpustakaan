@@ -469,27 +469,12 @@
                     </div>
                 </div>
 
-                <h2>Sistem Digital<br>Perpustakaan</h2>
+                <h2>Perpustakaan<br>SMK 4 BJN</h2>
                 <p>
                     Kelola peminjaman buku, data anggota, dan aktivitas
                     perpustakaan secara modern, cepat, dan aman.
                 </p>
                 
-                <div class="badge-container">
-                    <div class="badge-item">
-                        <i class="far fa-circle"></i>
-                        <span>Akses 24/7</span>
-                    </div>
-                    <div class="badge-item">
-                        <i class="fas fa-circle-check"></i>
-                        <span>Real-time</span>
-                    </div>
-                </div>
-                
-                <div class="secure-badge">
-                    <i class="fas fa-shield-alt" style="margin-right: 5px;"></i>
-                    Aman & Terpercaya
-                </div>
             </div>
         </div>
 

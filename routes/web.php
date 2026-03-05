@@ -20,7 +20,7 @@ use App\Http\Controllers\Anggota\DashboardAnggotaController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\RegisterWargaController;
 use App\Http\Controllers\Admin\PengunjungController;
-
+use App\Http\Controllers\CategoryController;
 
 // Halaman utama
 Route::get('/', fn () => view('welcome'));
@@ -62,17 +62,7 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/aturanpeminjaman', [AturanPeminjamanController::class, 'index']);
 
-    Route::get('kategori', function () {
-        return view('admin.kategori.index');
-    });
-
-    Route::get('kategori/create', function () {
-        return view('admin.kategori.create');
-    });
-
-    Route::get('kategori/{id}/edit', function ($id) {
-        return view('admin.kategori.edit', compact('id'));
-    });
+    Route::get('/kategori', [CategoryController::class, 'showKategori']);
 });
 
 Route::prefix('admin/transaksi')->group(function () {

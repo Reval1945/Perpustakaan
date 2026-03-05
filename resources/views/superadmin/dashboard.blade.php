@@ -3,12 +3,12 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid px-4 py-3">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard Super Admin</h1>
-        <a href="/superadmin/admin" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-users-cog fa-sm text-white-50"></i> Kelola Admin
+        <h1 class="h3 mb-0" style="color: var(--dark); font-weight: 700;">Dashboard Super Admin</h1>
+        <a href="/superadmin/admin" class="btn btn-primary shadow-sm">
+            <i class="fas fa-users-cog fa-sm mr-2"></i> Kelola Admin
         </a>
     </div>
 
@@ -16,98 +16,20 @@
     <div class="row">
         <!-- Admin Count Card -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card h-100 py-3" style="border: none; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); border-left: 4px solid var(--primary);">
                 <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1" style="color: var(--gray); letter-spacing: 0.5px;">
                                 Total Admin
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="adminCount">0</div>
+                            <div class="h2 mb-0 font-weight-bold" style="color: var(--dark);" id="adminCount">0</div>
                         </div>
                         <div class="col-auto">
-                            <i class="fas fa-user-tie fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Content Row -->
-    <div class="row">
-        <!-- Info Perpustakaan -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">
-                        <i class="fas fa-info-circle mr-2"></i>Informasi Perpustakaan
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="small text-gray-600 mb-1">Nama Perpustakaan</label>
-                                <p class="font-weight-bold mb-0">Perpustakaan Digital SMK</p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="small text-gray-600 mb-1">Alamat</label>
-                                <p class="mb-0">Jl. Pendidikan No. 12, Kota Bandung</p>
+                            <div style="width: 48px; height: 48px; background: var(--primary-soft); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user-tie fa-2x" style="color: var(--primary);"></i>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="small text-gray-600 mb-1">Tahun Berdiri</label>
-                                <p class="font-weight-bold mb-0">2022</p>
-                            </div>
-                            <div class="mb-3">
-                                <label class="small text-gray-600 mb-1">Status</label>
-                                <span class="badge badge-success">Aktif</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Jam Operasional -->
-        <div class="col-lg-6 mb-4">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-success">
-                        <i class="fas fa-clock mr-2"></i>Jam Operasional
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm table-borderless">
-                        <tbody>
-                            <tr>
-                                <td class="font-weight-bold">Senin - Jumat</td>
-                                <td>:</td>
-                                <td>08.00 – 15.00 WIB</td>
-                                <td><span class="badge badge-primary">Buka</span></td>
-                            </tr>
-                            <tr>
-                                <td class="font-weight-bold">Sabtu</td>
-                                <td>:</td>
-                                <td>08.00 – 12.00 WIB</td>
-                                <td><span class="badge badge-primary">Buka</span></td>
-                            </tr>
-                            <tr>
-                                <td class="font-weight-bold">Minggu</td>
-                                <td>:</td>
-                                <td>Libur</td>
-                                <td><span class="badge badge-secondary">Tutup</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <hr>
-                    <div class="text-center mt-3">
-                        <p class="small text-gray-600 mb-0">
-                            <i class="fas fa-exclamation-circle mr-2"></i>
-                            Perpustakaan tutup pada hari libur nasional
-                        </p>
                     </div>
                 </div>
             </div>
@@ -115,33 +37,33 @@
     </div>
 
     <!-- Admin Table -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-user-tie mr-2"></i>Daftar Admin Terbaru
+    <div class="card shadow mb-4" style="border: none; border-radius: 16px;">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center px-4" style="background: white; border-bottom: 1px solid var(--border); border-radius: 16px 16px 0 0;">
+            <h6 class="m-0 font-weight-bold" style="color: var(--dark);">
+                <i class="fas fa-user-tie mr-2" style="color: var(--primary);"></i>Daftar Admin Terbaru
             </h6>
-            <a href="/superadmin/admin" class="btn btn-sm btn-primary">
+            <a href="/superadmin/admin" class="btn btn-outline-primary btn-sm">
                 <i class="fas fa-eye mr-2"></i>Lihat Semua
             </a>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="adminTable" width="100%" cellspacing="0">
-                    <thead class="bg-light">
+                <table class="table table-hover mb-0" id="adminTable" width="100%" cellspacing="0">
+                    <thead style="background: var(--gray-light);">
                         <tr>
-                            <th width="50">No</th>
-                            <th>Nama Admin</th>
-                            <th>Email</th>
-                            <th width="120">Role</th>
+                            <th width="50" class="px-4 py-3 text-center" style="color: var(--gray); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-top: none;">No</th>
+                            <th class="px-4 py-3" style="color: var(--gray); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-top: none;">Nama Admin</th>
+                            <th class="px-4 py-3" style="color: var(--gray); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-top: none;">Email</th>
+                            <th width="120" class="px-4 py-3 text-center" style="color: var(--gray); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-top: none;">Role</th>
                         </tr>
                     </thead>
                     <tbody id="adminTableBody">
                         <tr>
-                            <td colspan="5" class="text-center py-4">
+                            <td colspan="4" class="text-center py-5">
                                 <div class="spinner-border text-primary" role="status">
                                     <span class="sr-only">Loading...</span>
                                 </div>
-                                <p class="mt-2 text-muted">Memuat data admin...</p>
+                                <p class="mt-2 mb-0" style="color: var(--gray);">Memuat data admin...</p>
                             </td>
                         </tr>
                     </tbody>
@@ -173,7 +95,7 @@ async function loadAdminDashboard() {
         });
 
         if (!res.ok) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center">Gagal memuat data admin</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4" style="color: var(--gray);">Gagal memuat data admin</td></tr>`;
             return;
         }
 
@@ -185,33 +107,35 @@ async function loadAdminDashboard() {
 
         // Hitung jumlah
         const adminCount = admins.filter(a => a.role.toLowerCase() === 'admin').length;
-    
         adminCountElem.textContent = adminCount;
 
         // Render tabel 5 terbaru
         const latestAdmins = admins.slice(0, 5);
 
         if (latestAdmins.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center">Belum ada data admin</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4" style="color: var(--gray);">Belum ada data admin</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = latestAdmins.map((admin,index) => {
+        let htmlRows = '';
+        latestAdmins.forEach((admin, index) => {
             const roleBadge = admin.role.toLowerCase() === 'superadmin'
-                ? '<span class="badge badge-danger">Super Admin</span>'
-                : '<span class="badge badge-primary">Admin</span>';
+                ? '<span class="badge" style="background: #fee2e2; color: var(--danger); font-weight: 500; padding: 0.35rem 0.8rem; border-radius: 30px;">Super Admin</span>'
+                : '<span class="badge" style="background: var(--primary-soft); color: var(--primary); font-weight: 500; padding: 0.35rem 0.8rem; border-radius: 30px;">Admin</span>';
 
-            return `<tr>
-                <td class="text-center">${index+1}</td>
-                <td class="font-weight-bold">${admin.name}</td>
-                <td class="text-truncate" style="max-width:250px;">${admin.email}</td>
-                <td class="text-center">${roleBadge}</td>
+            htmlRows += `<tr style="border-bottom: 1px solid var(--border);">
+                <td class="px-4 py-3 text-center" style="color: var(--gray);">${index + 1}</td>
+                <td class="px-4 py-3 font-weight-bold" style="color: var(--dark);">${admin.name}</td>
+                <td class="px-4 py-3" style="color: var(--gray);">${admin.email}</td>
+                <td class="px-4 py-3 text-center">${roleBadge}</td>
             </tr>`;
-        }).join('');
+        });
+        
+        tbody.innerHTML = htmlRows;
 
     } catch(err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center">Terjadi kesalahan: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4" style="color: var(--danger);">Terjadi kesalahan: ${err.message}</td></tr>`;
     }
 }
 
@@ -225,17 +149,42 @@ $(document).ready(function() {
 </script>
 
 <style>
+:root {
+    --primary: #2C5AA0;
+    --primary-light: #4A7BC8;
+    --primary-soft: #e8f0fe;
+    --success: #10b981;
+    --danger: #ef4444;
+    --dark: #1e293b;
+    --gray: #64748b;
+    --gray-light: #f1f5f9;
+    --border: #e2e8f0;
+}
+
+/* Container - Full width with less padding */
+.container-fluid {
+    width: 100%;
+    padding-right: 2rem;
+    padding-left: 2rem;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Card Styles */
 .card {
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.2s ease-in-out;
+    width: 100%;
 }
 
 .card:hover {
     transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.03) !important;
 }
 
-.badge {
-    font-size: 0.75em;
-    padding: 0.35em 0.65em;
+/* Table Styles */
+.table {
+    width: 100% !important;
+    margin-bottom: 0;
 }
 
 .table th {
@@ -243,26 +192,153 @@ $(document).ready(function() {
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    border-top: none;
 }
 
 .table td {
     vertical-align: middle;
+    border-color: var(--border);
 }
 
+.table-hover tbody tr:hover {
+    background: var(--gray-light);
+    transition: background 0.2s ease;
+}
+
+/* Border Left Utilities */
 .border-left-primary {
-    border-left: 4px solid #4e73df !important;
+    border-left: 4px solid var(--primary) !important;
 }
-
 .border-left-success {
-    border-left: 4px solid #1cc88a !important;
+    border-left: 4px solid var(--success) !important;
 }
-
 .border-left-info {
     border-left: 4px solid #36b9cc !important;
 }
-
 .border-left-warning {
     border-left: 4px solid #f6c23e !important;
+}
+
+/* Badge Styles */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 30px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.spinner-border {
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    vertical-align: text-bottom;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+}
+.spinner-border.text-primary {
+    color: var(--primary) !important;
+}
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}
+
+/* Button Styles */
+.btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(44,90,160,0.3);
+}
+
+.btn-sm {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+}
+
+/* Shadow */
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58,59,69,0.05) !important;
+}
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem 0 rgba(58,59,69,0.1) !important;
+}
+
+/* Text Utilities */
+.font-weight-bold {
+    font-weight: 700 !important;
+}
+.text-uppercase {
+    text-transform: uppercase;
+}
+.text-center {
+    text-align: center;
+}
+
+/* Spacing Utilities */
+.px-4 {
+    padding-right: 1.5rem !important;
+    padding-left: 1.5rem !important;
+}
+.py-3 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+.mr-2 {
+    margin-right: 0.5rem !important;
+}
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+.mt-2 {
+    margin-top: 0.5rem !important;
+}
+
+/* Remove default container padding */
+.container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Full width content */
+.row {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.col-xl-3, .col-md-6 {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+    
+    .h2 {
+        font-size: 1.8rem;
+    }
+    
+    .btn-sm {
+        padding: 0.3rem 0.8rem;
+    }
 }
 </style>
 @endsection

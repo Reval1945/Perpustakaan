@@ -24,6 +24,7 @@ class VerifyReturnAllRequest extends FormRequest
         return [
             'status'      => 'required|in:dikembalikan,terlambat,rusak,hilang',
             'jenis_denda' => 'nullable|in:telat,rusak,hilang',
+            'jumlah_hari_telat' => 'nullable|integer|min:0',
             'denda'       => 'nullable|numeric|min:0',
             'catatan'     => 'nullable|string'
         ];
