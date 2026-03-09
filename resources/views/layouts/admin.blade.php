@@ -138,6 +138,7 @@
 
         .dropdown-item:hover {
             background: var(--primary-soft);
+            color: var(--dark);
         }
 
         .img-profile {
@@ -283,79 +284,98 @@
     <!-- SIDEBAR -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-            <div class="sidebar-brand-icon">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">Perpustakaan</div>
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+        <div class="sidebar-brand-icon">
+            <i class="fas fa-book"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Perpustakaan</div>
+    </a>
+
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item {{ Request::is('admin/dashboard') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/dashboard') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
         </a>
+    </li>
 
-        <hr class="sidebar-divider my-0">
+    <hr class="sidebar-divider">
 
-        <li class="nav-item {{ Request::is('admin/dashboard') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/dashboard') }}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
+    <div class="sidebar-heading">
+        Manajemen Data
+    </div>
 
-        <li class="nav-item {{ Request::is('admin/anggota') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/anggota') }}">
-                <i class="fas fa-fw fa-users"></i>
-                <span>Anggota</span>
-            </a>
-        </li>
+    <li class="nav-item {{ Request::is('admin/anggota') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/anggota') }}">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Anggota</span>
+        </a>
+    </li>
 
-        <li class="nav-item {{ Request::is('admin/pengunjung') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/pengunjung') }}">
-                <i class="fas fa-fw fa-user"></i>
-                <span>Pengunjung</span>
-            </a>
-        </li>
+    <li class="nav-item {{ Request::is('admin/pengunjung') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/pengunjung') }}">
+            <i class="fas fa-fw fa-user"></i>
+            <span>Pengunjung</span>
+        </a>
+    </li>
 
-        <li class="nav-item {{ Request::is('admin/aturanpeminjaman') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/aturanpeminjaman') }}">
-                <i class="fas fa-clipboard-list"></i>
-                <span>Aturan Peminjaman</span>
-            </a>
-        </li>
+    <li class="nav-item {{ Request::is('admin/kategori') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/kategori') }}">
+            <i class="fas fa-tag"></i>
+            <span>Kategori</span>
+        </a>
+    </li>
 
-        <li class="nav-item {{ Request::is('admin/kategori') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/kategori') }}">
-                <i class="fas fa-list"></i>
-                <span>Kategori</span>
-            </a>
-        </li>
-        
-         <li class="nav-item {{ Request::is('admin/buku') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/buku') }}">
-                <i class="fas fa-fw fa-book"></i>
-                <span>Buku</span>
-            </a>
-        </li>
+    <li class="nav-item {{ Request::is('admin/buku') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/buku') }}">
+            <i class="fas fa-fw fa-book"></i>
+            <span>Buku</span>
+        </a>
+    </li>
 
-        <li class="nav-item {{ Request::is('admin/transaksi/peminjaman') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/transaksi/peminjaman') }}">
-                <i class="fas fa-money-check"></i>
-                <span>Transaksi</span>
-            </a>
-        </li>
+    <hr class="sidebar-divider">
 
-        <li class="nav-item {{ Request::is('admin/laporanpeminjaman') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/laporanpeminjaman') }}">
-                <i class="fas fa-fw fa-file-alt"></i>
-                <span>Laporan</span>
-            </a>
-        </li>
-        <li class="nav-item {{ Request::is('admin/laporandenda') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ url('/admin/laporandenda') }}">
-                <i class="fas fa-fw fa-exclamation-triangle"></i>
-                <span>Laporan Denda</span>
-            </a>
-        </li>
+    <div class="sidebar-heading">
+        Layanan
+    </div>
 
-        <hr class="sidebar-divider d-none d-md-block">
-    </ul>
+    <li class="nav-item {{ Request::is('admin/transaksi/peminjaman') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/transaksi/peminjaman') }}">
+            <i class="fas fa-money-check"></i>
+            <span>Transaksi</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ Request::is('admin/aturanpeminjaman') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/aturanpeminjaman') }}">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Aturan Peminjaman</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-heading">
+        Laporan
+    </div>
+
+    <li class="nav-item {{ Request::is('admin/laporanpeminjaman') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/laporanpeminjaman') }}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Laporan Peminjaman</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ Request::is('admin/laporandenda') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ url('/admin/laporandenda') }}">
+            <i class="fas fa-fw fa-exclamation-triangle"></i>
+            <span>Laporan Denda</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider d-none d-md-block">
+</ul>
     <!-- END SIDEBAR -->
 
     <!-- CONTENT WRAPPER -->
@@ -460,6 +480,24 @@
     </div>
 </div>
 
+<div class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="color: var(--dark);">Konfirmasi Logout</h5>
+                <button class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                Apakah kamu yakin ingin logout?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                <button id="btnLogout" class="btn btn-danger">Logout</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Scroll -->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
@@ -490,23 +528,6 @@
     });
 </script>
 
-<div class="modal fade" id="logoutModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Konfirmasi Logout</h5>
-                <button class="close" data-dismiss="modal">×</button>
-            </div>
-            <div class="modal-body">
-                Apakah kamu yakin ingin logout?
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
-                <button id="btnLogout" class="btn btn-danger">Logout</button>
-            </div>
-        </div>
-    </div>
-</div>
 <script>
 if (!localStorage.getItem('token')) {
     window.location.href = '/';

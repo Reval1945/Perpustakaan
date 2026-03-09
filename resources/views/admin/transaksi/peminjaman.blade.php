@@ -88,8 +88,10 @@
                 <div class="form-group mb-3">
                     <label class="small font-weight-bold text-muted">Status Pengembalian</label>
                     <select id="status" class="form-control" style="border-radius: 12px; border-color: var(--border);">
-                        <option value="dikembalikan">Dikembalikan</option>
+                        <option value="dikembalikan">Dikembalikan (Normal)</option>
                         <option value="terlambat">Terlambat</option>
+                        <option value="rusak">Rusak</option>
+                        <option value="hilang">Hilang</option>
                     </select>
                 </div>
 
@@ -114,6 +116,11 @@
                     <div id="denda_keterangan" class="mt-2 p-2 bg-light" style="display:none; border-radius: 8px;">
                         <small class="text-muted"><i class="fas fa-info-circle mr-1"></i> <span id="denda_formula"></span></small>
                     </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="small font-weight-bold">Catatan / Keterangan</label>
+                    <textarea name="catatan" id="catatan" class="form-control" rows="2" placeholder=""></textarea>
                 </div>
             </div>
             <div class="modal-footer border-0 pb-4 px-4">
@@ -196,31 +203,6 @@ function getVerificationType(trx) {
     return 'partial';
 }
 
-// FETCH STATUS
-function getTransactionStatus(trx) {
-    const detailStatus = trx.details.map(d => d.status);
-
-    const total = detailStatus.length;
-    const dipinjam = detailStatus.filter(s => s === 'dipinjam').length;
-    const dikembalikan = detailStatus.filter(s => s === 'dikembalikan').length;
-    const menunggu = detailStatus.filter(s => s === 'menunggu_verifikasi').length;
-
-    if (menunggu > 0) return 'menunggu_verifikasi';
-    if (dikembalikan === total) return 'dikembalikan';
-    if (dipinjam === total) return 'dipinjam';
-    if (dikembalikan > 0 && dipinjam > 0) return 'sebagian_dipinjam';
-    return trx.status;
-}
-
-function statusBadge(status) {
-    if (status === 'dipinjam') return `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
-    if (status === 'menunggu_verifikasi') return `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Verifikasi</span>`;
-    if (status === 'mengajukan_pengembalian') return `<span class="badge-custom" style="background: var(--info-soft); color: var(--info);">Kembali?</span>`;
-    if (status === 'dikembalikan') return `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
-    if (status === 'sebagian_dipinjam') return `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Sebagian</span>`;
-    return `<span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">${status}</span>`;
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     fetchDendaRule();
     fetchTransactions();
@@ -260,73 +242,158 @@ function fetchTransactions() {
     });
 }
 
+// Fetch Status
+// Fetch Status Utama (Header)
+function getTransactionStatus(trx) {
+    const detailStatus = trx.details.map(d => d.status);
+    const total = detailStatus.length;
+
+    const adaMintaPerpanjang = trx.details.some(d => d.status === 'mengajukan_perpanjangan');
+    const menungguKembali = detailStatus.filter(s => s === 'menunggu_verifikasi_kembali').length;
+    
+    // PRIORITAS 1: Jika ada yang minta perpanjang, ini harus langsung kelihatan
+    if (adaMintaPerpanjang) return 'sebagian_minta_perpanjang';
+
+    // PRIORITAS 2: Verifikasi kembali (buku sudah di meja admin)
+    if (menungguKembali > 0) return 'menunggu_verifikasi_kembali'; 
+
+    // PRIORITAS 3: Verifikasi pinjam baru
+    const menungguPinjam = detailStatus.filter(s => s === 'menunggu_verifikasi').length;
+    if (menungguPinjam > 0) return 'menunggu_verifikasi';
+    
+    const dikembalikan = detailStatus.filter(s => s === 'dikembalikan' || s === 'rusak' || s === 'hilang').length;
+    const dipinjam = detailStatus.filter(s => s === 'dipinjam' || s === 'diperpanjang').length;
+
+    if (dikembalikan === total) return 'dikembalikan';
+    if (dipinjam === total) return 'dipinjam';
+    if (dikembalikan > 0 && dipinjam > 0) return 'sebagian_dipinjam';
+    
+    return trx.status;
+}
+
+// Badge untuk Tabel Utama
+function statusBadge(status) {
+    if (status === 'sebagian_minta_perpanjang') {
+        return `<span class="badge-custom" style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba;">Sebagian Minta Perpanjang</span>`;
+    }
+    if (status === 'dipinjam') return `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
+    if (status === 'menunggu_verifikasi') return `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Verifikasi</span>`;
+    if (status === 'menunggu_verifikasi_kembali') return `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Verifikasi Kembali</span>`;
+    if (status === 'dikembalikan') return `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
+    if (status === 'sebagian_dipinjam') return `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Sebagian</span>`;
+    
+    return `<span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">${status}</span>`;
+}
+
+// Badge khusus untuk Tabel Detail (Row Expanded)
+function statusBadgeDetail(status) {
+    switch (status) {
+        case 'mengajukan_perpanjangan':
+            return `<span class="badge-custom" style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba;">Minta Perpanjang</span>`;
+        case 'diperpanjang':
+            return `<span class="badge-custom" style="background: #e1f5fe; color: var(--info);">Diperpanjang</span>`;
+        case 'dipinjam':
+            return `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
+        case 'dikembalikan':
+            return `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Kembali</span>`;
+        default:
+            return `<span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">${status}</span>`;
+    }
+}
+
 // 4. Fungsi Render Tabel (Logika Utama Tampilan)
 function renderTable(data) {
     const tbody = document.getElementById('transactionTable');
     tbody.innerHTML = '';
 
-    // Filter Default: Sembunyikan yang sudah dikembalikan & status terlambat (sesuai permintaan Anda)
+    // Filter: Sembunyikan yang sudah kembali & tidak terlambat
     const filteredData = data.filter(trx =>
-        trx.details.some(d => d.status !== 'dikembalikan')
-        && getTransactionStatus(trx) !== 'terlambat'
+        trx.details.some(d => 
+            ['dipinjam', 'menunggu_verifikasi', 'menunggu_verifikasi_kembali', 'mengajukan_perpanjangan', 'diperpanjang'].includes(d.status)
+        )
     );
 
     if (filteredData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">Tidak ada data peminjaman</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Tidak ada data peminjaman aktif</td></tr>`;
         return;
     }
 
     filteredData.forEach((trx, index) => {
-        // Logika Detail Buku (Expanded Row)
+        // --- Render Detail Rows (Expanded) ---
+        // Di dalam trx.details.map
         const detailRows = trx.details.map((d, i) => {
-            let actionDetail = `
-                <a href="/admin/transaksi/detail/edit/${d.id}" class="btn btn-sm btn-light mr-1" style="border-radius: 8px; border: 1px solid var(--border);">
-                    <i class="fas fa-edit text-warning"></i>
-                </a>
-            `;
+            let actionDetail = ''; 
 
-            if ((d.status === 'menunggu_verifikasi' || d.status === 'menunggu_verifikasi_kembali') 
-                && getVerificationType(trx) === 'partial') {
+            // 1. Tombol Perpanjang (Hanya jika minta perpanjang)
+            if (d.status === 'mengajukan_perpanjangan') {
                 actionDetail += `
-                    <button class="btn btn-success btn-sm btn-acc-detail" 
-                        data-id="${d.id}" data-jatuh-tempo="${d.tanggal_jatuh_tempo}">
-                        Konfirmasi
+                    <a href="/admin/transaksi/detail/edit/${d.id}" 
+                    class="btn btn-sm btn-light mr-1" 
+                    title="Perpanjang Buku Ini" 
+                    style="border-radius: 8px; border: 1px solid #ddd;">
+                        <i class="fas fa-calendar-alt text-warning"></i>
+                    </a>
+                `;
+            }
+
+            // 2. Tombol Konfirmasi Pengembalian (Hanya jika mau kembali)
+            // Kita HAPUS pengecekan 'menunggu_verifikasi' di sini agar tombol hijau tidak muncul
+            if (d.status === 'menunggu_verifikasi_kembali') {
+                actionDetail += `
+                    <button class="btn btn-info btn-sm btn-acc-detail" 
+                            data-id="${d.id}" 
+                            data-judul="${d.judul_buku}"
+                            data-jatuh-tempo="${d.tanggal_jatuh_tempo}"
+                            title="Verifikasi Kembali / Rusak / Hilang"
+                            style="border-radius: 8px;">
+                        <i class="fas fa-undo-alt"></i>
                     </button>
                 `;
             }
 
+            if (actionDetail === '') {
+                actionDetail = '<span class="text-muted small">-</span>';
+            }
+
             return `
                 <tr>
-                    <td>${i + 1}</td>
-                    <td>${d.book_stock?.kode_eksemplar ?? '-'}</td>
-                    <td>${d.judul_buku}</td>
-                    <td>${d.status}</td>
-                    <td>${actionDetail}</td>
+                    <td class="text-center small">${i + 1}</td>
+                    <td class="text-center small">${d.book_stock?.kode_eksemplar ?? '-'}</td>
+                    <td class="font-weight-bold small">${d.judul_buku}</td>
+                    <td class="text-center small">${formatTanggal(d.tanggal_jatuh_tempo)}</td>
+                    <td class="text-center">${statusBadgeDetail(d.status)}</td>
+                    <td class="text-center small">${actionDetail}</td>
                 </tr>
             `;
         }).join('');
 
-        // Baris Utama
+        // --- Render Baris Utama ---
         const row = `
             <tr class="main-row" data-id="${trx.id}" style="cursor:pointer;">
-                <td>${index + 1}</td> 
+                <td class="text-center small">${index + 1}</td> 
                 <td class="align-middle">
-                    <span class="badge badge-light text-primary p-2" style="font-weight: 700;">${trx.kode_transaksi}</span>
+                    <span class="badge badge-light text-primary p-2" style="font-weight: 700; border-radius:8px;">${trx.kode_transaksi}</span>
                 </td>
-                <td class="font-weight-bold">${trx.user.name}</td>
-                <td class="text-center">${trx.user.role}</td>
-                <td class="text-center">${formatTanggal(trx.tanggal_pinjam)}</td>
-                <td class="text-center">${formatTanggal(trx.tanggal_jatuh_tempo)}</td>
+                <td class="font-weight-bold small">${trx.user.name}</td>
+                <td class="text-center small">${trx.user.role}</td>
+                <td class="text-center small">${formatTanggal(trx.tanggal_pinjam)}</td>
+                <td class="text-center small">${formatTanggal(trx.tanggal_jatuh_tempo)}</td>
                 <td class="text-center">${statusBadge(getTransactionStatus(trx))}</td>
                 <td class="text-center">${renderActionButton(trx)}</td>
             </tr>
-            <tr id="expand-${trx.id}" class="expand-row" style="display:none;">
+            <tr id="expand-${trx.id}" class="expand-row" style="display:none; background-color: #fcfcfc;">
                 <td colspan="8">
-                    <div class="inner-table p-3">
+                    <div class="inner-table p-3 shadow-sm" style="background: white; border: 1px solid #eee; border-radius: 12px; margin: 10px;">
+                        <h6 class="font-weight-bold text-muted mb-3"><i class="fas fa-list mr-2"></i>ITEM BUKU</h6>
                         <table class="table table-sm table-bordered mb-0">
-                            <thead class="thead-light text-center">
+                            <thead class="thead-light text-center small">
                                 <tr>
-                                    <th>No</th><th>Kode Buku</th><th>Judul Buku</th><th>Status</th><th>Aksi</th>
+                                    <th width="50">No</th>
+                                    <th width="80">Kode Buku</th>
+                                    <th width="250">Judul Buku</th>
+                                    <th width="150">Jatuh Tempo</th>
+                                    <th width="150">Status</th>
+                                    <th width="120">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>${detailRows}</tbody>
@@ -337,6 +404,39 @@ function renderTable(data) {
         `;
         tbody.innerHTML += row;
     });
+}
+
+// Render tombol action utama
+function renderActionButton(trx) {
+    const statusUtama = getTransactionStatus(trx);
+    
+    // 1. Tombol standar yang selalu ada (Lihat Detail & Perpanjang Semua)
+    let buttons = `
+        <button class="btn btn-sm btn-light btn-detail mr-1" data-id="${trx.id}" title="Lihat Item" style="border-radius: 8px; border: 1px solid var(--border);">
+            <i class="fas fa-eye text-primary"></i>
+        </button>
+        <a href="/admin/transaksi/edit/${trx.id}" class="btn btn-sm btn-light mr-1" title="Perpanjang Semua" style="border-radius: 8px; border: 1px solid var(--border);">
+            <i class="fas fa-calendar-alt text-warning"></i>
+        </a>
+    `;
+
+    // 2. Logika Tombol Konfirmasi (Muncul hanya jika butuh verifikasi)
+    if (statusUtama === 'menunggu_verifikasi' || statusUtama === 'menunggu_verifikasi_kembali') {
+        const isKembali = statusUtama === 'menunggu_verifikasi_kembali';
+        
+        buttons += `
+            <button class="btn btn-sm ${isKembali ? 'btn-info' : 'btn-success'} btn-acc" 
+                    data-id="${trx.id}" 
+                    data-status-type="${statusUtama}"
+                    data-jatuh-tempo="${trx.tanggal_jatuh_tempo}"
+                    style="border-radius: 8px;"
+                    title="${isKembali ? 'Konfirmasi Pengembalian' : 'Konfirmasi Peminjaman'}">
+                <i class="fas ${isKembali ? 'fa-undo-alt' : 'fa-check'}"></i>
+            </button>
+        `;
+    }
+
+    return `<div class="d-flex justify-content-center">${buttons}</div>`;
 }
 
 // 5. Fungsi Logic Filter (Search & Tanggal)
@@ -381,30 +481,8 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Render tombol action utama
-function renderActionButton(trx) {
-    const verificationType = getVerificationType(trx);
-    let buttons = `
-        <button class="btn btn-sm btn-light btn-detail mr-1" data-id="${trx.id}" style="border-radius: 8px; border: 1px solid var(--border);">
-            <i class="fas fa-eye text-primary"></i>
-        </button>
-        <a href="/admin/transaksi/edit/${trx.id}" class="btn btn-sm btn-light mr-1" style="border-radius: 8px; border: 1px solid var(--border);">
-            <i class="fas fa-edit text-warning"></i>
-        </a>
-    `;
-
-    if (verificationType === 'all') {
-        buttons += `
-            <button class="btn btn-sm btn-success btn-acc" data-id="${trx.id}" data-kembali="${trx.details[0]?.tanggal_kembali ?? ''}" data-jatuh-tempo="${trx.tanggal_jatuh_tempo || ''}" style="border-radius: 8px;">
-                <i class="fas fa-check mr-1"></i>
-            </button>
-        `;
-    }
-
-    return `<div class="d-flex justify-content-center">${buttons}</div>`;
-}
-
 document.addEventListener('DOMContentLoaded', fetchTransactions);
+
 
 // =========================
 // ACC STATUS / MODAL
@@ -440,55 +518,61 @@ function fetchDendaRule() {
 document.addEventListener('click', function(e) {
     const token = localStorage.getItem('token');
 
-    // Tombol Konfirmasi Utama (Pinjam)
-   if (e.target.closest('.btn-acc')) {
-    const btn = e.target.closest('.btn-acc');
-    const id = btn.dataset.id;
-    const kembali = btn.dataset.kembali;
+    // 1. Tombol Konfirmasi Utama (Bisa Pinjam atau Kembali)
+    if (e.target.closest('.btn-acc')) {
+        const btn = e.target.closest('.btn-acc');
+        const id = btn.dataset.id;
+        // Kita gunakan statusType sebagai penentu (lebih akurat daripada dataset.kembali)
+        const statusType = btn.dataset.statusType; 
 
-    // Jika ini adalah verifikasi peminjaman awal
-    if (!kembali || kembali === '' || kembali === 'null') {
-        Swal.fire({
-            title: 'Konfirmasi Pinjam?',
-            text: "Pastikan buku sudah diserahkan kepada peminjam.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#2C5AA0',
-            cancelButtonColor: '#aaa',
-            confirmButtonText: 'Ya, Verifikasi!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Tampilkan loading saat proses
-                Swal.showLoading();
-                
-                fetch(`http://127.0.0.1:8000/api/transactions/${id}/verifikasi-pinjam`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({status: 'dipinjam'})
-                })
-                .then(res => res.json())
-                .then(() => {
-                    Swal.fire('Berhasil!', 'Buku berhasil dipinjam.', 'success');
-                    fetchTransactions();
-                })
-                .catch(() => Swal.fire('Gagal', 'Terjadi kesalahan sistem.', 'error'));
-            }
-        });
-        return;
-    }
+        // LOGIKA PINJAM: Jika statusnya menunggu_verifikasi (peminjaman awal)
+        if (statusType === 'menunggu_verifikasi') {
+            Swal.fire({
+                title: 'Konfirmasi Pinjam?',
+                text: "Pastikan buku sudah diserahkan kepada peminjam.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2C5AA0',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Verifikasi!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.showLoading();
+                    
+                    fetch(`http://127.0.0.1:8000/api/transactions/${id}/verifikasi-pinjam`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({status: 'dipinjam'})
+                    })
+                    .then(res => res.json())
+                    .then(() => {
+                        Swal.fire('Berhasil!', 'Buku berhasil dipinjam.', 'success');
+                        fetchTransactions();
+                    })
+                    .catch(() => Swal.fire('Gagal', 'Terjadi kesalahan sistem.', 'error'));
+                }
+            });
+            return; // Stop di sini untuk proses pinjam
+        }
 
+        // LOGIKA KEMBALI: Jika statusnya menunggu_verifikasi_kembali
+        // (Ini adalah bagian yang sebelumnya terpicu salah)
         accEndpoint = `http://127.0.0.1:8000/api/transactions/${id}/verifikasi-kembali`;
-        // Gunakan jatuh tempo dari data transaksi atau detail pertama
         const tglJatuhTempo = btn.dataset.jatuhTempo || '';
+        
+        // Pastikan input hidden detailId dikosongkan karena ini verifikasi massal/header
+        const detailIdElem = document.getElementById('detailId');
+        if (detailIdElem) detailIdElem.value = '';
+        
         calculateAndFillModal(null, tglJatuhTempo);
     }
 
-    // Tombol Konfirmasi Per Buku (Detail)
+    // 2. Tombol Konfirmasi Per Buku (Detail) - TETAP SAMA
     if (e.target.closest('.btn-acc-detail')) {
         const btn = e.target.closest('.btn-acc-detail');
         const id = btn.dataset.id;
@@ -496,10 +580,13 @@ document.addEventListener('click', function(e) {
 
         accEndpoint = `http://127.0.0.1:8000/api/transaction-detail/${id}/verify-return`;
 
-        document.getElementById('detailId').value = id;
+        const detailIdElem = document.getElementById('detailId');
+        if (detailIdElem) detailIdElem.value = id;
+        
         calculateAndFillModal(id, tglJatuhTempo);
     }
 });
+
 
 function calculateAndFillModal(id, tglJatuhTempo) {
     const hariIni = new Date();
@@ -547,36 +634,38 @@ function calculateAndFillModal(id, tglJatuhTempo) {
 document.getElementById('btnSubmitAccDetail').addEventListener('click', function() {
     const statusVal = document.getElementById('status').value;
     const dendaVal = parseFloat(document.getElementById('denda').value) || 0;
+    const catatanVal = document.getElementById('catatan').value; // <--- TAMBAHKAN INI
     let jenisDendaVal = document.getElementById('jenis_denda').value;
 
-    // OTOMATISASI: Jika status terlambat, jenis_denda HARUS 'telat'
     if (statusVal === 'terlambat' && !jenisDendaVal) {
-            jenisDendaVal = 'telat';
-        }
+        jenisDendaVal = 'telat';
+    }
 
     // Buat payload
     const data = {
         status: statusVal,
         denda: dendaVal,
         jenis_denda: jenisDendaVal || null,
+        catatan: catatanVal, // <--- MASUKKAN KE PAYLOAD
         jumlah_hari_telat: parseInt(document.getElementById('jumlah_hari_telat').value) || 0
     };
 
     Swal.fire({
-            title: 'Menyimpan...',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
+        title: 'Menyimpan...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
 
-        fetch(accEndpoint, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
+    fetch(accEndpoint, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    
         .then(async res => {
             const result = await res.json();
             if (!res.ok) {
@@ -614,32 +703,44 @@ function resetFilter() {
 document.getElementById('status').addEventListener('change', function(){
     const jenis = document.getElementById('jenis_denda');
     const denda = document.getElementById('denda');
+    const catatan = document.getElementById('catatan'); // Ambil elemen catatan
     const keteranganElem = document.getElementById('denda_keterangan');
     const formulaElem = document.getElementById('denda_formula');
 
     if(this.value === 'terlambat'){
         jenis.value = 'telat';
-        // hitung ulang denda berdasarkan tanggal jatuh tempo jika tersedia di modal
+        catatan.value = 'Keterlambatan pengembalian buku.'; // Catatan otomatis
+        
         const tgl = document.getElementById('modalAccDetail')
                      .querySelector('[data-jatuh-tempo]')?.dataset?.jatuhTempo;
         if (tgl) {
             const total = hitungDendaOtomatis(tgl, dendaPerHariAturan);
+            const hari = total / dendaPerHariAturan;
             denda.value = total;
             keteranganElem.style.display = total > 0 ? 'block' : 'none';
-            formulaElem.textContent = `${total === 0 ? 0 : `...`}`; // formula already set during open
-            // also update jumlah hari telat hidden
-            const hari = total / dendaPerHariAturan;
+            formulaElem.textContent = `${hari} hari × ${formatCurrency(dendaPerHariAturan)} = ${formatCurrency(total)}`;
             document.getElementById('jumlah_hari_telat').value = hari;
         }
     } else if(this.value === 'rusak'){
         jenis.value = 'rusak';
+        denda.value = '';
+        catatan.value = '[RUSAK - Membayar denda perbaikan]'; 
+        keteranganElem.style.display = 'block'; 
+        formulaElem.textContent = 'Masukkan biaya perbaikan buku'; 
         document.getElementById('jumlah_hari_telat').value = 0;
+
     } else if(this.value === 'hilang'){
         jenis.value = 'hilang';
+        denda.value = '0';
+        catatan.value = '[HILANG - WAJIB GANTI BUKU FISIK!!]'; // Catatan otomatis
+        keteranganElem.style.display = 'none';
         document.getElementById('jumlah_hari_telat').value = 0;
+
     } else {
+        // Status: dikembalikan (Normal)
         jenis.value = '';
         denda.value = '0';
+        catatan.value = ''; // Kosongkan catatan
         keteranganElem.style.display = 'none';
         document.getElementById('jumlah_hari_telat').value = 0;
     }
@@ -647,31 +748,39 @@ document.getElementById('status').addEventListener('change', function(){
 
 // Auto-calculate denda ketika jenis_denda berubah
 document.getElementById('jenis_denda').addEventListener('change', function(){
-    const denda = document.getElementById('denda');
+    const dendaInput = document.getElementById('denda');
     const status = document.getElementById('status').value;
     const keteranganElem = document.getElementById('denda_keterangan');
-    const formulaElem = document.getElementById('denda_formula');
+    const catatanInput = document.getElementById('catatan');
 
     if(this.value === 'telat' && status === 'terlambat'){
-        // hitung ulang berdasarkan tanggal jatuh tempo
-        const tgl = document.getElementById('modalAccDetail')
-                     .querySelector('[data-jatuh-tempo]')?.dataset?.jatuhTempo;
+        // Hitung denda telat otomatis (logika lama Anda)
+        const tgl = document.getElementById('modalAccDetail').querySelector('[data-jatuh-tempo]')?.dataset?.jatuhTempo;
         if (tgl) {
-            const selisih = hitungDendaOtomatis(tgl, dendaPerHariAturan) / dendaPerHariAturan;
             const total = hitungDendaOtomatis(tgl, dendaPerHariAturan);
-            denda.value = total;
-            keteranganElem.style.display = total > 0 ? 'block' : 'none';
-            formulaElem.textContent = `${selisih} hari × ${formatCurrency(dendaPerHariAturan)} = ${formatCurrency(total)}`;
-            document.getElementById('jumlah_hari_telat').value = selisih;
+            dendaInput.value = total;
+            dendaInput.readOnly = true; 
+            keteranganElem.style.display = 'block';
         }
-    } else if(this.value === 'rusak' || this.value === 'hilang'){
-        denda.value = '0';
+    } 
+    else if(this.value === 'rusak'){
+        dendaInput.value = ''; 
+        dendaInput.readOnly = false; // Admin input nominal uang perbaikan
+        dendaInput.placeholder = "Masukkan biaya rusak...";
         keteranganElem.style.display = 'none';
-        document.getElementById('jumlah_hari_telat').value = 0;
-    } else {
-        denda.value = '0';
+        catatanInput.placeholder = "Sebutkan kerusakan buku...";
+    } 
+    else if(this.value === 'hilang'){
+        dendaInput.value = '0';
+        dendaInput.readOnly = true; 
         keteranganElem.style.display = 'none';
-        document.getElementById('jumlah_hari_telat').value = 0;
+        catatanInput.value = "User wajib mengganti dengan buku fisik asli yang sama.";
+        alert("STATUS HILANG: Denda uang diset Rp 0. Pastikan user mengganti buku fisik!");
+    } 
+    else {
+        dendaInput.value = '0';
+        dendaInput.readOnly = true;
+        keteranganElem.style.display = 'none';
     }
 });
 

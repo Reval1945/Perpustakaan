@@ -74,7 +74,7 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
 
     // DETAIL TRANSAKSI
     Route::put('/transactions/{kode}/jatuh-tempo', [TransactionController::class, 'updateJatuhTempo']);
-    Route::put('/transaction-detail/{id}/jatuh-tempo', [TransactionController::class, 'updateJatuhTempoDetail']);
+    Route::put('/transactions/jatuh-tempo-detail/{id}', [TransactionController::class, 'updateJatuhTempoDetail']);
     Route::put("/transactions/{id}/verifikasi-detail", [TransactionController::class, 'verifikasiPinjamDetail']);
     Route::get('/transactions/export/excel', [TransactionController::class, 'exportExcel']);
     Route::get('/transaction-details', [TransactionController::class, 'getDetails']);
@@ -135,6 +135,8 @@ Route::middleware(['auth:sanctum', 'role.manual:user'])->group(function () {
     Route::resource('/list-books', BookController::class)->only(['index', 'show']);
 
     // TRANSAKSI
+    Route::put('/transaksi-perpanjangan/{id}', [TransactionController::class, 'ajukanPerpanjangan']);
+    Route::post('/transaksi-request-perpanjangan/{id}', [TransactionController::class, 'requestPerpanjangan']);
     Route::post('/transaksi-pinjam', [TransactionController::class, 'store']);
     Route::put('/transaksi-kembali/{id}', [TransactionController::class, 'ajukanPengembalian']);
     Route::get('/transaksi-me', [TransactionController::class, 'myTransactions']);

@@ -20,15 +20,12 @@ class DendaController extends Controller
         $this->service = $service;
     }
 
-
     public function index(Request $request)
     {
         $status = $request->query('status');
 
         if ($status && !in_array($status, ['lunas', 'belum_lunas'])) {
-            return response()->json([
-                'message' => 'Status tidak valid'
-            ], 422);
+            return response()->json(['message' => 'Status tidak valid'], 422);
         }
 
         $details = $this->service->listDenda($status);
@@ -38,8 +35,9 @@ class DendaController extends Controller
                 'id' => $detail->id,
                 'judul_buku' => $detail->judul_buku,
                 'denda' => $detail->denda,
-                'jenis_denda' => $detail->jenis_denda,
+                'jenis_denda' => $detail->jenis_denda ?? ($detail->status === 'hilang' ? 'hilang' : 'telat'),
                 'status_denda' => $detail->status_denda,
+                'catatan' => $detail->catatan,
                 'tanggal_kembali' => $detail->tanggal_kembali,
                 'jumlah_hari_telat' => $detail->jumlah_hari_telat,
                 'transaction' => [
@@ -47,45 +45,47 @@ class DendaController extends Controller
                     'tanggal_pinjam' => $detail->transaction->tanggal_pinjam,
                     'tanggal_jatuh_tempo' => $detail->transaction->tanggal_jatuh_tempo ?? null,
                     'user' => [
-                        'name' => $detail->transaction->user->name
+                        'name' => $detail->transaction->user->name ?? 'User Terhapus'
                     ]
                 ]
             ];
         });
 
         return response()->json([
-            'message' => 'Daftar transaksi yang memiliki denda',
+            'message' => 'Daftar transaksi denda & buku bermasalah',
             'data' => $data
         ]);
     }
 
-    /**
-     * Generate PDF report of fines using DomPdf
-     * @param int|null $id - optional detail ID for single record
-     */
     public function cetakPdf($id = null)
     {
+        // Gunakan query yang konsisten untuk single maupun massal
+        $query = TransactionDetail::with(['transaction.user'])
+            ->where(function($q) {
+                $q->where('denda', '>', 0)
+                  ->orWhereIn('jenis_denda', ['rusak', 'hilang'])
+                  ->orWhereIn('status', ['rusak', 'hilang']);
+            });
+
         if ($id) {
-            // Load single detail by ID
-            $details = TransactionDetail::with(['transaction.user'])
-                ->where('id', $id)
-                ->where('denda', '>', 0)
-                ->get();
-            
+            $details = $query->where('id', $id)->get();
             if ($details->isEmpty()) {
-                return response()->json([
-                    'message' => 'Data denda tidak ditemukan'
-                ], 404);
+                return response()->json(['message' => 'Data denda tidak ditemukan'], 404);
             }
-            
             $filename = 'laporan-denda-' . $id . '.pdf';
         } else {
-            // Load all details that include a denda value
-            $details = TransactionDetail::with(['transaction.user'])
-                ->where('denda', '>', 0)
-                ->get();
-            
+            $details = $query->get();
             $filename = 'laporan-denda.pdf';
+        }
+
+        // Trik agar format('d F Y') tidak error di Blade jika kolom bukan Carbon instance
+        foreach ($details as $d) {
+            if ($d->transaction) {
+                $d->transaction->tanggal_pinjam = \Carbon\Carbon::parse($d->transaction->tanggal_pinjam);
+            }
+            if ($d->tanggal_kembali) {
+                $d->tanggal_kembali = \Carbon\Carbon::parse($d->tanggal_kembali);
+            }
         }
 
         $pdf = Pdf::loadView('laporan.denda', [

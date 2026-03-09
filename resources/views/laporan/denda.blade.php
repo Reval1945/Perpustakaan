@@ -26,6 +26,17 @@
         .data-table td.label { width: 150px; font-weight: bold; }
         .data-table td.separator { width: 20px; text-align: center; }
 
+        /* Catatan Styling */
+        .catatan-box { 
+            padding: 10px; 
+            background-color: #FFF9C4; 
+            border-left: 3px solid #FBC02D; 
+            font-style: italic; 
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+
         .footer-note { margin-top: 50px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 11px; font-style: italic; color: #666; }
 
         /* Print Optimization */
@@ -106,6 +117,20 @@
                 <span style="padding: 2px 8px; background-color: #eee; border-radius: 4px;">
                     {{ strtoupper(str_replace('_', ' ', $detail->status_denda)) }}
                 </span>
+            </td>
+        </tr>
+        {{-- BAGIAN CATATAN BARU DI SINI --}}
+        <tr>
+            <td class="label">Catatan Petugas</td>
+            <td class="separator">:</td>
+            <td>
+                @if($detail->catatan)
+                    <div class="catatan-box">
+                        {{ $detail->catatan }}
+                    </div>
+                @else
+                    <span style="color: #999;">-</span>
+                @endif
             </td>
         </tr>
     </table>

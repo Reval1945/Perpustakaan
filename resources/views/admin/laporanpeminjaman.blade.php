@@ -145,15 +145,21 @@
                 badgeHtml = `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
             } else if (item.status === 'dipinjam') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
+            } else if (item.status === 'diperpanjang') {
+                badgeHtml = `<span class="badge-custom" style="background: #e1f5fe; color: var(--info);">Diperpanjang</span>`;
             } else if (item.status === 'terlambat') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Terlambat</span>`;
+            } else if (item.status === 'rusak') {
+                badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Rusak</span>`;
+            } else if (item.status === 'hilang') {
+                badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Hilang</span>`;
             } else {
                 badgeHtml = `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Verifikasi...</span>`;
             }
 
             return `
                 <tr>
-                    <td class="text-center text-muted small">${index + 1}</td>
+                    <td class="text-center text-muted">${index + 1}</td>
                     <td class="px-4 font-weight-bold">${nama}</td>
                     <td>${judul}</td>
                     <td class="text-center">${tglPinjam}</td>

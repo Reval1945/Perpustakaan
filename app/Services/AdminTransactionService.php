@@ -176,13 +176,23 @@ class AdminTransactionService
         return DB::transaction(function () use ($detail, $data, $today, $jumlahHariTelat, $totalDenda, $stockStatus, $jenisDendaDB) {
 
             // 5. Update detail
+            $jenisDendaOtomatis = null;
+            if ($data['status'] === 'terlambat') {
+                $jenisDendaOtomatis = 'telat';
+            } elseif ($data['status'] === 'rusak') {
+                $jenisDendaOtomatis = 'rusak';
+            } elseif ($data['status'] === 'hilang') {
+                $jenisDendaOtomatis = 'hilang';
+            }
+
             $detail->update([
-                'status'            => $data['status'],
+                'status'            => $data['status'], // misal: 'rusak'
                 'tanggal_kembali'   => $today,
-                'jenis_denda'       => ($totalDenda > 0) ? $jenisDendaDB : null,
+                'jenis_denda'       => $jenisDendaOtomatis, // Maka otomatis jadi 'rusak'
                 'jumlah_hari_telat' => $jumlahHariTelat,
                 'denda'             => $totalDenda,
-                'status_denda'      => ($totalDenda > 0) ? 'belum_lunas' : 'lunas',
+                // Jika ada denda (telat/rusak/hilang), status_denda jadi belum_lunas
+                'status_denda'      => ($jenisDendaOtomatis !== null) ? 'belum_lunas' : 'lunas',
                 'catatan'           => $data['catatan'] ?? null,
             ]);
 

@@ -137,6 +137,7 @@
 
         .dropdown-item:hover {
             background: var(--primary-soft);
+            color: var(--dark);
         }
 
         .img-profile {

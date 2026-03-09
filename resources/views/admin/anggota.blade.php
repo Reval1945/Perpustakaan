@@ -166,10 +166,10 @@
             </div>
 
             <div class="modal-footer border-0 bg-light p-3">
-                <button type="button" class="btn btn-light rounded px-3 shadow-sm font-weight-bold" data-dismiss="modal" style="height: 38px; font-size: 0.85rem;">
+                <button type="button" class="btn btn-secondary rounded px-3 shadow-sm" data-dismiss="modal" style="height: 38px;">
                     Batal
                 </button>
-                <button type="button" id="btnSimpanUser" class="btn btn-primary rounded px-4 shadow-sm font-weight-bold" style="height: 38px; font-size: 0.85rem;">
+                <button type="button" id="btnSimpanUser" class="btn btn-primary rounded px-4 shadow-sm" style="height: 38px;">
                     <i class="fas fa-save mr-1"></i> Simpan Data
                 </button>
             </div>

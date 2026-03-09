@@ -128,12 +128,22 @@ class TransactionController extends Controller
     }
 
     public function verifikasiKembali(VerifyReturnAllRequest $request, $id) {
-
         try {
             $transaction = Transactions::findOrFail($id);
+            $data = $request->validated();
+
+            // LOGIKA TAMBAHAN: Jika status verifikasi massal adalah rusak/hilang
+            if ($data['status'] === 'hilang') {
+                $data['denda'] = 0;
+                $data['jenis_denda'] = 'hilang';
+                $data['catatan'] = "[HILANG] " . ($data['catatan'] ?? 'Wajib ganti buku fisik.');
+            } elseif ($data['status'] === 'rusak') {
+                $data['jenis_denda'] = 'rusak';
+            }
+
             $this->admin_service->verifyReturnTransaction(
                 $transaction,
-                $request->validated()
+                $data // Kirim data yang sudah dimodifikasi
             );
 
             return response()->json([
@@ -141,30 +151,39 @@ class TransactionController extends Controller
             ]);
 
         } catch (ValidationException $e) {
-            dd($e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 422);
         }
     }
 
     public function verifikasiKembaliDetail(VerifyReturnRequest $request, string $detailId) 
     {
         try {
+            $detail = TransactionDetail::with('transaction')->findOrFail($detailId);
+            $validatedData = $request->validated();
 
-            $detail = TransactionDetail::with('transaction')
-                ->findOrFail($detailId);
+            // 1. LOGIKA UNTUK HILANG
+            if ($validatedData['status'] === 'hilang') {
+                $validatedData['denda'] = 0; // Ketua minta ganti buku, jadi uang 0
+                $validatedData['jenis_denda'] = 'hilang';
+                $validatedData['catatan'] = "[HILANG - WAJIB GANTI BUKU] " . ($validatedData['catatan'] ?? '');
+            } 
+            
+            // 2. LOGIKA UNTUK RUSAK
+            elseif ($validatedData['status'] === 'rusak') {
+                $validatedData['jenis_denda'] = 'rusak';
+                // Nilai denda tidak diubah, tetap pakai input manual dari admin
+            }
 
+            // Simpan ke Database melalui Service
             $this->admin_service->verifyReturnDetail(
                 $detail,
-                $request->validated()
+                $validatedData
             );
 
-            return response()->json([
-                'message' => 'Pengembalian buku berhasil diverifikasi'
-            ]);
+            return response()->json(['message' => 'Verifikasi berhasil disimpan']);
 
         } catch (ValidationException $e) {
-            return response()->json([
-                'message' => collect($e->errors())->flatten()->first()
-            ], 422);
+            return response()->json(['message' => collect($e->errors())->flatten()->first()], 422);
         }
     }
 
@@ -227,59 +246,101 @@ class TransactionController extends Controller
         }
     }
 
-   public function updateJatuhTempo(Request $request, $kode)
-    {
-        $validated = $request->validate([
-            'tanggal_jatuh_tempo' => 'required|date'
-        ]);
-
-        // Menggunakan DB Transaction agar jika satu gagal, semua batal (menjaga integritas data)
-        return DB::transaction(function () use ($validated, $kode) {
-            
-            $trx = Transactions::where('kode_transaksi', $kode)->firstOrFail();
-
-            // 1. Update di tabel Transactions (Header)
-            $trx->update([
-                'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo']
-            ]);
-
-            // 2. Update SEMUA baris di tabel TransactionDetail yang memiliki transaction_id sama
-            // Inilah yang membuat data di sisi Anggota ikut berubah
-            $trx->details()->update([
-                'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo']
-            ]);
-
-            return response()->json([
-                'message' => 'Tanggal jatuh tempo berhasil diperbarui di header dan semua detail',
-                'data' => $trx->load('details') // Load details agar JSON yang dikembalikan lengkap
-            ]);
-        });
-    }
-
-    public function updateJatuhTempoDetail(Request $request, $id)
+    public function requestPerpanjangan(Request $request, $id)
     {
         $request->validate([
-            'tanggal_jatuh_tempo' => 'required|date'
+            'tanggal_diminta' => 'required|date|after:today'
         ]);
 
-        $detail = TransactionDetail::find($id);
+        // Cari detail transaksi berdasarkan UUID/ID
+        $detail = TransactionDetail::findOrFail($id);
 
-        if(!$detail){
-            return response()->json([
-                'message'=>'Detail tidak ditemukan'
-            ],404);
+        // Cek apakah statusnya memang bisa diperpanjang
+        if ($detail->status !== 'dipinjam' && $detail->status !== 'diperpanjang') {
+            return response()->json(['message' => 'Status buku tidak memungkinkan untuk perpanjangan'], 400);
         }
 
         $detail->update([
-            'tanggal_jatuh_tempo'=>$request->tanggal_jatuh_tempo
+            'status' => 'mengajukan_perpanjangan',
+            'tgl_permintaan_perpanjangan' => $request->tanggal_diminta
+        ]);
+
+        return response()->json(['message' => 'Permintaan perpanjangan berhasil dikirim ke pustakawan']);
+    }
+
+    public function ajukanPerpanjangan(Request $request, $id)
+    {
+        // $id adalah ID dari transaction_details
+        $detail = TransactionDetail::findOrFail($id);
+        
+        // Update status di level detail buku
+        $detail->update([
+            'status' => 'mengajukan_perpanjangan'
         ]);
 
         return response()->json([
-            'message'=>'Jatuh tempo buku berhasil diupdate',
-            'data'=>$detail
+            'message' => 'Permintaan perpanjangan buku berhasil dikirim'
         ]);
     }
 
+   // FUNGSI 1: Memperpanjang SEMUA buku dalam satu transaksi
+public function updateJatuhTempo(Request $request, $kode)
+{
+    $validated = $request->validate([
+        'tanggal_jatuh_tempo' => 'required|date'
+    ]);
+
+    return DB::transaction(function () use ($validated, $kode) {
+        $trx = Transactions::where('kode_transaksi', $kode)->firstOrFail();
+
+        // 1. Update Header
+        $trx->update([
+            'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo']
+        ]);
+
+        // 2. Update SEMUA detail menjadi "diperpanjang"
+        $trx->details()->update([
+            'tanggal_jatuh_tempo' => $validated['tanggal_jatuh_tempo'],
+            'status' => 'diperpanjang'
+        ]);
+
+        return response()->json([
+            'message' => 'Semua buku dalam transaksi ini berhasil diperpanjang',
+            'data' => $trx->load('details')
+        ]);
+    });
+}
+
+// FUNGSI 2: Memperpanjang HANYA SATU buku (berdasarkan ID detail)
+public function updateJatuhTempoDetail(Request $request, $id)
+{
+    $request->validate([
+        'tanggal_jatuh_tempo' => 'required|date'
+    ]);
+
+    return DB::transaction(function () use ($request, $id) {
+        $detail = TransactionDetail::findOrFail($id);
+
+        // 1. Update baris detail, kembalikan tgl_permintaan ke null
+        $detail->update([
+            'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
+            'status' => 'diperpanjang',
+            'tgl_permintaan_perpanjangan' => null 
+        ]);
+
+        // 2. Sinkronisasi Tanggal Header (Ambil tanggal paling jauh/max)
+        $trx = Transactions::find($detail->transaction_id);
+        if ($trx) {
+            $maxDate = TransactionDetail::where('transaction_id', $trx->id)->max('tanggal_jatuh_tempo');
+            $trx->update(['tanggal_jatuh_tempo' => $maxDate]);
+        }
+
+        return response()->json([
+            'message' => 'Buku berhasil diperpanjang',
+            'data' => $detail
+        ]);
+    });
+}
 
     public function destroy(string $id)
     {

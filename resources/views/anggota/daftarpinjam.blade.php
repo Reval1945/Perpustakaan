@@ -92,21 +92,47 @@
     --border: #e2e8f0;
 }
 
-.table td { vertical-align: middle !important; border-color: var(--border); padding: 1rem 0.75rem; color: var(--dark); }
-.badge { font-weight: 600; padding: 0.45rem 0.85rem; border-radius: 30px; font-size: 0.75rem; }
 .form-control { height: auto; padding: 0.6rem 1rem; }
 .form-control:focus { border-color: var(--primary); box-shadow: none; }
 
-.btn-kembali { 
+.table td { vertical-align: middle !important; border-color: var(--border); padding: 1rem 0.75rem; color: var(--dark); }
+.badge { font-weight: 600; padding: 0.45rem 0.85rem; border-radius: 30px; font-size: 0.75rem; }
+
+/* Style Tombol Aksi Baru */
+.btn-action-custom { 
+    height: 38px; 
+    border-radius: 8px; /* Mengikuti style admin */
+    font-weight: 600; 
+    font-size: 0.8rem; 
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+    border: 1px solid var(--border);
+}
+
+.btn-kembali-new { 
     background: #fef3c7; 
     color: #d97706; 
-    border: none; 
-    border-radius: 30px; 
-    padding: 0.4rem 1.2rem; 
-    font-weight: 600;
-    transition: 0.2s;
+    border: 1px solid #fde68a;
 }
-.btn-kembali:hover { background: #fde68a; color: #b45309; text-decoration: none; }
+.btn-kembali-new:hover { 
+    background: #fde68a; 
+    color: #b45309; 
+    transform: translateY(-2px);
+}
+
+.btn-perpanjang-new {
+    background: #e1f5fe;
+    color: var(--primary);
+    border: 1px solid #b3e5fc;
+}
+.btn-perpanjang-new:hover {
+    background: #b3e5fc;
+    color: #01579b;
+    transform: translateY(-2px);
+}
 
 .fa-spin-custom {
     animation: spin 1s infinite linear;
@@ -155,7 +181,9 @@ async function loadTransaksi() {
             ...trx,
             details: trx.details.filter(d =>
                 d.status === 'dipinjam' ||
-                d.status === 'menunggu_verifikasi'
+                d.status === 'menunggu_verifikasi' ||
+                d.status === 'diperpanjang' ||
+                d.status === 'mengajukan_perpanjangan'
             )
         })).filter(trx => trx.details.length > 0);
 
@@ -200,22 +228,48 @@ function renderTabel(dataTransaksi) {
             else
                 badgeWaktu = `<span class="badge" style="background: var(--danger-soft); color: var(--danger);">Telat ${Math.abs(selisih)} hari</span>`;
 
-            const badgeStatus = detail.status === 'dipinjam'
-                ? `<span class="badge" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`
-                : `<span class="badge" style="background: var(--warning-soft); color: var(--warning);">Verifikasi...</span>`;
+            // --- LOGIKA STATUS ---
+            let badgeStatus = '';
+            if (detail.status === 'dipinjam') {
+                badgeStatus = `<span class="badge" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
+            } else if (detail.status === 'diperpanjang') {
+                badgeStatus = `<span class="badge" style="background: #e1f5fe; color: var(--info);">Diperpanjang</span>`;
+            } else if (detail.status === 'mengajukan_perpanjangan') {
+                badgeStatus = `<span class="badge" style="background: var(--warning-soft); color: #856404;">Menunggu Perpanjangan...</span>`;
+            } else {
+                badgeStatus = `<span class="badge" style="background: #f3f4f6; color: #6b7280;">Verifikasi...</span>`;
+            }
 
-            const tombol = detail.status === 'dipinjam'
-                ? `<button class="btn-kembali shadow-sm" onclick="ajukanKembali('${trx.id}','${detail.id}', '${detail.judul_buku.replace(/'/g, "\\'")}')">
-                    <i class="fas fa-undo-alt mr-1"></i> Kembalikan
-                   </button>`
-                : `<button class="btn btn-sm btn-light" disabled style="border-radius:30px; opacity:0.6">
-                    <i class="fas fa-hourglass-half"></i> Diproses
-                   </button>`;
+            // --- LOGIKA TOMBOL ---
+            let tombol = '';
+            if (detail.status === 'dipinjam' || detail.status === 'diperpanjang') {
+                tombol = `
+                    <div class="d-flex justify-content-center" style="gap: 8px;">
+                        <button class="btn-action-custom btn-kembali-new shadow-sm" 
+                                onclick="ajukanKembali('${trx.id}','${detail.id}', '${detail.judul_buku.replace(/'/g, "\\'")}')" 
+                                title="Kembalikan Buku">
+                            <i class="fas fa-undo-alt mr-2"></i> Kembali
+                        </button>
+                        ${detail.status === 'dipinjam' ? `
+                            <button class="btn-action-custom btn-perpanjang-new shadow-sm" 
+                                    onclick="ajukanPerpanjangan('${detail.id}', '${detail.tanggal_jatuh_tempo}')"
+                                    title="Perpanjang Durasi">
+                                <i class="fas fa-calendar-plus mr-2"></i> Perpanjang
+                            </button>
+                        ` : ''}
+                    </div>`;
+            } else {
+                // Status Menunggu (Proses)
+                tombol = `
+                    <button class="btn-action-custom btn-light text-muted" disabled style="opacity:0.7; border-style: dashed;">
+                        <i class="fas fa-clock mr-2"></i> Sedang Diproses
+                    </button>`;
+            }
 
             tbody.innerHTML += `
             <tr>
                 <td class="text-center text-muted small">${no++}</td>
-                <td class="font-weight-bold">${detail.judul_buku}</td>
+                <td class="font-weight-bold" style="min-width: 200px;">${detail.judul_buku}</td>
                 <td class="text-center small">${formatTanggal(trx.tanggal_pinjam)}</td>
                 <td class="text-center small">${formatTanggal(detail.tanggal_jatuh_tempo)}</td>
                 <td class="text-center">${badgeWaktu}</td>
@@ -225,6 +279,61 @@ function renderTabel(dataTransaksi) {
         });
     });
 }
+
+// FUNGSI AJUKAN PERPANJANGAN (API)
+async function ajukanPerpanjangan(detailId, tglJatuhTempoAsli) {
+    const token = localStorage.getItem("token");
+
+    // Format tanggal untuk input HTML (YYYY-MM-DD)
+    // Jika tglJatuhTempoAsli dalam format ISO atau YYYY-MM-DD, kita ambil bagian depannya saja
+    const defaultDate = tglJatuhTempoAsli ? tglJatuhTempoAsli.split(' ')[0] : new Date().toISOString().split('T')[0];
+
+    const { value: tanggalInput } = await Swal.fire({
+        title: 'Pilih Tanggal Kembali',
+        html: `
+            <div class="text-left mt-2">
+                <label class="small text-muted">Tanggal Jatuh Tempo Saat Ini: <b>${defaultDate}</b></label>
+                <input type="date" id="swal-input-date" class="form-control" 
+                       value="${defaultDate}" 
+                       min="${new Date().toISOString().split('T')[0]}">
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: 'var(--primary)',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ajukan',
+        preConfirm: () => {
+            const date = document.getElementById('swal-input-date').value;
+            if (!date) return Swal.showValidationMessage('Tanggal wajib diisi!');
+            return date;
+        }
+    });
+
+    if (!tanggalInput) return;
+
+    try {
+        // Endpoint sesuai dengan api.php: /api/transaksi-request-perpanjangan/{id}
+        const res = await fetch(`/api/transaksi-request-perpanjangan/${detailId}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ tanggal_diminta: tanggalInput })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Gagal mengajukan");
+
+        await Swal.fire('Berhasil!', data.message, 'success');
+        location.reload(); // Refresh untuk melihat status "Diproses"
+
+    } catch (err) {
+        Swal.fire('Gagal', err.message, 'error');
+    }
+}
+
 
 function applyFilter() {
     const keyword = document.getElementById('searchInput').value.toLowerCase();

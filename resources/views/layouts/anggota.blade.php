@@ -26,6 +26,12 @@
             --gray: #64748b;
             --gray-light: #f1f5f9;
             --border: #e2e8f0;
+            --success: #10b981;
+            --success-soft: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-soft: #fffbeb;
+            --danger: #ef4444;
+            --danger-soft: #fef2f2;
         }
 
         body {
@@ -137,6 +143,7 @@
 
         .dropdown-item:hover {
             background: var(--primary-soft);
+            color: var(--dark);
         }
 
         .img-profile {
@@ -527,8 +534,17 @@ document.addEventListener("DOMContentLoaded", function(){
         document.getElementById('previewPhoto').src = data.photo;
     }
 
+
+    
     loadUser();
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'center',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
 
     // =====================
     // PREVIEW FOTO
@@ -536,12 +552,38 @@ document.addEventListener("DOMContentLoaded", function(){
     const inputPhoto = document.getElementById('inputPhoto');
 
     if(inputPhoto){
-        inputPhoto.addEventListener('change', e=>{
+        inputPhoto.addEventListener('change', e => {
             const file = e.target.files[0];
             if(!file) return;
 
-            document.getElementById('previewPhoto').src =
-                URL.createObjectURL(file);
+            // 1. Validasi Ukuran (2MB = 2048 * 1024 bytes)
+            const maxSize = 2 * 1024 * 1024; 
+            if(file.size > maxSize) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Ukuran file terlalu besar! Maksimal 2MB.'
+                });
+                inputPhoto.value = ""; // Reset input
+                return;
+            }
+
+            // 2. Validasi Format
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if(!allowedTypes.includes(file.type)) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Format tidak didukung! Gunakan JPG atau PNG.'
+                });
+                inputPhoto.value = ""; // Reset input
+                return;
+            }
+
+            // Jika lolos validasi, tampilkan preview
+            document.getElementById('previewPhoto').src = URL.createObjectURL(file);
+            
+            // Update label input file
+            const fileName = file.name;
+            document.querySelector('.custom-file-label').innerText = fileName;
         });
     }
 
@@ -562,19 +604,33 @@ document.addEventListener("DOMContentLoaded", function(){
             console.log([...form]); // ← DEBUG
 
             const res = await fetch('/api/update-profile',{
-                method:'POST',
-                headers:{ Authorization:'Bearer '+token },
+               method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Accept': 'application/json'
+                },
                 body:form
             });
 
             const data = await res.json();
             console.log(data);
 
-            alert(data.message);
-            $('#modalProfile').modal('hide');
-            loadUser(); // panggil ulang fungsi load user
+            if (res.ok) {
+                Toast.fire({
+                    icon: 'success',
+                    title: data.message || 'Profil berhasil diperbarui'
+                });
+                $('#modalProfile').modal('hide');
+                loadUser(); 
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: data.message || 'Gagal memperbarui profil'
+                });
+            }
         });
     }
+
 });
 
 async function cetakKartu() {

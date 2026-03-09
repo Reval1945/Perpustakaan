@@ -90,7 +90,9 @@
             </div>
             <div class="modal-footer" style="border-top: none;">
                 <button class="btn btn-light px-4" data-dismiss="modal" style="border-radius: 10px;">Batal</button>
-                <button class="btn btn-primary px-4" id="btnUpdateDenda" style="border-radius: 10px; background: var(--primary);">Simpan Perubahan</button>
+                <button class="btn btn-primary px-4" id="btnUpdateDenda" style="border-radius: 10px; background: var(--primary);">
+                    <i class="fas fa-save mr-2"></i> Simpan Perubahan
+                </button>
             </div>
         </div>
     </div>
@@ -179,7 +181,18 @@ function renderTable(data) {
         let tglKembali = formatTanggal(item.tanggal_kembali);
         let hariTelat = parseInt(item.jumlah_hari_telat) || 0;
         
-        // Status Badge Logic
+        // Logika Warna untuk Jenis Denda
+        let jenisDendaLabel = item.jenis_denda ? item.jenis_denda.toLowerCase() : 'telat';
+        let colorClass = "text-primary"; // Default untuk telat
+        let badgeHariClass = "badge-light text-dark";
+
+        if (jenisDendaLabel === 'rusak') {
+            colorClass = "text-warning"; // Oranye/Kuning untuk Rusak
+        } else if (jenisDendaLabel === 'hilang') {
+            colorClass = "text-danger"; // Merah untuk Hilang
+        }
+
+        // Status Badge Pembayaran
         let statusHtml = item.status_denda === "lunas" 
             ? `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Lunas</span>`
             : `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Belum Lunas</span>`;
@@ -192,10 +205,10 @@ function renderTable(data) {
                 <td class="text-center small">${tglPinjam}</td>
                 <td class="text-center small">${tglKembali}</td>
                 <td class="text-center">
-                    <span class="badge badge-light text-dark" style="border-radius: 6px;">${hariTelat} Hari</span>
+                    <span class="badge ${badgeHariClass}" style="border-radius: 6px;">${hariTelat} Hari</span>
                 </td>
-               <td class="text-center font-weight-bold text-primary">
-                    ${item.jenis_denda.charAt(0).toUpperCase() + item.jenis_denda.slice(1)}
+                <td class="text-center font-weight-bold ${colorClass}">
+                    ${jenisDendaLabel.charAt(0).toUpperCase() + jenisDendaLabel.slice(1)}
                 </td>
                 <td class="text-center">${statusHtml}</td>
                 <td class="text-center">

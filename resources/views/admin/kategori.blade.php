@@ -52,7 +52,9 @@
                 </div>
                 <div class="modal-footer bg-light" style="border-radius: 0 0 16px 16px;">
                     <button type="button" class="btn btn-secondary shadow-sm" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4 shadow-sm">Simpan Data</button>
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                       <i class="fas fa-save mr-2"></i> Simpan Data
+                    </button>
                 </div>
             </form>
         </div>
@@ -124,9 +126,9 @@ function renderTable(categories) {
 
     tbody.innerHTML = categories.map((cat, index) => `
         <tr>
-            <td class="text-center font-weight-bold text-muted">${index + 1}</td>
-            <td class="font-weight-bold text-dark">${cat.name}</td>
-            <td class="text-secondary small">${cat.deskripsi || '-'}</td>
+            <td class="text-center text-muted">${index + 1}</td>
+            <td class="font-weight-bold" style="color: var(--dark);">${cat.name}</td>
+            <td class="text-secondary">${cat.deskripsi || '-'}</td>
             <td class="text-center">
                 <div class="d-flex justify-content-center">
                     <button class="btn btn-light btn-sm btn-edit mr-2" 

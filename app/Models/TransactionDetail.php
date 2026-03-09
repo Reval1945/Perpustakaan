@@ -12,9 +12,10 @@ class TransactionDetail extends Model
 
     protected $table = 'transaction_details';
 
+    protected $primaryKey = 'id'; 
     protected $keyType = 'string';
     public $incrementing = false;
-
+    
     protected $fillable = [
         'transaction_id',
         'book_id',
@@ -22,11 +23,13 @@ class TransactionDetail extends Model
         'judul_buku',
         'tanggal_kembali',
         'tanggal_jatuh_tempo',
+        'tgl_permintaan_perpanjangan',
         'status',
         'jumlah_hari_telat',
         'denda',
         'jenis_denda',
         'status_denda',
+        'catatan',
         'book_stock_id',
     ];
 

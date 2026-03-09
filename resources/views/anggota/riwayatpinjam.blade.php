@@ -58,8 +58,10 @@
                         <th style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Judul Buku</th>
                         <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Pinjam</th>
                         <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Kembali</th>
-                        <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Durasi</th>
-                        <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Status</th>
+                        <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Status Buku</th>
+                        <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Denda</th>
+                        <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Status Denda</th>
+                        <th style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Catatan</th>
                     </tr>
                 </thead>
                 <tbody id="riwayat-body">
@@ -79,12 +81,7 @@
 :root {
     --primary: #2C5AA0;
     --primary-soft: #e8f0fe;
-    --success: #10b981;
-    --success-soft: #ecfdf5;
     --warning: #f59e0b;
-    --warning-soft: #fffbeb;
-    --danger: #ef4444;
-    --danger-soft: #fef2f2;
     --dark: #1e293b;
     --gray: #64748b;
     --gray-light: #f8fafc;
@@ -96,6 +93,16 @@
 .badge { font-weight: 600; padding: 0.45rem 0.85rem; border-radius: 30px; font-size: 0.75rem; }
 .form-control:focus { border-color: var(--primary); box-shadow: none; }
 
+.badge-custom { 
+    font-weight: 600; 
+    padding: 0.45rem 0.85rem; 
+    border-radius: 30px; 
+    font-size: 0.7rem; 
+    display: inline-block;
+    min-width: 95px;
+    text-align: center;
+    text-transform: uppercase;
+}
 /* Animasi Putar */
 .fa-spin-custom {
     animation: spin 1s infinite linear;
@@ -151,58 +158,65 @@ async function loadRiwayat() {
 function renderRiwayat(data) {
     const tbody = document.getElementById('riwayat-body');
     tbody.innerHTML = '';
-
     let no = 1;
 
     function formatTanggal(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
-        return date.toLocaleDateString('id-ID', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        });
+        return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
     }
 
     data.forEach(trx => {
-        const detailRiwayat = trx.details.filter(d =>
-            ['menunggu_verifikasi_kembali', 'dikembalikan', 'terlambat', 'dipinjam']
-            .includes(d.status)
-        );
+        trx.details.forEach(detail => {
+            // 1. Badge Status Buku
+            let badgeBuku = '';
+            const s = detail.status;
+            if (s === 'dikembalikan') 
+                badgeBuku = `<span class="badge" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
+            else if (s === 'terlambat') 
+                badgeBuku = `<span class="badge" style="background: var(--danger-soft); color: var(--danger);">Terlambat</span>`;
+            else if (s === 'rusak') 
+                badgeBuku = `<span class="badge" style="background: #fff7ed; color: #c2410c;">Rusak</span>`;
+            else if (s === 'hilang') 
+                badgeBuku = `<span class="badge" style="background: #fef2f2; color: #991b1b;">Hilang</span>`;
+            else if (s === 'dipinjam') 
+                badgeBuku = `<span class="badge" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
+            else if (s === 'diperpanjang') 
+                badgeBuku = `<span class="badge" style="background: #e1f5fe; color: var(--info);">Diperpanjang</span>`;
+            else 
+                badgeBuku = `<span class="badge" style="background: var(--warning-soft); color: var(--warning);">Proses...</span>`;
 
-        detailRiwayat.forEach(detail => {
-            let lama = '-';
-            if (detail.tanggal_kembali) {
-                const pinjam = new Date(trx.tanggal_pinjam);
-                const kembali = new Date(detail.tanggal_kembali);
-                const selisih = Math.ceil((kembali - pinjam) / (1000 * 60 * 60 * 24));
-                lama = selisih + ' hari';
+            // 2. Info Nominal Denda
+            let infoDenda = detail.denda > 0 ? `Rp ${new Intl.NumberFormat('id-ID').format(detail.denda)}` : '-';
+
+            // 3. Badge Status Denda
+            let badgeDenda = '-';
+            if (detail.denda > 0 || ['rusak', 'hilang'].includes(detail.status)) {
+                if (detail.status_denda === 'lunas') {
+                    badgeDenda = `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Lunas</span>`;
+                } else {
+                    badgeDenda = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Belum Lunas</span>`;
+                }
             }
 
-            let badge = '';
-            if (detail.status === 'dikembalikan')
-                badge = `<span class="badge" style="background: var(--success-soft); color: var(--success);">Dikembalikan</span>`;
-            else if (detail.status === 'terlambat')
-                badge = `<span class="badge" style="background: var(--danger-soft); color: var(--danger);">Terlambat</span>`;
-            else if (detail.status === 'dipinjam')
-                badge = `<span class="badge" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
-            else
-                badge = `<span class="badge" style="background: var(--warning-soft); color: var(--warning);">Verifikasi...</span>`;
-
             tbody.innerHTML += `
-            <tr>
+            <tr class="small">
                 <td class="text-center text-muted small">${no++}</td>
-                <td class="font-weight-bold">${detail.judul_buku}</td>
-                <td class="text-center">${formatTanggal(trx.tanggal_pinjam)}</td>
-                <td class="text-center">${detail.tanggal_kembali ? formatTanggal(detail.tanggal_kembali) : '<span class="text-muted">-</span>'}</td>
-                <td class="text-center">${lama}</td>
-                <td class="text-center">${badge}</td>
+                <td class="font-weight-bold" style="max-width: 200px;">${detail.judul_buku}</td>
+                <td class="text-center small">${formatTanggal(trx.tanggal_pinjam)}</td>
+                <td class="text-center small">${formatTanggal(detail.tanggal_kembali)}</td>
+                <td class="text-center">${badgeBuku}</td>
+                <td class="text-center font-weight-bold text-dark">${infoDenda}</td>
+                <td class="text-center">${badgeDenda}</td>
+                <td style="line-height: 1.2;">
+                    <small class="text-muted italic">${detail.catatan ?? '-'}</small>
+                </td>
             </tr>`;
         });
     });
 
     if (tbody.innerHTML === '') {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Tidak ditemukan data</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted">Tidak ditemukan data</td></tr>`;
     }
 }
 

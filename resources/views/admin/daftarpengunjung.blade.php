@@ -168,10 +168,10 @@ function renderTable(data) {
     tbody.innerHTML = data.map((p, index) => `
         <tr>
             <td class="text-center align-middle">
-                <span class="font-weight-bold" style="color: var(--gray);">${index + 1}</span>
+                <span style="color: var(--gray); font-size: 0.9rem;">${index + 1}</span>
             </td>
             <td class="px-4 py-3 align-middle">
-                <div class="font-weight-bold text-dark">${p.nama}</div>
+                <div class="font-weight-bold" style="color: var(--dark);">${p.nama}</div>
             </td>
             <td class="text-center align-middle">
                 <span class="text-muted" style="font-size: 0.9rem; font-family: monospace;">${p.nisn ?? '-'}</span>

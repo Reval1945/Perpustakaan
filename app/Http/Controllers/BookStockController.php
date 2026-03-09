@@ -20,7 +20,7 @@ class BookStockController extends Controller
     public function store(Request $request,$bookId)
     {
         $request->validate([
-            'kode_eksemplar'=>'required|string|max:50|unique:book_stocks,kode_eksemplar'
+            'kode_eksemplar' => 'required|string|max:50|unique:book_stocks,kode_eksemplar'
         ]);
 
         $stock = BookStock::create([

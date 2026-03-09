@@ -169,13 +169,15 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-2">
+                   <div class="form-group mb-2">
                         <label class="text-overline text-primary d-block mb-1">
                             <i class="fas fa-image mr-1"></i> Cover Buku
                         </label>
-                        <div class="custom-file" style="height: 40px;">
-                            <input type="file" id="image" class="custom-file-input rounded-pill" accept="image/*" style="height: 40px;">
-                            <label class="custom-file-label rounded-pill bg-light border-0" for="image" style="height: 40px; line-height: 2.2;">Pilih file gambar (jpg, png)</label>
+                        <div class="custom-file border-0">
+                            <input type="file" id="image" class="custom-file-input" accept="image/*">
+                            <label class="custom-file-label border-0 bg-light input-custom-style" for="image" style="height: 40px; border-radius: 50px; display: flex; align-items: center; padding-left: 20px;">
+                                Pilih file gambar (jpg, png)
+                            </label>
                         </div>
                     </div>
 
@@ -183,8 +185,8 @@
             </div>
 
             <div class="modal-footer border-0 bg-light p-3">
-                <button type="button" class="btn btn-light rounded px-3 shadow-sm" data-dismiss="modal" style="height: 38px;">
-                    <i class="fas fa-times mr-1"></i> Batal
+                <button type="button" class="btn btn-secondary rounded px-3 shadow-sm" data-dismiss="modal" style="height: 38px;">
+                    <i class="mr-1"></i> Batal
                 </button>
                 <button type="button" id="btnSaveBook" class="btn btn-primary rounded px-4 shadow-sm" style="height: 38px;">
                     <i class="fas fa-save mr-1"></i> Simpan
@@ -214,14 +216,15 @@
 
                 <div class="form-group mb-3">
                     <label class="text-overline text-primary d-block mb-1">
-                        <i class="fas fa-barcode mr-1"></i> Kode Eksemplar
+                        <i class="fas fa-barcode mr-1"></i> Kode Eksemplar 
                     </label>
                     <div class="d-flex">
-                        <input type="text" id="kode_eksemplar" class="form-control rounded-pill border-0 bg-light mr-2" placeholder="Contoh: BK001-A" style="height: 42px;">
+                        <input type="text" id="kode_eksemplar" class="form-control rounded-pill border-0 bg-light mr-2" placeholder="Contoh: BK01" style="height: 42px;">
                         <button class="btn btn-primary rounded-pill px-3 shadow-sm" id="btnTambahStok" style="height: 42px;">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
+                    <small class="ml-3 align-self-center" style="color: var(--gray);">Jika ingin menambah stok banyak secara langsung : BK01-BK10</small>
                 </div>
 
                 <hr class="my-3">
@@ -472,12 +475,9 @@
         background: rgba(78, 115, 223, 0.1); 
         color: var(--primary); }
     
-    .badge-warning-soft {
-        background: rgba(246, 194, 62, 0.1);
-        color: #f6c23e;
-        font-weight: 600;
-        font-size: 0.7rem;
-    }
+    .badge-success-soft { background: #dffff3; color: var(--success); }
+    .badge-warning-soft { background: #fff9e6; color: var(--warning); }
+    .badge-danger-soft { background: #ffebeb; color: var(--danger); }
     
     .btn-action { 
         width: 34px; 
@@ -494,6 +494,28 @@
     
     .btn-action:hover {
         transform: translateY(-2px);
+    }
+
+    /* Menghilangkan border default dan menyamakan tinggi label */
+    .custom-file-label {
+        line-height: 1.5;
+        color: #6e707e; /* Warna placeholder agar sama dengan input lain */
+    }
+
+    /* Menyesuaikan tombol "Browse" (::after) agar masuk ke dalam desain pill */
+    .custom-file-label::after {
+        height: 40px !important;
+        display: flex;
+        align-items: center;
+        background-color: #eaecf4 !important; /* Warna abu-abu soft agar senada dengan bg-light */
+        border: none !important;
+        padding: 0 20px !important;
+    }
+
+    /* Menghilangkan ring biru saat fokus agar konsisten dengan style input Anda */
+    .custom-file-input:focus ~ .custom-file-label {
+        box-shadow: none !important;
+        border: none !important;
     }
 
     /* Stock List */
@@ -845,6 +867,7 @@ async function loadStok(bookId){
             if(stok.status === 'tersedia') badgeClass = 'badge-success-soft';
             else if(stok.status === 'dipinjam') badgeClass = 'badge-warning-soft';
             else if(stok.status === 'rusak') badgeClass = 'badge-danger-soft';
+            else if(stok.status === 'hilang') badgeClass = 'badge-danger-soft';
 
             list.innerHTML += `
             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -864,48 +887,83 @@ async function loadStok(bookId){
 
 // Tambah Stok
 document.getElementById('btnTambahStok').addEventListener('click', async () => {
-    const bookId = document.getElementById('stok_book_id').value;
-    const kode = document.getElementById('kode_eksemplar').value.trim();
 
-    if(!kode){
+    const bookId = document.getElementById('stok_book_id').value;
+    const kodeInput = document.getElementById('kode_eksemplar').value.trim();
+
+    if(!kodeInput){
         Swal.fire('Peringatan', 'Kode eksemplar harus diisi', 'warning');
         return;
     }
 
+    let daftarKode = [];
+
+        const rangePattern = /^([A-Za-z]+)(\d+)-([A-Za-z]+)(\d+)$/;
+
+        if(rangePattern.test(kodeInput)){
+
+            const match = kodeInput.match(rangePattern);
+
+            const prefix = match[1];
+            const startNum = parseInt(match[2]);
+            const endNum = parseInt(match[4]);
+
+            const digitLength = match[2].length; // jumlah digit dari input
+
+            for(let i = startNum; i <= endNum; i++){
+
+                let number = String(i).padStart(digitLength,'0');
+                daftarKode.push(prefix + number);
+
+            }
+
+        }else{
+
+            daftarKode.push(kodeInput);
+
+        }
+
     try {
-        const res = await fetch(`${API}/books/${bookId}/stok`, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ kode_eksemplar: kode })
-        });
 
-        const data = await res.json();
+        for(const kode of daftarKode){
 
-        if(!res.ok){
-            Swal.fire('Gagal', data.message || 'Gagal tambah stok', 'error');
-            return;
+            const res = await fetch(`${API}/books/${bookId}/stok`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ kode_eksemplar: kode })
+            });
+
+            if(!res.ok){
+                const data = await res.json();
+                Swal.fire('Gagal', data.message || 'Gagal tambah stok', 'error');
+                return;
+            }
         }
 
         document.getElementById('kode_eksemplar').value = '';
+
         await loadStok(bookId);
         fetchBooks();
-        
+
         Swal.fire({
             toast: true,
             position: 'center',
             icon: 'success',
-            title: 'Stok ditambahkan',
+            title: 'Stok berhasil ditambahkan',
             showConfirmButton: false,
             timer: 1500
         });
 
     } catch (err) {
+
         Swal.fire('Error', 'Gagal menambah stok', 'error');
+
     }
+
 });
 
 // Hapus Stok Eksemplar
