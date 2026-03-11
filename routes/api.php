@@ -55,6 +55,7 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
     Route::resource('/books', BookController::class);
     Route::get('/books/{book}/stok', [BookStockController::class,'index']);
     Route::post('/books/{book}/stok', [BookStockController::class,'store']);
+     Route::get('/books/{book}/stok-tersedia1', [BookStockController::class, 'stokTersedia']);
     Route::delete('/stok/{id}', [BookStockController::class,'destroy']);
     Route::get('/books/export/excel', [BookController::class, 'exportExcel']);
 
@@ -133,6 +134,7 @@ Route::middleware(['auth:sanctum', 'role.manual:user'])->group(function () {
 
     // BUKU
     Route::resource('/list-books', BookController::class)->only(['index', 'show']);
+    Route::get('/books/{book}/stok-tersedia', [BookStockController::class, 'stokTersedia']);
 
     // TRANSAKSI
     Route::put('/transaksi-perpanjangan/{id}', [TransactionController::class, 'ajukanPerpanjangan']);

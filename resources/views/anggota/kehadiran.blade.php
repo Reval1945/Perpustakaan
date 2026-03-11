@@ -6,8 +6,7 @@
 <div class="container-fluid animate-up">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Presensi Pengunjung</h1>
-            <p class="text-muted small mb-0">Silakan isi form di bawah ini saat tiba di perpustakaan.</p>
+            <h1 class="h3 mb-0" style="color: var(--dark); font-weight: 700;">Presensi Pengunjung</h1>
         </div>
     </div>
 

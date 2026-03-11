@@ -11,10 +11,9 @@
     </h1>
 </div>
 
-<div class="row">
-    <!-- Form -->
-    <div class="col-lg-7">
-        <div class="card shadow-sm mb-4" style="border: none; border-radius: 16px;">
+<div class="row d-flex align-items-stretch">
+    <div class="col-lg-7 d-flex">
+        <div class="card shadow-sm mb-4 h-90 w-100" style="border: none; border-radius: 16px;">
             <div class="card-header bg-white py-3" style="border-radius: 16px 16px 0 0; border-bottom: 1px solid var(--gray-light);">
                 <h6 class="m-0 font-weight-bold text-primary">
                     <i class="fas fa-edit mr-1"></i> Formulir Pengaturan
@@ -23,7 +22,6 @@
             <div class="card-body p-4">
                 <form id="aturanForm">
                     <input type="hidden" id="aturanId">
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -48,7 +46,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label class="font-weight-bold text-dark">Status Aturan</label>
                         <select id="aktif" class="form-control custom-select-lg">
@@ -56,14 +53,11 @@
                             <option value="0">🔴 Non-Aktif (Tangguhkan)</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label class="font-weight-bold text-dark">Keterangan / Catatan Tambahan</label>
                         <textarea id="keterangan" class="form-control" rows="4" placeholder="Contoh: Aturan ini berlaku untuk semua kategori buku..."></textarea>
                     </div>
-
                     <hr class="my-4">
-
                     <button type="submit" class="btn btn-primary btn-block shadow-sm" style="height: 50px; border-radius: 12px; font-weight: 600;">
                         <i class="fas fa-save mr-2"></i> Perbarui Aturan Peminjaman
                     </button>
@@ -72,9 +66,8 @@
         </div>
     </div>
 
-    <!-- Preview Info -->
-    <div class="col-lg-5">
-        <div class="card shadow-sm border-0 mb-4" style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);">
+    <div class="col-lg-5 d-flex">
+        <div class="card shadow-sm border-0 mb-4 h-90 w-100" style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);">
             <div class="card-body p-4">
                 <div class="text-center mb-4">
                     <div class="bg-primary-soft mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; border-radius: 20px;">
@@ -100,14 +93,6 @@
                         <p class="small mb-0 text-dark-50" id="infoAturanText">
                             Memuat narasi aturan...
                         </p>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h6 class="font-weight-bold text-dark small mb-2 text-uppercase">Log Terakhir:</h6>
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-clock text-gray mr-2"></i>
-                        <span class="text-muted small">Diperbarui sistem pada: {{ date('d M Y') }}</span>
                     </div>
                 </div>
             </div>

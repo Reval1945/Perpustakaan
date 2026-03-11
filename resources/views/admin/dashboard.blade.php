@@ -5,7 +5,7 @@
 @section('content')
 <div class="container-fluid animate-up">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Dashboard</h1>
+        <h1 class="h3 mb-0" style="color: var(--dark); font-weight: 700;">Dashboard</h1>
         <div class="d-none d-sm-inline-block">
         </div>
     </div>

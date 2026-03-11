@@ -7,7 +7,6 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <div>
         <h1 class="h3 mb-1" style="color: var(--dark); font-weight: 700;">Daftar Peminjaman</h1>
-        <p class="text-muted small mb-0">Pantau koleksi buku yang sedang Anda baca</p>
     </div>
     <div class="text-right">
         <span class="badge badge-pill shadow-sm py-2 px-3" style="background: var(--primary-soft); color: var(--primary); font-size: 0.9rem;">

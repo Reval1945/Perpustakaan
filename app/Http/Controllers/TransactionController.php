@@ -50,11 +50,13 @@ class TransactionController extends Controller
 
     public function store(StorePeminjamanRequest $request)
     {
-        $userId = $request->user()->id;
+        $userId   = $request->user()->id;
+        $validated = $request->validated();
 
         $transaksi = $this->service->createPeminjaman(
             $userId,
-            $request->validated()['book_ids']
+            $validated['book_ids'],
+            $validated['book_stock_ids'] ?? []
         );
         return response()->json([
             'message' => 'Peminjaman diajukan, menunggu verifikasi admin',
@@ -67,7 +69,8 @@ class TransactionController extends Controller
         try {
             $transaksi = $this->admin_service->createManual(
                 $request->user_id,
-                $request->book_ids
+                $request->book_ids,
+                $request->book_stock_ids ?? []
             );
 
             return response()->json([
@@ -81,6 +84,7 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+
 
     public function verifikasiPinjamDetail(string $detailId)
     {

@@ -15,39 +15,72 @@ use Illuminate\Validation\ValidationException;
 
 class AdminTransactionService
 {
-    public function createManual(string $userId, array $bookIds): Transactions
+    // Admin Membua Peminjaman Manual (tanpa memilih eksemplar, atau dengan memilih eksemplar yang direservasi)
+    public function createManual(string $userId, array $bookIds, array $bookStockIds = []): Transactions
     {
-        return DB::transaction(function () use ($userId, $bookIds) {
+        return DB::transaction(function () use ($userId, $bookIds, $bookStockIds) {
 
-            $aturan = AturanPeminjaman::where('aktif', 1)->firstOrFail();
+            $aturan        = AturanPeminjaman::where('aktif', 1)->firstOrFail();
             $tanggalPinjam = Carbon::today();
+            $jatuhTempo    = $tanggalPinjam->copy()->addDays($aturan->maks_hari_pinjam);
 
             $transaksi = Transactions::create([
-                'kode_transaksi' => TransactionCodeGenerator::generate(),
+                'kode_transaksi'      => TransactionCodeGenerator::generate(),
                 'user_id'             => $userId,
                 'tanggal_pinjam'      => $tanggalPinjam,
-                'tanggal_jatuh_tempo' => $tanggalPinjam->copy()
-                    ->addDays($aturan->maks_hari_pinjam),
+                'tanggal_jatuh_tempo' => $jatuhTempo,
                 'status'              => 'menunggu_verifikasi',
             ]);
 
-            $books = Book::whereIn('id', $bookIds)->get();
+            $books = Book::whereIn('id', $bookIds)->get()->keyBy('id');
 
-            $transaksi->details()->createMany(
-                $books->map(fn ($b) => [
-                    'book_id'    => $b->id,
-                    'kode_buku'  => $b->kode_buku,
-                    'judul_buku' => $b->judul,
-                    'tanggal_jatuh_tempo' => $tanggalPinjam->copy()
-                    ->addDays($aturan->maks_hari_pinjam),
-                    'status'     => 'menunggu_verifikasi',
-                ])->toArray()
-            );
+            $stockMap = count($bookStockIds) === count($bookIds)
+                ? collect($bookIds)->combine($bookStockIds)->toArray()
+                : [];
+
+            $details = [];
+
+            foreach ($bookIds as $bookId) {
+                $book    = $books[$bookId] ?? null;
+                $stockId = $stockMap[$bookId] ?? null;
+
+                if (!$book) continue;
+
+                if ($stockId) {
+                    $stok = BookStock::where('id', $stockId)
+                        ->where('book_id', $bookId)
+                        ->where('status', 'tersedia')
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$stok) {
+                        throw new \Exception(
+                            "Eksemplar yang dipilih untuk buku \"{$book->judul}\" sudah tidak tersedia."
+                        );
+                    }
+
+                    $stok->update(['status' => 'direservasi']);
+                }
+
+                $details[] = [
+                    'book_id'             => $book->id,
+                    'kode_buku'           => $book->kode_buku,
+                    'judul_buku'          => $book->judul,
+                    'tanggal_jatuh_tempo' => $jatuhTempo,
+                    'status'              => 'menunggu_verifikasi',
+                    'book_stock_id'       => $stockId,
+                ];
+            }
+
+            $transaksi->details()->createMany($details);
 
             return $transaksi;
         });
     }
 
+    /**
+     * Verifikasi pinjam oleh admin.
+     */
     public function verifikasiPinjam($transaction)
     {
         DB::transaction(function () use ($transaction) {
@@ -58,57 +91,64 @@ class AdminTransactionService
                     continue;
                 }
 
-                // ambil stok tersedia
-                $stok = BookStock::where('book_id', $detail->book_id)
-                    ->where('status', 'tersedia')
-                    ->lockForUpdate()
-                    ->first();
+                if ($detail->book_stock_id) {
+                    // ── Kasus A ──
+                    $stok = BookStock::where('id', $detail->book_stock_id)
+                        ->whereIn('status', ['direservasi', 'tersedia'])
+                        ->lockForUpdate()
+                        ->first();
 
-                if (!$stok) {
-                    throw new \Exception("Stok buku {$detail->judul_buku} habis");
+                    if (!$stok) {
+                        throw new \Exception(
+                            "Stok eksemplar untuk buku \"{$detail->judul_buku}\" tidak ditemukan atau status sudah berubah."
+                        );
+                    }
+
+                    $stok->update(['status' => 'dipinjam']);
+                    $detail->update(['status' => 'dipinjam']);
+
+                } else {
+                    // ── Kasus B ──
+                    $stok = BookStock::where('book_id', $detail->book_id)
+                        ->where('status', 'tersedia')
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$stok) {
+                        throw new \Exception("Stok buku \"{$detail->judul_buku}\" habis.");
+                    }
+
+                    $stok->update(['status' => 'dipinjam']);
+
+                    $detail->update([
+                        'book_stock_id' => $stok->id,
+                        'status'        => 'dipinjam',
+                    ]);
                 }
-
-                // ubah status stok
-                $stok->update([
-                    'status' => 'dipinjam'
-                ]);
-
-                // assign stok ke detail
-                $detail->update([
-                    'book_stock_id' => $stok->id,
-                    'status' => 'dipinjam'
-                ]);
             }
 
-            // update transaksi utama
-            $transaction->update([
-                'status' => 'dipinjam'
-            ]);
+            $transaction->update(['status' => 'dipinjam']);
         });
     }
-    
+
     public function verifyReturnTransaction(Transactions $transaction, array $data)
     {
         return DB::transaction(function () use ($transaction, $data) {
             $transaction->load('details');
 
             foreach ($transaction->details as $detail) {
-                // Kita bungkus payload agar konsisten dengan input yang dibutuhkan verifyReturnDetail
                 $payload = [
-                    'status'      => $data['status'],
-                    'jenis_denda' => $data['jenis_denda'] ?? null,
-                    'denda'       => $data['denda'] ?? 0,
-                    'catatan'     => $data['catatan'] ?? null,
+                    'status'            => $data['status'],
+                    'jenis_denda'       => $data['jenis_denda'] ?? null,
+                    'denda'             => $data['denda'] ?? 0,
+                    'catatan'           => $data['catatan'] ?? null,
                     'jumlah_hari_telat' => $data['jumlah_hari_telat'] ?? 0,
                 ];
-
                 $this->verifyReturnDetail($detail, $payload);
             }
 
-            $transaction->refresh();
-            $transaction->load('details');
+            $transaction->refresh()->load('details');
 
-            // Update status transaksi utama jika semua buku sudah kembali/diproses
             $statusSelesai = ['dikembalikan', 'terlambat', 'rusak', 'hilang'];
             if ($transaction->details->every(fn ($d) => in_array($d->status, $statusSelesai))) {
                 $newStatus = 'dikembalikan';
@@ -121,7 +161,6 @@ class AdminTransactionService
                     $newStatus = 'terlambat';
                 }
 
-                // update aggregate penalties and payment flag as well
                 $totalDenda = $transaction->details->sum('denda');
                 $transaction->update([
                     'status'      => $newStatus,
@@ -136,93 +175,68 @@ class AdminTransactionService
 
     public function verifyReturnDetail(TransactionDetail $detail, array $data)
     {
-        // normalize to startOfDay to avoid off-by-one due to time portions
-        $today = Carbon::now()->startOfDay();
+        $today      = Carbon::now()->startOfDay();
         $jatuhTempo = Carbon::parse($detail->tanggal_jatuh_tempo)->startOfDay();
 
-        // 1. Validasi Status Terlambat
         if ($data['status'] === 'terlambat' && $today->lte($jatuhTempo)) {
             throw ValidationException::withMessages([
                 'status' => 'Buku belum melewati tanggal jatuh tempo, gunakan status "dikembalikan".'
             ]);
         }
 
-        // 2. Hitung jumlah hari telat (untuk record DB) - pastikan non-negative.
-        if (isset($data['jumlah_hari_telat'])) {
-            $jumlahHariTelat = max(0, (int) $data['jumlah_hari_telat']);
-        } else {
-            $jumlahHariTelat = $today->gt($jatuhTempo) ? (int) $today->diffInDays($jatuhTempo) : 0;
-            $jumlahHariTelat = max(0, $jumlahHariTelat);
-        }
+        $jumlahHariTelat = isset($data['jumlah_hari_telat'])
+            ? max(0, (int) $data['jumlah_hari_telat'])
+            : max(0, $today->gt($jatuhTempo) ? (int) $today->diffInDays($jatuhTempo) : 0);
 
-        // 3. LOGIKA DENDA (Disederhanakan)
-        // Karena JS sudah menghitung (Hari x Tarif), di sini kita langsung ambil totalnya
         $totalDenda = (float) ($data['denda'] ?? 0);
-        
-        // Tentukan jenis denda untuk ENUM database
-        if ($data['status'] === 'terlambat') {
-            $jenisDendaDB = 'telat';
-        } else {
-            $jenisDendaDB = $data['jenis_denda'] ?? null;
-        }
 
-        // 4. Mapping status stock
         $stockStatus = match ($data['status']) {
             'rusak'  => 'rusak',
             'hilang' => 'hilang',
-            default  => 'tersedia' // 'dikembalikan' & 'terlambat' buku jadi tersedia lagi
+            default  => 'tersedia',
         };
 
-        return DB::transaction(function () use ($detail, $data, $today, $jumlahHariTelat, $totalDenda, $stockStatus, $jenisDendaDB) {
+        return DB::transaction(function () use ($detail, $data, $today, $jumlahHariTelat, $totalDenda, $stockStatus) {
 
-            // 5. Update detail
-            $jenisDendaOtomatis = null;
-            if ($data['status'] === 'terlambat') {
-                $jenisDendaOtomatis = 'telat';
-            } elseif ($data['status'] === 'rusak') {
-                $jenisDendaOtomatis = 'rusak';
-            } elseif ($data['status'] === 'hilang') {
-                $jenisDendaOtomatis = 'hilang';
-            }
+            $jenisDendaOtomatis = match ($data['status']) {
+                'terlambat' => 'telat',
+                'rusak'     => 'rusak',
+                'hilang'    => 'hilang',
+                default     => null,
+            };
 
             $detail->update([
-                'status'            => $data['status'], // misal: 'rusak'
+                'status'            => $data['status'],
                 'tanggal_kembali'   => $today,
-                'jenis_denda'       => $jenisDendaOtomatis, // Maka otomatis jadi 'rusak'
+                'jenis_denda'       => $jenisDendaOtomatis,
                 'jumlah_hari_telat' => $jumlahHariTelat,
                 'denda'             => $totalDenda,
-                // Jika ada denda (telat/rusak/hilang), status_denda jadi belum_lunas
-                'status_denda'      => ($jenisDendaOtomatis !== null) ? 'belum_lunas' : 'lunas',
+                'status_denda'      => $jenisDendaOtomatis !== null ? 'belum_lunas' : 'lunas',
                 'catatan'           => $data['catatan'] ?? null,
             ]);
 
-            // 6. Update status fisik buku (BookStock)
             if ($detail->book_stock_id) {
-                BookStock::where('id', $detail->book_stock_id)->update([
-                    'status' => $stockStatus
-                ]);
+                BookStock::where('id', $detail->book_stock_id)
+                    ->update(['status' => $stockStatus]);
             }
 
-            // 7. synchronize header after a single detail was verified
             $transaction = $detail->transaction->fresh('details');
-            $statuses = $transaction->details->pluck('status');
+            $statuses    = $transaction->details->pluck('status');
 
-            // compute header status based on detail statuses
             if ($statuses->contains('rusak')) {
                 $transaction->status = 'rusak';
             } elseif ($statuses->contains('hilang')) {
                 $transaction->status = 'hilang';
             } elseif ($statuses->contains('terlambat')) {
                 $transaction->status = 'terlambat';
-            } elseif ($statuses->every(fn($s) => $s === 'dikembalikan')) {
+            } elseif ($statuses->every(fn ($s) => $s === 'dikembalikan')) {
                 $transaction->status = 'dikembalikan';
-            } elseif ($statuses->every(fn($s) => $s === 'dipinjam')) {
+            } elseif ($statuses->every(fn ($s) => $s === 'dipinjam')) {
                 $transaction->status = 'dipinjam';
             }
 
-            // update aggregate penalties too
             $transaction->total_denda = $transaction->details->sum('denda');
-            $transaction->lunas = $transaction->total_denda <= 0;
+            $transaction->lunas       = $transaction->total_denda <= 0;
             $transaction->save();
 
             return $detail;
@@ -232,18 +246,47 @@ class AdminTransactionService
     public function verifikasiDetail(TransactionDetail $detail): void
     {
         DB::transaction(function () use ($detail) {
-            $detail->update(['status' => 'dipinjam']);
+
+            if ($detail->book_stock_id) {
+                // ── Kasus A: stok sudah direservasi ──
+                $stok = BookStock::where('id', $detail->book_stock_id)
+                    ->whereIn('status', ['direservasi', 'tersedia'])
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($stok) {
+                    $stok->update(['status' => 'dipinjam']);
+                }
+
+                $detail->update(['status' => 'dipinjam']);
+
+            } else {
+                // ── Kasus B: pilih stok otomatis ──
+                $stok = BookStock::where('book_id', $detail->book_id)
+                    ->where('status', 'tersedia')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$stok) {
+                    throw new \Exception("Stok buku \"{$detail->judul_buku}\" habis.");
+                }
+
+                $stok->update(['status' => 'dipinjam']);
+
+                $detail->update([
+                    'book_stock_id' => $stok->id,
+                    'status'        => 'dipinjam',
+                ]);
+            }
 
             $transaksi = $detail->transaction;
-            $details = $transaksi->details;
+            $details   = $transaksi->details()->get();
 
-            // Cek apakah semua atau sebagian sudah dipinjam
             if ($details->every(fn ($d) => $d->status === 'dipinjam')) {
                 $transaksi->update(['status' => 'dipinjam']);
-            } else if ($details->contains(fn ($d) => $d->status === 'dipinjam')) {
+            } elseif ($details->contains(fn ($d) => $d->status === 'dipinjam')) {
                 $transaksi->update(['status' => 'sebagian_dipinjam']);
             }
         });
     }
 }
-

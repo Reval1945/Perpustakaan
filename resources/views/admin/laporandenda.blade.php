@@ -89,7 +89,7 @@
                 </div>
             </div>
             <div class="modal-footer" style="border-top: none;">
-                <button class="btn btn-light px-4" data-dismiss="modal" style="border-radius: 10px;">Batal</button>
+                <button class="btn btn-secondary px-4" data-dismiss="modal" style="border-radius: 10px;">Batal</button>
                 <button class="btn btn-primary px-4" id="btnUpdateDenda" style="border-radius: 10px; background: var(--primary);">
                     <i class="fas fa-save mr-2"></i> Simpan Perubahan
                 </button>

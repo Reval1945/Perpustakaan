@@ -16,46 +16,57 @@ class BookStock extends Model
         'id',
         'book_id',
         'kode_eksemplar',
-        'status'
+        'status',
     ];
 
     public $incrementing = false;
-    protected $keyType = 'string';
+    protected $keyType   = 'string';
 
     protected static function boot()
     {
         parent::boot();
 
-        // auto generate UUID
         static::creating(function ($model) {
             if (!$model->id) {
                 $model->id = (string) Str::uuid();
             }
         });
     }
-    
+
     public function book()
     {
         return $this->belongsTo(Book::class);
     }
 
+    // ── Scopes ────────────────────────────────────────────────────────────
     public function scopeAvailable($query)
     {
-        return $query->where('status','tersedia');
+        return $query->where('status', 'tersedia');
     }
 
     public function scopeBorrowed($query)
     {
-        return $query->where('status','dipinjam');
+        return $query->where('status', 'dipinjam');
     }
 
-    public function isAvailable()
+    public function scopeReserved($query)
+    {
+        return $query->where('status', 'direservasi');
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    public function isAvailable(): bool
     {
         return $this->status === 'tersedia';
     }
 
-    public function isBorrowed()
+    public function isBorrowed(): bool
     {
         return $this->status === 'dipinjam';
+    }
+
+    public function isReserved(): bool
+    {
+        return $this->status === 'direservasi';
     }
 }

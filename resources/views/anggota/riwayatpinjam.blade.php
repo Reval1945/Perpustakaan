@@ -7,7 +7,6 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <div>
         <h1 class="h3 mb-1" style="color: var(--dark); font-weight: 700;">Riwayat Peminjaman</h1>
-        <p class="text-muted small mb-0">Daftar seluruh transaksi buku yang pernah Anda lakukan</p>
     </div>
     <div>
         <button class="btn btn-success shadow-sm px-4 btn-main" id="btn-cetak">

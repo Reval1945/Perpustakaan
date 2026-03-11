@@ -2,48 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\BookStock;
 use Illuminate\Http\Request;
 
 class BookStockController extends Controller
 {
-    public function index($bookId)
+    /**
+     * [ADMIN] Tampilkan semua stok milik sebuah buku.
+     */
+    public function index(Book $book)
     {
-        $stocks = BookStock::where('book_id',$bookId)->get();
-
         return response()->json([
-            'success'=>true,
-            'data'=>$stocks
+            'data' => $book->stocks()->orderBy('kode_eksemplar')->get()
         ]);
     }
 
-    public function store(Request $request,$bookId)
+    /**
+     * [ADMIN] Tambah eksemplar baru.
+     */
+    public function store(Request $request, Book $book)
     {
         $request->validate([
-            'kode_eksemplar' => 'required|string|max:50|unique:book_stocks,kode_eksemplar'
+            'kode_eksemplar' => ['required', 'string', 'unique:book_stocks,kode_eksemplar'],
         ]);
 
-        $stock = BookStock::create([
-            'book_id'=>$bookId,
-            'kode_eksemplar'=>$request->kode_eksemplar
+        $stock = $book->stocks()->create([
+            'kode_eksemplar' => $request->kode_eksemplar,
+            'status'         => 'tersedia',
         ]);
 
         return response()->json([
-            'success'=>true,
-            'message'=>'Stok berhasil ditambahkan',
-            'data'=>$stock
-        ]);
+            'message' => 'Eksemplar berhasil ditambahkan',
+            'data'    => $stock,
+        ], 201);
     }
 
+    /**
+     * [ADMIN] Hapus eksemplar.
+     */
     public function destroy($id)
     {
         $stock = BookStock::findOrFail($id);
+
+        if ($stock->status !== 'tersedia') {
+            return response()->json([
+                'message' => 'Eksemplar sedang dipinjam, tidak dapat dihapus.'
+            ], 422);
+        }
+
         $stock->delete();
 
-        return response()->json([
-            'success'=>true,
-            'message'=>'Stok dihapus'
-        ]);
+        return response()->json(['message' => 'Eksemplar berhasil dihapus']);
     }
 
+    /**
+     * [USER] Ambil daftar eksemplar TERSEDIA dari sebuah buku.
+     * GET /api/books/{book}/stok-tersedia
+     */
+    public function stokTersedia(Book $book)
+    {
+        $stocks = $book->stocks()
+            ->where('status', 'tersedia')
+            ->orderBy('kode_eksemplar')
+            ->get(['id', 'kode_eksemplar', 'status']);
+
+        return response()->json(['data' => $stocks]);
+    }
 }

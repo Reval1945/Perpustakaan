@@ -13,8 +13,7 @@
     {{-- Header --}}
     <div class="header-container mb-4">
         <div class="header-left">
-            <h1 class="h3 mb-1 text-gray-800 font-weight-bold">Daftar Buku</h1>
-            <p class="text-muted small mb-0">Kelola koleksi buku perpustakaan Anda.</p>
+            <h1 class="h3 mb-1" style="color: var(--dark); font-weight: 700;">Daftar Buku</h1>
         </div>
 
         <div class="header-right">

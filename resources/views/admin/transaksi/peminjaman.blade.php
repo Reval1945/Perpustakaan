@@ -527,39 +527,96 @@ document.addEventListener('click', function(e) {
 
         // LOGIKA PINJAM: Jika statusnya menunggu_verifikasi (peminjaman awal)
         if (statusType === 'menunggu_verifikasi') {
+    // Ambil data transaksi dari state untuk tampilkan eksemplar yang dipilih
+    const trx = allTransactions.find(t => t.id == id);
+
+    // Bangun info eksemplar per detail
+    let eksemplarRows = '';
+            if (trx && trx.details) {
+                trx.details
+                    .filter(d => d.status === 'menunggu_verifikasi')
+                    .forEach(d => {
+                        const kode = d.book_stock?.kode_eksemplar ?? null;
+
+                        if (kode) {
+                            // Anggota sudah pilih eksemplar
+                            eksemplarRows += `
+                                <tr>
+                                    <td style="padding:6px 8px; font-size:0.85rem;">${d.judul_buku}</td>
+                                    <td style="padding:6px 8px; text-align:center;">
+                                        <span style="background:#eef2ff;color:#4e73df;border-radius:6px;padding:2px 10px;font-weight:700;font-size:0.8rem;">
+                                            <i class="fas fa-barcode" style="font-size:0.7rem;margin-right:4px;"></i>${kode}
+                                        </span>
+                                    </td>
+                                </tr>`;
+                        } else {
+                            // Admin manual, belum ada eksemplar — akan dipilih otomatis
+                            eksemplarRows += `
+                                <tr>
+                                    <td style="padding:6px 8px; font-size:0.85rem;">${d.judul_buku}</td>
+                                    <td style="padding:6px 8px; text-align:center;">
+                                        <span style="background:#fff3cd;color:#856404;border-radius:6px;padding:2px 10px;font-weight:700;font-size:0.8rem;">
+                                            <i class="fas fa-random" style="font-size:0.7rem;margin-right:4px;"></i>Otomatis
+                                        </span>
+                                    </td>
+                                </tr>`;
+                        }
+                    });
+            }
+
             Swal.fire({
-                title: 'Konfirmasi Pinjam?',
-                text: "Pastikan buku sudah diserahkan kepada peminjam.",
+                title: 'Konfirmasi Peminjaman',
                 icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#2C5AA0',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Ya, Verifikasi!',
-                cancelButtonText: 'Batal'
+                html: `
+                    <p class="mb-3" style="color:#64748b;font-size:0.9rem;">
+                        Pastikan buku fisik berikut sudah diserahkan kepada peminjam.
+                    </p>
+                    <table style="width:100%;border-collapse:collapse;border:1px solid #e8ecf5;border-radius:10px;overflow:hidden;">
+                        <thead>
+                            <tr style="background:#f0f4ff;">
+                                <th style="padding:8px;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:#64748b;text-align:left;">Judul Buku</th>
+                                <th style="padding:8px;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:#64748b;text-align:center;">Kode Eksemplar</th>
+                            </tr>
+                        </thead>
+                        <tbody>${eksemplarRows}</tbody>
+                    </table>
+                    <p class="mt-3 mb-0" style="font-size:0.78rem;color:#a0aec0;">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Badge <b style="color:#856404;">Otomatis</b> artinya eksemplar dipilih sistem saat ini.
+                    </p>`,
+                showCancelButton:    true,
+                confirmButtonColor:  '#2C5AA0',
+                cancelButtonColor:   '#6c757d',
+                confirmButtonText:   '<i class="fas fa-check mr-1"></i> Ya, Verifikasi!',
+                cancelButtonText:    'Batal',
+                width:               560,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.showLoading();
-                    
-                    fetch(`http://127.0.0.1:8000/api/transactions/${id}/verifikasi-pinjam`, {
+                    Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    fetch(`/api/transactions/${id}/verifikasi-pinjam`, {
                         method: 'PUT',
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                            'Accept': 'application/json',
                         },
-                        body: JSON.stringify({status: 'dipinjam'})
+                        body: JSON.stringify({ status: 'dipinjam' }),
                     })
                     .then(res => res.json())
-                    .then(() => {
-                        Swal.fire('Berhasil!', 'Buku berhasil dipinjam.', 'success');
+                    .then(data => {
+                        if (data.message && data.message.toLowerCase().includes('gagal') || data.errors) {
+                            Swal.fire('Gagal', data.message || 'Terjadi kesalahan.', 'error');
+                            return;
+                        }
+                        Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Buku berhasil dipinjam.', timer: 1500, showConfirmButton: false });
                         fetchTransactions();
                     })
                     .catch(() => Swal.fire('Gagal', 'Terjadi kesalahan sistem.', 'error'));
                 }
             });
-            return; // Stop di sini untuk proses pinjam
+            return;
         }
-
         // LOGIKA KEMBALI: Jika statusnya menunggu_verifikasi_kembali
         // (Ini adalah bagian yang sebelumnya terpicu salah)
         accEndpoint = `http://127.0.0.1:8000/api/transactions/${id}/verifikasi-kembali`;

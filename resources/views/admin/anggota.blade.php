@@ -66,13 +66,11 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content border-0 shadow" style="border-radius: 18px; overflow: hidden;">
             
-            <div class="modal-header border-0 pb-0 pt-3 px-4">
-                <h5 class="modal-title font-weight-bold text-gray-800" id="modalTitle">
+            <div class="modal-header text-white" style="background: var(--primary); border-radius: 16px 16px 0 0;">
+                <h5 class="modal-title font-weight-bold text-white" id="modalTitle">
                     <i class="fas fa-user-edit text-primary mr-2"></i> Formulir Anggota
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
             </div>
 
             <div class="modal-body p-4 pt-2">
@@ -262,7 +260,7 @@ function renderTable(users) {
                 <td class="align-middle">
                     <span class="badge badge-light text-primary p-2" style="font-weight: 700;">${user.kode_user}</span>
                 </td>
-                <td class="align-middle text-dark font-weight-bold">${user.name}</td>
+                <td class="align-middle font-weight-bold" style="color: var(--dark);">${user.name}</td>
                 <td class="text-center align-middle">
                     <span class="text-muted" style="font-size: 0.9rem; font-family: monospace;" >${user.nisn ?? '-'}</span>
                 </td>

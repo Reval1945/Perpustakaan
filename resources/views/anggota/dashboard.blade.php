@@ -6,8 +6,7 @@
 <div class="container-fluid animate-up">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Dashboard Anggota</h1>
-            <p class="text-muted small mb-0">Halo, selamat datang kembali di sistem perpustakaan.</p>
+            <h1 class="h3 mb-0" style="color: var(--dark); font-weight: 700;">Dashboard</h1>
         </div>
         <div class="d-none d-sm-inline-block">
             <div class="bg-white px-3 py-2 rounded-pill shadow-sm border-0 small">
