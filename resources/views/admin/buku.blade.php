@@ -63,7 +63,7 @@
         <div class="modal-content border-0 shadow" style="border-radius: 18px; overflow: hidden;">
             
             <div class="modal-header text-white" style="background: var(--primary); border-radius: 16px 16px 0 0;">
-                <h5 class="modal-title font-weight-bold" id="modalTambahBukuLabel">
+                <h5 class="modal-title font-weight-bold text-white" id="modalTambahBukuLabel">
                     <i id="modalBukuIcon" class="fas fa-plus-circle text-primary mr-2"></i>
                     <span id="modalBukuTitle">Tambah Buku</span>
                 </h5>

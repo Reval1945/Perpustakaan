@@ -24,8 +24,8 @@ class ProfileSAController extends Controller
     }
 
    public function update(Request $request)
-    {
-        $user = $request->user();
+   {
+    $user = $request->user();
 
         $request->validate([
             'name' => 'required|max:255',
@@ -62,7 +62,7 @@ class ProfileSAController extends Controller
 
         return response()->json([
             'message' => 'Profil berhasil diupdate',
-            'photo' => asset('storage/profile/'.$data['photo'] ?? $user->photo)
+            'photo' => asset('storage/profile/'.($data['photo'] ?? $user->photo))
         ]);
     }
 }

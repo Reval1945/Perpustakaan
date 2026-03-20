@@ -19,10 +19,14 @@
         --primary-light:  #4A7BC8;
         --primary-soft:   #e8f0fe;
         --danger:         #ef4444;
+        --danger-soft:    #fef2f2;
         --dark:           #1e293b;
         --gray:           #64748b;
         --gray-light:     #f1f5f9;
         --border:         #e2e8f0;
+        --info-soft:      #e1f5fe;
+        --success-soft:   #ecfdf5;
+        --warning-soft:   #fffbeb;
         --sidebar-w:      230px;
         --sidebar-icon-w: 72px;
         --topbar-h:       62px;
@@ -30,7 +34,7 @@
     }
 
     /* ====================================================
-       RESET / BASE
+       BASE
     ==================================================== */
     *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -41,14 +45,13 @@
     }
 
     /* ====================================================
-       LAYOUT WRAPPER
+       LAYOUT
     ==================================================== */
     #wrapper {
         display: flex;
         width: 100%;
         min-height: 100vh;
     }
-
     #content-wrapper {
         display: flex;
         flex-direction: column;
@@ -56,7 +59,6 @@
         min-width: 0;
         overflow-x: hidden;
     }
-
     #content { flex: 1; }
 
     /* ====================================================
@@ -76,27 +78,18 @@
     }
 
     /* Collapsed (desktop) */
-    .sidebar.toggled {
-        width: var(--sidebar-icon-w) !important;
-    }
+    .sidebar.toggled { width: var(--sidebar-icon-w) !important; }
     .sidebar.toggled .sidebar-brand-text,
     .sidebar.toggled .sidebar-heading,
-    .sidebar.toggled .nav-item .nav-link span {
-        display: none !important;
-    }
+    .sidebar.toggled .nav-item .nav-link span { display: none !important; }
     .sidebar.toggled .nav-item .nav-link {
         justify-content: center !important;
         padding: 0.75rem 0 !important;
         margin: 0.15rem 0.4rem !important;
         gap: 0 !important;
     }
-    .sidebar.toggled .sidebar-brand {
-        justify-content: center !important;
-        padding-left: 0 !important;
-    }
-    .sidebar.toggled .sidebar-divider {
-        margin: 0.4rem 0.6rem !important;
-    }
+    .sidebar.toggled .sidebar-brand { justify-content: center !important; padding-left: 0 !important; }
+    .sidebar.toggled .sidebar-divider { margin: 0.4rem 0.6rem !important; }
 
     /* Brand */
     .sidebar-brand {
@@ -190,8 +183,7 @@
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; flex-shrink: 0;
         transition: background 0.18s, color 0.18s, border-color 0.18s;
-        padding: 0; font-size: 0.9rem;
-        line-height: 1;
+        padding: 0; font-size: 0.9rem; line-height: 1;
     }
     .btn-hamburger:hover {
         background: var(--primary-soft);
@@ -207,42 +199,39 @@
         align-items: center;
     }
 
-    /* User button */
-    .user-btn {
-        display: flex; align-items: center; gap: 0.55rem;
-        background: transparent;
-        border: 1px solid var(--border);
+    /* ── Profile: style ANGGOTA (nama teks + foto, dropdown klasik) ── */
+    .nav-item.dropdown .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.3rem 0.5rem;
         border-radius: 50px;
-        padding: 0.28rem 0.9rem 0.28rem 0.28rem;
-        cursor: pointer;
+        color: var(--dark) !important;
         text-decoration: none !important;
-        color: var(--dark);
-        transition: border-color 0.18s, background 0.18s;
-    }
-    .user-btn:hover {
-        border-color: var(--primary);
-        background: var(--primary-soft);
-        color: var(--primary);
+        transition: background 0.18s;
     }
     .img-profile {
-        width: 34px; height: 34px;
+        width: 36px; height: 36px;
         border-radius: 50%;
         object-fit: cover;
+        border: 2px solid white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
         flex-shrink: 0;
     }
     #navName {
-        font-size: 0.825rem;
+        font-size: 0.85rem;
         font-weight: 600;
+        color: var(--dark);
         white-space: nowrap;
     }
 
-    /* Dropdown */
+    /* Dropdown menu */
     .dropdown-menu {
         border: none;
         box-shadow: 0 8px 24px rgba(0,0,0,0.11);
         border-radius: 14px;
         padding: 0.5rem;
-        min-width: 170px;
+        min-width: 180px;
         margin-top: 0.5rem !important;
     }
     .dropdown-item {
@@ -253,19 +242,22 @@
         color: var(--dark);
         transition: background 0.15s;
     }
-    .dropdown-item i { width: 1rem; color: var(--gray); font-size: 0.8rem; }
+    .dropdown-item i {
+        width: 1.1rem;
+        color: var(--gray);
+        font-size: 0.82rem;
+    }
     .dropdown-item:hover { background: var(--primary-soft); color: var(--primary); }
     .dropdown-item:hover i { color: var(--primary); }
-    .dropdown-item.text-danger:hover { background: #fff5f5; color: var(--danger); }
-    .dropdown-item.text-danger i { color: var(--danger); }
+    .dropdown-item.text-danger { color: var(--danger) !important; }
+    .dropdown-item.text-danger i { color: var(--danger) !important; }
+    .dropdown-item.text-danger:hover { background: var(--danger-soft); }
     .dropdown-divider { margin: 0.3rem 0.5rem; border-color: var(--border); }
 
     /* ====================================================
        PAGE CONTENT
     ==================================================== */
-    .container-fluid {
-        padding: 1.5rem 1.5rem 2rem;
-    }
+    .container-fluid { padding: 1.5rem 1.5rem 2rem; }
 
     /* ====================================================
        FOOTER
@@ -276,11 +268,7 @@
         padding: 0.875rem 0;
         margin-top: auto;
     }
-    .copyright {
-        color: var(--gray);
-        font-size: 0.85rem;
-        text-align: center;
-    }
+    .copyright { color: var(--gray); font-size: 0.85rem; text-align: center; }
 
     /* ====================================================
        SCROLL TO TOP
@@ -302,7 +290,7 @@
     }
 
     /* ====================================================
-       GLOBAL COMPONENT OVERRIDES
+       GLOBAL OVERRIDES
     ==================================================== */
     .btn-primary  { background: var(--primary); border-color: var(--primary); }
     .btn-primary:hover { background: var(--primary-light); border-color: var(--primary-light); }
@@ -319,14 +307,11 @@
         box-shadow: 0 0 0 3px rgba(44,90,160,0.1);
     }
 
-    .modal-content {
-        border: none; border-radius: 16px;
-        box-shadow: 0 20px 48px rgba(0,0,0,0.12);
-    }
-    .modal-header { border-bottom: 1px solid var(--border); padding: 1.1rem 1.4rem; }
-    .modal-title  { font-weight: 700; font-size: 1rem; }
-    .modal-body   { padding: 1.4rem; }
-    .modal-footer { border-top: 1px solid var(--border); padding: 1rem 1.4rem; }
+    .modal-content { border: none; border-radius: 16px; box-shadow: 0 20px 48px rgba(0,0,0,0.12); }
+    .modal-header  { border-bottom: 1px solid var(--border); padding: 1.1rem 1.4rem; }
+    .modal-title   { font-weight: 700; font-size: 1rem; color: var(--dark); }
+    .modal-body    { padding: 1.4rem; }
+    .modal-footer  { border-top: 1px solid var(--border); padding: 1rem 1.4rem; }
 
     #previewPhoto {
         width: 90px; height: 90px;
@@ -346,59 +331,46 @@
         opacity: 0;
         transition: opacity 0.25s ease;
     }
-    #sidebarOverlay.show {
-        display: block;
-        opacity: 1;
-    }
+    #sidebarOverlay.show { display: block; opacity: 1; }
+
+    /* ====================================================
+       SEMBUNYIKAN HAMBURGER by default (desktop)
+    ==================================================== */
+    #sidebarToggleTop,
+    #sidebarToggle { display: none !important; }
 
     /* ====================================================
        TABLET (768px – 1199px) — sidebar icon-only
     ==================================================== */
     @media (min-width: 768px) and (max-width: 1199.98px) {
-        .sidebar {
-            width: var(--sidebar-icon-w) !important;
-        }
+        .sidebar { width: var(--sidebar-icon-w) !important; }
         .sidebar .sidebar-brand-text,
         .sidebar .sidebar-heading,
-        .sidebar .nav-item .nav-link span {
-            display: none !important;
-        }
+        .sidebar .nav-item .nav-link span { display: none !important; }
         .sidebar .nav-item .nav-link {
             justify-content: center !important;
             padding: 0.75rem 0 !important;
             margin: 0.15rem 0.4rem !important;
             gap: 0 !important;
         }
-        .sidebar .sidebar-brand {
-            justify-content: center !important;
-            padding-left: 0 !important;
-        }
-        .sidebar .sidebar-divider {
-            margin: 0.4rem 0.6rem !important;
-        }
-        #sidebarToggle { display: none !important; }
-        #navName        { display: none !important; }
+        .sidebar .sidebar-brand { justify-content: center !important; padding-left: 0 !important; }
+        .sidebar .sidebar-divider { margin: 0.4rem 0.6rem !important; }
+        #navName { display: none !important; }
     }
 
     /* ====================================================
        MOBILE (< 768px) — off-canvas sidebar
     ==================================================== */
     @media (max-width: 767.98px) {
-
-        /* Sidebar lepas dari flow → fixed off-canvas */
         .sidebar {
             position: fixed !important;
             top: 0; left: 0;
             height: 100vh !important;
             width: var(--sidebar-w) !important;
             z-index: 1050;
-            /* mulai tersembunyi di kiri */
             transform: translateX(-100%);
             transition: transform 0.28s cubic-bezier(0.4,0,0.2,1) !important;
-            /* Reset override tablet */
         }
-
-        /* Paksa semua teks tampil di off-canvas mobile */
         .sidebar .sidebar-brand-text,
         .sidebar .sidebar-heading,
         .sidebar .nav-item .nav-link span {
@@ -413,41 +385,24 @@
             margin: 0.15rem 0.75rem !important;
             gap: 0.65rem !important;
         }
-        .sidebar .sidebar-brand {
-            justify-content: flex-start !important;
-            padding-left: 1.25rem !important;
-        }
-
-        /* Terbuka */
+        .sidebar .sidebar-brand { justify-content: flex-start !important; padding-left: 1.25rem !important; }
         .sidebar.mobile-open {
             transform: translateX(0) !important;
             box-shadow: 8px 0 32px rgba(0,0,0,0.2);
         }
 
-        /* Layout: content full width */
-        #wrapper          { display: block; }
-        #content-wrapper  { width: 100%; }
+        #wrapper         { display: block; }
+        #content-wrapper { width: 100%; }
 
-        /* Topbar */
         .topbar { padding: 0 0.875rem; }
 
-        /* Toggle: sembunyikan desktop, tampilkan mobile */
-        #sidebarToggle    { display: none !important; }
         #sidebarToggleTop { display: flex !important; }
+        #sidebarToggle    { display: none !important; }
 
-        /* Sembunyikan nama */
         #navName { display: none !important; }
 
-        /* Padding konten */
         .container-fluid { padding: 1rem 0.875rem 1.5rem; }
-
-        /* Modal */
-        .modal-dialog { margin: 0.75rem; }
-    }
-
-    /* Desktop ≥ 1200px */
-    @media (min-width: 1200px) {
-        #sidebarToggleTop { display: none !important; }
+        .modal-dialog    { margin: 0.75rem; }
     }
     </style>
 </head>
@@ -545,34 +500,37 @@
 
             <!-- TOPBAR -->
             <nav class="topbar">
-                {{-- Mobile toggle (< 768px) --}}
-                <button id="sidebarToggleTop" class="btn-hamburger" style="display:none;" aria-label="Buka menu">
+                <button id="sidebarToggleTop" class="btn-hamburger" aria-label="Buka menu">
                     <i class="fas fa-bars"></i>
                 </button>
-
-                {{-- Desktop toggle (≥ 768px) --}}
                 <button id="sidebarToggle" class="btn-hamburger" aria-label="Toggle sidebar">
                     <i class="fas fa-bars"></i>
                 </button>
 
+                <!-- Profile — style ANGGOTA (nama + foto + dropdown klasik) -->
                 <div class="topbar-right">
-                    <div class="dropdown no-arrow">
-                        <a class="user-btn" href="#" id="userDropdown"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img id="navPhoto" class="img-profile"
-                                 src="{{ asset('template/img/undraw_profile.svg') }}" alt="Profil">
-                            <span id="navName">Loading...</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalProfile">
-                                <i class="fas fa-user-edit"></i> Edit Profil
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#"
+                               id="userDropdown" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <span id="navName" class="mr-2">Loading...</span>
+                                <img id="navPhoto" class="img-profile rounded-circle"
+                                     src="{{ asset('template/img/undraw_profile.svg') }}" alt="Profil">
                             </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#" data-toggle="modal" data-target="#logoutModal">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </a>
-                        </div>
-                    </div>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#"
+                                   data-toggle="modal" data-target="#modalProfile">
+                                    <i class="fas fa-user-edit fa-fw"></i> Edit Profil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-danger" href="#"
+                                   data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-fw"></i> Logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </nav>
             <!-- END TOPBAR -->
@@ -668,19 +626,15 @@
 <script>
 /**
  * SIDEBAR CONTROLLER
- * Dijalankan SETELAH sb-admin-2.js load.
- * Teknik "clone node" dipakai untuk membunuh semua event listener
- * yang sudah dipasang oleh sb-admin-2 pada tombol hamburger,
- * lalu kita pasang listener kita sendiri yang bersih.
+ * Clone node trick: membunuh semua listener sb-admin-2, pasang listener bersih.
  */
 document.addEventListener('DOMContentLoaded', function () {
 
     var MOBILE_BP = 768;
+    var sidebar   = document.getElementById('accordionSidebar');
+    var overlay   = document.getElementById('sidebarOverlay');
+    var isOpen    = false;
 
-    var sidebar  = document.getElementById('accordionSidebar');
-    var overlay  = document.getElementById('sidebarOverlay');
-
-    /* --- Clone tombol agar terlepas dari semua listener sb-admin-2 --- */
     function freshClone(id) {
         var el = document.getElementById(id);
         if (!el) return null;
@@ -694,9 +648,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!sidebar) return;
 
-    var isOpen = false;
-
-    /* --- Mobile: buka / tutup --- */
     function openSidebar() {
         isOpen = true;
         sidebar.classList.add('mobile-open');
@@ -711,12 +662,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = '';
     }
 
-    /* --- Desktop: collapse / expand --- */
     function toggleDesktop() {
         sidebar.classList.toggle('toggled');
     }
 
-    /* --- Bind events --- */
     if (btnMobile) {
         btnMobile.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -731,18 +680,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (overlay) {
-        overlay.addEventListener('click', closeSidebar);
-    }
+    if (overlay) overlay.addEventListener('click', closeSidebar);
 
-    /* Tutup saat menu diklik di mobile */
     sidebar.querySelectorAll('.nav-link').forEach(function (link) {
         link.addEventListener('click', function () {
             if (window.innerWidth < MOBILE_BP) closeSidebar();
         });
     });
 
-    /* Tutup saat resize ke desktop */
     window.addEventListener('resize', function () {
         if (window.innerWidth >= MOBILE_BP && isOpen) closeSidebar();
     });

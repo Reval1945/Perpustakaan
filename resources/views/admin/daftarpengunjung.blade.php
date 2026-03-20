@@ -70,7 +70,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="border: none; border-radius: 16px;">
             <div class="modal-header text-white" style="background: var(--primary); border-radius: 16px 16px 0 0;">
-                <h5 class="modal-title font-weight-bold">
+                <h5 class="modal-title font-weight-bold text-white">
                     <i class="fas fa-edit mr-2"></i>Edit Data Kunjungan
                 </h5>
                 <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>

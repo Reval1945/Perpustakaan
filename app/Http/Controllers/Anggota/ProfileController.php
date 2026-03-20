@@ -62,7 +62,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => 'Profil berhasil diupdate',
-            'photo' => asset('storage/profile/'.$data['photo'] ?? $user->photo)
+            'photo' => asset('storage/profile/'.($data['photo'] ?? $user->photo))
         ]);
     }
 

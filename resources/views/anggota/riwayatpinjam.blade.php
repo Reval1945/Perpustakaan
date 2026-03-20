@@ -65,7 +65,7 @@
                 </thead>
                 <tbody id="riwayat-body">
                     <tr>
-                        <td colspan="6" class="text-center py-5">
+                        <td colspan="8" class="text-center py-5">
                             <div class="spinner-border text-primary" role="status"></div>
                             <p class="mt-2 mb-0 text-muted">Memuat data...</p>
                         </td>
@@ -143,7 +143,7 @@ async function loadRiwayat() {
 
     } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Gagal memuat data</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger">Gagal memuat data</td></tr>`;
     } finally {
         // Matikan animasi setelah selesai (dengan sedikit delay agar terlihat smooth)
         setTimeout(() => {

@@ -234,6 +234,12 @@ p,span,div,a,li,td,th,button,input,select,textarea {
     width: 40px; height: 40px; border-radius: var(--r-md);
     display: flex; align-items: center; justify-content: center;
     font-size: .95rem; flex-shrink: 0;
+    transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+}
+.kpi-card:hover .kpi-icon {
+    transform: scale(1.18) rotate(-6deg);
+    filter: brightness(1.15);
+    box-shadow: 0 6px 18px rgba(0,0,0,.13);
 }
 .kpi-value {
     font-family: 'JetBrains Mono', monospace !important;
@@ -270,6 +276,11 @@ p,span,div,a,li,td,th,button,input,select,textarea {
 .kpi-glow {
     position: absolute; width: 120px; height: 120px; border-radius: 50%;
     right: -30px; bottom: -40px; opacity: .055; pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease;
+}
+.kpi-card:hover .kpi-glow {
+    opacity: .13;
+    transform: scale(1.25);
 }
 .kpi-blue  .kpi-glow { background: var(--blue);  }
 .kpi-amber .kpi-glow { background: var(--amber); }
