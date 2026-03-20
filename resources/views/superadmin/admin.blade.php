@@ -148,12 +148,12 @@
         </div>
         
       </div>
-      <div class="modal-footer" style="border-top: 1px solid var(--border);">
-        <button type="button" class="btn btn-light" data-dismiss="modal" style="border-radius: 12px;">
-          <i class="fas fa-times mr-2"></i> Batal
+      <div class="modal-footer border-0 bg-light p-3">
+        <button type="button" class="btn btn-secondary rounded px-3 shadow-sm" data-dismiss="modal" style="height: 38px;">
+            Batal
         </button>
-        <button type="button" class="btn btn-primary" onclick="submitAdmin()" id="submitBtn" style="border-radius: 12px;">
-          <i class="fas fa-save mr-2"></i> Simpan
+        <button type="button" class="btn btn-primary rounded px-4 shadow-sm" onclick="submitAdmin()" id="submitBtn" style="height: 38px;">
+          <i class="fas fa-save mr-1"></i> Simpan
         </button>
       </div>
     </div>
@@ -285,12 +285,19 @@ function renderTabelAdmin(admins) {
             <td class="align-middle font-weight-bold" style="color: var(--dark);">${admin.name}</td>
             <td class="align-middle" style="color: var(--gray);">${admin.email}</td>
             <td class="align-middle text-center">${roleBadge}</td>
-            <td class="align-middle text-center">
-                <button class="btn btn-sm" onclick="showEditModal('${admin.id}')" style="background: #fef3c7; color: #d97706; border: none; border-radius: 30px; padding: 0.25rem 1rem; margin-right: 0.3rem;">
-                    <i class="fas fa-edit mr-1"></i>
+           <td class="text-center align-middle">
+                <button class="btn btn-sm btn-light mr-1 btn-edit" 
+                        onclick="showEditModal('${admin.id}')" 
+                        data-id="${admin.id}" 
+                        style="border-radius: 8px; border: 1px solid var(--border); padding: 0.25rem 1rem;">
+                    <i class="fas fa-edit text-warning"></i>
                 </button>
-                <button class="btn btn-sm" onclick="hapusAdmin('${admin.id}')" style="background: #fee2e2; color: var(--danger); border: none; border-radius: 30px; padding: 0.25rem 1rem;">
-                    <i class="fas fa-trash mr-1"></i>
+
+                <button class="btn btn-sm btn-delete" 
+                        onclick="hapusAdmin('${admin.id}')" 
+                        data-id="${admin.id}" 
+                        style="background: #fee2e2; color: #ef4444; border-radius: 10px; padding: 0.25rem 1rem; border: none;">
+                    <i class="fas fa-trash"></i>
                 </button>
             </td>
         </tr>`;

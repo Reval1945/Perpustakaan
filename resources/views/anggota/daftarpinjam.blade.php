@@ -81,6 +81,7 @@
     --primary-soft: #e8f0fe;
     --success: #10b981;
     --success-soft: #ecfdf5;
+    --info-soft: #e1f5fe;
     --warning: #f59e0b;
     --warning-soft: #fffbeb;
     --danger: #ef4444;
@@ -243,17 +244,20 @@ function renderTabel(dataTransaksi) {
             let tombol = '';
             if (detail.status === 'dipinjam' || detail.status === 'diperpanjang') {
                 tombol = `
-                    <div class="d-flex justify-content-center" style="gap: 8px;">
-                        <button class="btn-action-custom btn-kembali-new shadow-sm" 
+                    <div class="d-flex justify-content-center" style="gap: 6px;">
+                        <button class="btn btn-sm btn-light shadow-sm" 
                                 onclick="ajukanKembali('${trx.id}','${detail.id}', '${detail.judul_buku.replace(/'/g, "\\'")}')" 
-                                title="Kembalikan Buku">
-                            <i class="fas fa-undo-alt mr-2"></i> Kembali
+                                title="Kembalikan Buku"
+                                style="border-radius: 8px; border: 1px solid var(--border); color: var(--primary); padding: 5px 10px;">
+                            <i class="fas fa-undo-alt"></i>
                         </button>
+
                         ${detail.status === 'dipinjam' ? `
-                            <button class="btn-action-custom btn-perpanjang-new shadow-sm" 
+                            <button class="btn btn-sm btn-light shadow-sm" 
                                     onclick="ajukanPerpanjangan('${detail.id}', '${detail.tanggal_jatuh_tempo}')"
-                                    title="Perpanjang Durasi">
-                                <i class="fas fa-calendar-plus mr-2"></i> Perpanjang
+                                    title="Perpanjang Durasi"
+                                    style="border-radius: 8px; border: 1px; background: var(--info-soft); color: var(--info); padding: 5px 10px;">
+                                <i class="fas fa-calendar-plus"></i>
                             </button>
                         ` : ''}
                     </div>`;

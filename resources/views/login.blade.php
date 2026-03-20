@@ -423,14 +423,14 @@
                 @csrf
 
                 <div class="form-group">
-                    <label>Alamat Email</label>
+                    <label><i class="fas fa-envelope" style="margin-right: 6px; color: var(--primary);"></i>Alamat Email</label>
                     <input type="email" id="email" class="form-control" placeholder="Masukkan email Anda" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Kata Sandi</label>
+                    <label><i class="fas fa-lock" style="margin-right: 6px; color: var(--primary);"></i>Password</label>
                     <div class="input-wrapper">
-                        <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
+                        <input type="password" id="password" class="form-control" placeholder="Masukkan password" required>
                         <span class="password-toggle" id="togglePassword">
                             <i class="fas fa-eye" id="eyeIcon"></i>
                         </span>

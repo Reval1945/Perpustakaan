@@ -30,11 +30,11 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <label class="small font-weight-bold text-muted">Dari Tanggal</label>
+                <label class="small font-weight-bold text-muted">Tgl Pinjam (Dari)</label>
                 <input type="date" id="startDate" class="form-control" style="border-radius: 12px; border-color: var(--border);">
             </div>
             <div class="col-md-3">
-                <label class="small font-weight-bold text-muted">Sampai Tanggal</label>
+                <label class="small font-weight-bold text-muted">Tgl Jatuh Tempo (Sampai)</label>
                 <input type="date" id="endDate" class="form-control" style="border-radius: 12px; border-color: var(--border);">
             </div>
             <div class="col-md-2">
@@ -295,7 +295,7 @@ function statusBadgeDetail(status) {
         case 'dipinjam':
             return `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
         case 'dikembalikan':
-            return `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Kembali</span>`;
+            return `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
         default:
             return `<span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">${status}</span>`;
     }
@@ -330,8 +330,8 @@ function renderTable(data) {
                     <a href="/admin/transaksi/detail/edit/${d.id}" 
                     class="btn btn-sm btn-light mr-1" 
                     title="Perpanjang Buku Ini" 
-                    style="border-radius: 8px; border: 1px solid #ddd;">
-                        <i class="fas fa-calendar-alt text-warning"></i>
+                    style="border-radius: 8px; border: 1px; background: var(--info-soft);">
+                        <i class="fas fa-calendar-alt text-info"></i>
                     </a>
                 `;
             }
@@ -415,8 +415,8 @@ function renderActionButton(trx) {
         <button class="btn btn-sm btn-light btn-detail mr-1" data-id="${trx.id}" title="Lihat Item" style="border-radius: 8px; border: 1px solid var(--border);">
             <i class="fas fa-eye text-primary"></i>
         </button>
-        <a href="/admin/transaksi/edit/${trx.id}" class="btn btn-sm btn-light mr-1" title="Perpanjang Semua" style="border-radius: 8px; border: 1px solid var(--border);">
-            <i class="fas fa-calendar-alt text-warning"></i>
+        <a href="/admin/transaksi/edit/${trx.id}" class="btn btn-sm btn-light mr-1" title="Perpanjang Semua" style="border-radius: 8px; border: 1px; background: var(--info-soft);">
+            <i class="fas fa-calendar-alt text-info"></i>
         </a>
     `;
 
@@ -454,14 +454,18 @@ function applyFilters() {
 
         // Cek range tanggal pinjam
         let matchesDate = true;
-        const trxDate = trx.tanggal_pinjam.split('T')[0]; // Ambil bagian YYYY-MM-DD
+        const trxDate = (trx.tanggal_pinjam ?? '').substring(0, 10);
+        const trxJatuhTempo = (trx.tanggal_jatuh_tempo ?? '').substring(0, 10);
 
         if (startDate && endDate) {
-            matchesDate = trxDate >= startDate && trxDate <= endDate;
+            // Keduanya diisi = range tgl pinjam >= start DAN tgl jatuh tempo <= end
+            matchesDate = trxDate >= startDate && trxJatuhTempo <= endDate;
         } else if (startDate) {
-            matchesDate = trxDate >= startDate;
+            // Hanya start = exact match tgl pinjam
+            matchesDate = trxDate === startDate;
         } else if (endDate) {
-            matchesDate = trxDate <= endDate;
+            // Hanya end = exact match tgl jatuh tempo
+            matchesDate = trxJatuhTempo === endDate;
         }
 
         return matchesSearch && matchesDate;
@@ -832,7 +836,13 @@ document.getElementById('jenis_denda').addEventListener('change', function(){
         dendaInput.readOnly = true; 
         keteranganElem.style.display = 'none';
         catatanInput.value = "User wajib mengganti dengan buku fisik asli yang sama.";
-        alert("STATUS HILANG: Denda uang diset Rp 0. Pastikan user mengganti buku fisik!");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Status Buku Hilang',
+            text: 'Denda uang otomatis diset Rp 0. Pastikan anggota mengganti dengan buku fisik asli yang sama!',
+            confirmButtonColor: '#4e73df', // Sesuaikan dengan warna primary admin Anda
+            confirmButtonText: 'Saya Mengerti'
+        });
     } 
     else {
         dendaInput.value = '0';

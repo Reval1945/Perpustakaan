@@ -442,15 +442,6 @@
                 <p>
                     Dapatkan akses ke ribuan koleksi buku digital dan nikmati kemudahan peminjaman online.
                 </p>
-                
-                <div class="badge-container">
-                    <div class="badge-item"><i class="far fa-circle"></i><span>Gratis</span></div>
-                    <div class="badge-item"><i class="fas fa-circle-check"></i><span>Mudah</span></div>
-                </div>
-                
-                <div class="secure-badge">
-                    <i class="fas fa-shield-alt" style="margin-right: 5px;"></i> Data Terenkripsi
-                </div>
             </div>
         </div>
 
@@ -483,7 +474,7 @@
 
                     <!-- Email -->
                     <div class="form-group">
-                        <label><i class="fas fa-envelope" style="margin-right: 6px; color: var(--primary);"></i>Email</label>
+                        <label><i class="fas fa-envelope" style="margin-right: 6px; color: var(--primary);"></i>Alamat Email</label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Alamat email" required value="{{ old('email') }}">
                         @error('email')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror
                     </div>
@@ -492,7 +483,7 @@
                     <div class="form-group">
                         <label><i class="fas fa-lock" style="margin-right: 6px; color: var(--primary);"></i>Password</label>
                         <div class="input-wrapper">
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Kata sandi" required>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Password" required>
                             <span class="password-toggle" id="togglePassword"><i class="fas fa-eye" id="eyeIcon"></i></span>
                         </div>
                         @error('password')<div class="invalid-feedback"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>@enderror

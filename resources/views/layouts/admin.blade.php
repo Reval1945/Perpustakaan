@@ -1,414 +1,579 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <title>@yield('title', 'Admin')</title>
 
-    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="{{ asset('template/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
-
-    <!-- SB Admin 2 -->
     <link href="{{ asset('template/css/sb-admin-2.min.css') }}" rel="stylesheet">
 
     <style>
-        :root {
-            --primary: #2C5AA0;
-            --primary-light: #4A7BC8;
-            --primary-soft: #e8f0fe;
-            --warning-soft: #fffbeb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --gray: #64748b;
-            --gray-light: #f1f5f9;
-            --border: #e2e8f0;
-        }
+    /* ====================================================
+       VARIABLES
+    ==================================================== */
+    :root {
+        --primary:        #2C5AA0;
+        --primary-light:  #4A7BC8;
+        --primary-soft:   #e8f0fe;
+        --danger:         #ef4444;
+        --dark:           #1e293b;
+        --gray:           #64748b;
+        --gray-light:     #f1f5f9;
+        --border:         #e2e8f0;
+        --sidebar-w:      230px;
+        --sidebar-icon-w: 72px;
+        --topbar-h:       62px;
+        --radius:         10px;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
-        }
+    /* ====================================================
+       RESET / BASE
+    ==================================================== */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+        font-family: 'Sora', sans-serif !important;
+        background: #f8fafc;
+        margin: 0; padding: 0;
+    }
 
-        /* Sidebar */
-        .bg-gradient-primary {
-            background: linear-gradient(180deg, var(--primary) 0%, #1e3a5f 100%) !important;
-        }
+    /* ====================================================
+       LAYOUT WRAPPER
+    ==================================================== */
+    #wrapper {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+    }
 
+    #content-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+        overflow-x: hidden;
+    }
+
+    #content { flex: 1; }
+
+    /* ====================================================
+       SIDEBAR
+    ==================================================== */
+    .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        width: var(--sidebar-w) !important;
+        flex-shrink: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        transition: width 0.25s ease;
+        background: linear-gradient(180deg, var(--primary) 0%, #1e3a5f 100%) !important;
+        z-index: 100;
+    }
+
+    /* Collapsed (desktop) */
+    .sidebar.toggled {
+        width: var(--sidebar-icon-w) !important;
+    }
+    .sidebar.toggled .sidebar-brand-text,
+    .sidebar.toggled .sidebar-heading,
+    .sidebar.toggled .nav-item .nav-link span {
+        display: none !important;
+    }
+    .sidebar.toggled .nav-item .nav-link {
+        justify-content: center !important;
+        padding: 0.75rem 0 !important;
+        margin: 0.15rem 0.4rem !important;
+        gap: 0 !important;
+    }
+    .sidebar.toggled .sidebar-brand {
+        justify-content: center !important;
+        padding-left: 0 !important;
+    }
+    .sidebar.toggled .sidebar-divider {
+        margin: 0.4rem 0.6rem !important;
+    }
+
+    /* Brand */
+    .sidebar-brand {
+        display: flex !important;
+        align-items: center;
+        padding: 1.25rem 1rem 1.25rem 1.25rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        color: white !important;
+        white-space: nowrap;
+        gap: 0.6rem;
+    }
+    .sidebar-brand-icon i { font-size: 1.6rem; flex-shrink: 0; }
+    .sidebar-brand-text   { font-size: 1rem; font-weight: 700; }
+
+    /* Heading */
+    .sidebar-heading {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.38);
+        padding: 0.5rem 1.25rem 0.2rem;
+        white-space: nowrap;
+    }
+
+    /* Divider */
+    .sidebar-divider {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin: 0.4rem 1rem;
+    }
+
+    /* Nav items */
+    .sidebar .nav-item { list-style: none; }
+    .sidebar .nav-item .nav-link {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 0.875rem;
+        padding: 0.65rem 0.9rem;
+        margin: 0.15rem 0.75rem;
+        border-radius: var(--radius);
+        color: rgba(255,255,255,0.82) !important;
+        text-decoration: none !important;
+        white-space: nowrap;
+        transition: background 0.18s, color 0.18s;
+        gap: 0.65rem;
+    }
+    .sidebar .nav-item .nav-link i {
+        font-size: 0.9rem;
+        width: 1.2rem;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    .sidebar .nav-item.active .nav-link {
+        background: rgba(255,255,255,0.16);
+        color: #fff !important;
+        font-weight: 600;
+    }
+    .sidebar .nav-item .nav-link:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff !important;
+    }
+
+    /* ====================================================
+       TOPBAR
+    ==================================================== */
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 99;
+        height: var(--topbar-h);
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 1.25rem;
+        gap: 0.75rem;
+        flex-shrink: 0;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    }
+
+    /* Hamburger */
+    .btn-hamburger {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--gray);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; flex-shrink: 0;
+        transition: background 0.18s, color 0.18s, border-color 0.18s;
+        padding: 0; font-size: 0.9rem;
+        line-height: 1;
+    }
+    .btn-hamburger:hover {
+        background: var(--primary-soft);
+        color: var(--primary);
+        border-color: var(--primary-soft);
+    }
+    .btn-hamburger:focus { outline: none; }
+
+    /* Right section */
+    .topbar-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+    }
+
+    /* User button */
+    .user-btn {
+        display: flex; align-items: center; gap: 0.55rem;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 50px;
+        padding: 0.28rem 0.9rem 0.28rem 0.28rem;
+        cursor: pointer;
+        text-decoration: none !important;
+        color: var(--dark);
+        transition: border-color 0.18s, background 0.18s;
+    }
+    .user-btn:hover {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+        color: var(--primary);
+    }
+    .img-profile {
+        width: 34px; height: 34px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    #navName {
+        font-size: 0.825rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    /* Dropdown */
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.11);
+        border-radius: 14px;
+        padding: 0.5rem;
+        min-width: 170px;
+        margin-top: 0.5rem !important;
+    }
+    .dropdown-item {
+        border-radius: 8px;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.875rem;
+        display: flex; align-items: center; gap: 0.6rem;
+        color: var(--dark);
+        transition: background 0.15s;
+    }
+    .dropdown-item i { width: 1rem; color: var(--gray); font-size: 0.8rem; }
+    .dropdown-item:hover { background: var(--primary-soft); color: var(--primary); }
+    .dropdown-item:hover i { color: var(--primary); }
+    .dropdown-item.text-danger:hover { background: #fff5f5; color: var(--danger); }
+    .dropdown-item.text-danger i { color: var(--danger); }
+    .dropdown-divider { margin: 0.3rem 0.5rem; border-color: var(--border); }
+
+    /* ====================================================
+       PAGE CONTENT
+    ==================================================== */
+    .container-fluid {
+        padding: 1.5rem 1.5rem 2rem;
+    }
+
+    /* ====================================================
+       FOOTER
+    ==================================================== */
+    .sticky-footer {
+        background: white;
+        border-top: 1px solid var(--border);
+        padding: 0.875rem 0;
+        margin-top: auto;
+    }
+    .copyright {
+        color: var(--gray);
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    /* ====================================================
+       SCROLL TO TOP
+    ==================================================== */
+    .scroll-to-top {
+        background: var(--primary);
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: white; text-decoration: none;
+        position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500;
+        box-shadow: 0 4px 12px rgba(44,90,160,0.35);
+        transition: background 0.18s, transform 0.18s;
+    }
+    .scroll-to-top:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+        color: white; text-decoration: none;
+    }
+
+    /* ====================================================
+       GLOBAL COMPONENT OVERRIDES
+    ==================================================== */
+    .btn-primary  { background: var(--primary); border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-light); border-color: var(--primary-light); }
+    .btn-danger   { background: var(--danger); border-color: var(--danger); }
+
+    .form-control {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.55rem 0.9rem;
+        font-size: 0.9rem;
+    }
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(44,90,160,0.1);
+    }
+
+    .modal-content {
+        border: none; border-radius: 16px;
+        box-shadow: 0 20px 48px rgba(0,0,0,0.12);
+    }
+    .modal-header { border-bottom: 1px solid var(--border); padding: 1.1rem 1.4rem; }
+    .modal-title  { font-weight: 700; font-size: 1rem; }
+    .modal-body   { padding: 1.4rem; }
+    .modal-footer { border-top: 1px solid var(--border); padding: 1rem 1.4rem; }
+
+    #previewPhoto {
+        width: 90px; height: 90px;
+        object-fit: cover; border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* ====================================================
+       OVERLAY (mobile)
+    ==================================================== */
+    #sidebarOverlay {
+        display: none;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.42);
+        z-index: 1049;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+    #sidebarOverlay.show {
+        display: block;
+        opacity: 1;
+    }
+
+    /* ====================================================
+       TABLET (768px – 1199px) — sidebar icon-only
+    ==================================================== */
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .sidebar {
+            width: var(--sidebar-icon-w) !important;
+        }
+        .sidebar .sidebar-brand-text,
+        .sidebar .sidebar-heading,
+        .sidebar .nav-item .nav-link span {
+            display: none !important;
+        }
         .sidebar .nav-item .nav-link {
-            font-weight: 500;
-            font-size: 0.9rem;
-            padding: 0.75rem 1rem;
-            margin: 0.2rem 1rem;
-            border-radius: 8px;
-            transition: all 0.2s;
+            justify-content: center !important;
+            padding: 0.75rem 0 !important;
+            margin: 0.15rem 0.4rem !important;
+            gap: 0 !important;
+        }
+        .sidebar .sidebar-brand {
+            justify-content: center !important;
+            padding-left: 0 !important;
+        }
+        .sidebar .sidebar-divider {
+            margin: 0.4rem 0.6rem !important;
+        }
+        #sidebarToggle { display: none !important; }
+        #navName        { display: none !important; }
+    }
+
+    /* ====================================================
+       MOBILE (< 768px) — off-canvas sidebar
+    ==================================================== */
+    @media (max-width: 767.98px) {
+
+        /* Sidebar lepas dari flow → fixed off-canvas */
+        .sidebar {
+            position: fixed !important;
+            top: 0; left: 0;
+            height: 100vh !important;
+            width: var(--sidebar-w) !important;
+            z-index: 1050;
+            /* mulai tersembunyi di kiri */
+            transform: translateX(-100%);
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1) !important;
+            /* Reset override tablet */
         }
 
-        .sidebar .nav-item .nav-link i {
-            font-size: 1rem;
-            width: 1.5rem;
+        /* Paksa semua teks tampil di off-canvas mobile */
+        .sidebar .sidebar-brand-text,
+        .sidebar .sidebar-heading,
+        .sidebar .nav-item .nav-link span {
+            display: inline-block !important;
+            opacity: 1 !important;
+            width: auto !important;
+            overflow: visible !important;
+        }
+        .sidebar .nav-item .nav-link {
+            justify-content: flex-start !important;
+            padding: 0.65rem 0.9rem !important;
+            margin: 0.15rem 0.75rem !important;
+            gap: 0.65rem !important;
+        }
+        .sidebar .sidebar-brand {
+            justify-content: flex-start !important;
+            padding-left: 1.25rem !important;
         }
 
-        .sidebar .nav-item.active .nav-link {
-            background: rgba(255,255,255,0.15);
-            font-weight: 600;
+        /* Terbuka */
+        .sidebar.mobile-open {
+            transform: translateX(0) !important;
+            box-shadow: 8px 0 32px rgba(0,0,0,0.2);
         }
 
-        .sidebar .nav-item .nav-link:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .sidebar-brand {
-            padding: 1.5rem 1rem;
-            font-weight: 700;
-        }
-
-        .sidebar-brand-icon i {
-            font-size: 1.8rem;
-        }
+        /* Layout: content full width */
+        #wrapper          { display: block; }
+        #content-wrapper  { width: 100%; }
 
         /* Topbar */
-        .topbar {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-            padding: 0.5rem 1.5rem;
-        }
+        .topbar { padding: 0 0.875rem; }
 
-        .navbar-search .input-group {
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            overflow: hidden;
-        }
+        /* Toggle: sembunyikan desktop, tampilkan mobile */
+        #sidebarToggle    { display: none !important; }
+        #sidebarToggleTop { display: flex !important; }
 
-        .navbar-search .form-control {
-            border: none;
-            background: white;
-            font-size: 0.9rem;
-            padding: 0.5rem 1.2rem;
-            height: auto;
-        }
+        /* Sembunyikan nama */
+        #navName { display: none !important; }
 
-        .navbar-search .btn {
-            border: none;
-            background: white;
-            color: var(--primary);
-            padding: 0.5rem 1.2rem;
-        }
-
-        .navbar-search .btn:hover {
-            background: var(--primary-soft);
-        }
-
-        #filterTanggal {
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 0.4rem 1rem;
-            font-size: 0.9rem;
-            height: auto;
-            width: 170px;
-        }
-
-        #filterTanggal:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(44,90,160,0.1);
-        }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-radius: 12px;
-            padding: 0.5rem;
-        }
-
-        .dropdown-item {
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        .dropdown-item i {
-            width: 1.5rem;
-            color: var(--gray);
-        }
-
-        .dropdown-item:hover {
-            background: var(--primary-soft);
-            color: var(--dark);
-        }
-
-        .img-profile {
-            width: 38px;
-            height: 38px;
-            object-fit: cover;
-            border: 2px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        #navName {
-            font-weight: 600;
-            color: var(--dark) !important;
-        }
-
-        /* Buttons */
-        .btn-outline-primary {
-            border-color: var(--border);
-            color: var(--dark);
-        }
-
-        .btn-outline-primary:hover {
-            background: var(--primary-soft);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-light);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            border: none;
-        }
+        /* Padding konten */
+        .container-fluid { padding: 1rem 0.875rem 1.5rem; }
 
         /* Modal */
-        .modal-content {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
+        .modal-dialog { margin: 0.75rem; }
+    }
 
-        .modal-header {
-            border-bottom: 1px solid var(--border);
-            padding: 1.2rem 1.5rem;
-        }
-
-        .modal-header .modal-title {
-            font-weight: 700;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            border-top: 1px solid var(--border);
-            padding: 1.2rem 1.5rem;
-        }
-
-        .form-control {
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 0.6rem 1rem;
-            font-size: 0.95rem;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(44,90,160,0.1);
-        }
-
-        #previewPhoto {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-        }
-
-        /* Footer */
-        .sticky-footer {
-            background: white;
-            border-top: 1px solid var(--border);
-            padding: 1rem 0;
-        }
-
-        .copyright {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        /* Scroll to top */
-        .scroll-to-top {
-            background: var(--primary);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .scroll-to-top:hover {
-            background: var(--primary-light);
-        }
-
-        /* Badge */
-        .badge-counter {
-            background: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 30px;
-            margin-left: 0.5rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .topbar {
-                padding: 0.5rem 1rem;
-            }
-            
-            #filterTanggal {
-                width: 140px;
-            }
-        }
+    /* Desktop ≥ 1200px */
+    @media (min-width: 1200px) {
+        #sidebarToggleTop { display: none !important; }
+    }
     </style>
 </head>
 
 <body id="page-top">
 
+<div id="sidebarOverlay"></div>
+
 <div id="wrapper">
 
-    <!-- SIDEBAR -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <!-- ================================================
+         SIDEBAR
+    ================================================ -->
+    <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
 
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-        <div class="sidebar-brand-icon">
-            <i class="fas fa-book"></i>
-        </div>
-        <div class="sidebar-brand-text mx-3">Perpustakaan</div>
-    </a>
-
-    <hr class="sidebar-divider my-0">
-
-    <li class="nav-item {{ Request::is('admin/dashboard') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/dashboard') }}">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
+        <a class="sidebar-brand" href="#">
+            <div class="sidebar-brand-icon"><i class="fas fa-book"></i></div>
+            <div class="sidebar-brand-text">Perpustakaan</div>
         </a>
-    </li>
 
-    <hr class="sidebar-divider">
+        <hr class="sidebar-divider my-0">
 
-    <div class="sidebar-heading">
-        Manajemen Data
-    </div>
+        <li class="nav-item {{ Request::is('admin/dashboard') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/dashboard') }}" title="Dashboard">
+                <i class="fas fa-fw fa-tachometer-alt"></i><span>Dashboard</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ Request::is('admin/anggota') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/anggota') }}">
-            <i class="fas fa-fw fa-users"></i>
-            <span>Anggota</span>
-        </a>
-    </li>
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Manajemen Data</div>
 
-    <li class="nav-item {{ Request::is('admin/pengunjung') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/pengunjung') }}">
-            <i class="fas fa-fw fa-user"></i>
-            <span>Pengunjung</span>
-        </a>
-    </li>
+        <li class="nav-item {{ Request::is('admin/anggota') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/anggota') }}" title="Anggota">
+                <i class="fas fa-fw fa-users"></i><span>Anggota</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ Request::is('admin/kategori') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/kategori') }}">
-            <i class="fas fa-tag"></i>
-            <span>Kategori</span>
-        </a>
-    </li>
+        <li class="nav-item {{ Request::is('admin/pengunjung') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/pengunjung') }}" title="Pengunjung">
+                <i class="fas fa-fw fa-user"></i><span>Pengunjung</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ Request::is('admin/buku') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/buku') }}">
-            <i class="fas fa-fw fa-book"></i>
-            <span>Buku</span>
-        </a>
-    </li>
+        <li class="nav-item {{ Request::is('admin/kategori') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/kategori') }}" title="Kategori">
+                <i class="fas fa-tag fa-fw"></i><span>Kategori</span>
+            </a>
+        </li>
 
-    <hr class="sidebar-divider">
+        <li class="nav-item {{ Request::is('admin/buku') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/buku') }}" title="Buku">
+                <i class="fas fa-fw fa-book"></i><span>Buku</span>
+            </a>
+        </li>
 
-    <div class="sidebar-heading">
-        Layanan
-    </div>
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Layanan</div>
 
-    <li class="nav-item {{ Request::is('admin/transaksi/peminjaman') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/transaksi/peminjaman') }}">
-            <i class="fas fa-money-check"></i>
-            <span>Transaksi</span>
-        </a>
-    </li>
+        <li class="nav-item {{ Request::is('admin/transaksi/peminjaman') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/transaksi/peminjaman') }}" title="Transaksi">
+                <i class="fas fa-money-check fa-fw"></i><span>Transaksi</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ Request::is('admin/aturanpeminjaman') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/aturanpeminjaman') }}">
-            <i class="fas fa-clipboard-list"></i>
-            <span>Aturan Peminjaman</span>
-        </a>
-    </li>
+        <li class="nav-item {{ Request::is('admin/aturanpeminjaman') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/aturanpeminjaman') }}" title="Aturan Peminjaman">
+                <i class="fas fa-clipboard-list fa-fw"></i><span>Aturan Peminjaman</span>
+            </a>
+        </li>
 
-    <hr class="sidebar-divider">
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">Laporan</div>
 
-    <div class="sidebar-heading">
-        Laporan
-    </div>
+        <li class="nav-item {{ Request::is('admin/laporanpeminjaman') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/laporanpeminjaman') }}" title="Laporan Peminjaman">
+                <i class="fas fa-fw fa-file-alt"></i><span>Laporan Peminjaman</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ Request::is('admin/laporanpeminjaman') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/laporanpeminjaman') }}">
-            <i class="fas fa-fw fa-file-alt"></i>
-            <span>Laporan Peminjaman</span>
-        </a>
-    </li>
+        <li class="nav-item {{ Request::is('admin/laporandenda') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/admin/laporandenda') }}" title="Laporan Denda">
+                <i class="fas fa-fw fa-exclamation-triangle"></i><span>Laporan Denda</span>
+            </a>
+        </li>
 
-    <li class="nav-item {{ Request::is('admin/laporandenda') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/admin/laporandenda') }}">
-            <i class="fas fa-fw fa-exclamation-triangle"></i>
-            <span>Laporan Denda</span>
-        </a>
-    </li>
-
-    <hr class="sidebar-divider d-none d-md-block">
-</ul>
+        <hr class="sidebar-divider">
+    </ul>
     <!-- END SIDEBAR -->
 
-    <!-- CONTENT WRAPPER -->
-    <div id="content-wrapper" class="d-flex flex-column">
-
+    <!-- ================================================
+         CONTENT WRAPPER
+    ================================================ -->
+    <div id="content-wrapper">
         <div id="content">
 
             <!-- TOPBAR -->
-            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 shadow">
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                    <i class="fa fa-bars"></i>
+            <nav class="topbar">
+                {{-- Mobile toggle (< 768px) --}}
+                <button id="sidebarToggleTop" class="btn-hamburger" style="display:none;" aria-label="Buka menu">
+                    <i class="fas fa-bars"></i>
                 </button>
 
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown no-arrow">
-                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                            <span id="navName" class="mr-2 text-gray-600 small">Loading...</span>
-                                <img id="navPhoto"
-                                    class="img-profile rounded-circle"
-                                    src="{{ asset('template/img/undraw_profile.svg') }}">
+                {{-- Desktop toggle (≥ 768px) --}}
+                <button id="sidebarToggle" class="btn-hamburger" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <div class="topbar-right">
+                    <div class="dropdown no-arrow">
+                        <a class="user-btn" href="#" id="userDropdown"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img id="navPhoto" class="img-profile"
+                                 src="{{ asset('template/img/undraw_profile.svg') }}" alt="Profil">
+                            <span id="navName">Loading...</span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow">
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalProfile">
-                                <i class="fas fa-user-edit fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Edit Profil
+                                <i class="fas fa-user-edit"></i> Edit Profil
                             </a>
-                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                Logout
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt"></i> Logout
                             </a>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </nav>
             <!-- END TOPBAR -->
 
@@ -420,46 +585,36 @@
         </div>
 
         <!-- FOOTER -->
-        <footer class="sticky-footer bg-white">
-            <div class="container my-auto">
-                <div class="copyright text-center my-auto">
-                    <span>© Perpustakaan 2026</span>
-                </div>
-            </div>
+        <footer class="sticky-footer">
+            <div class="copyright">&copy; Perpustakaan 2026</div>
         </footer>
-
     </div>
+
 </div>
 
-<!-- MODAL EDIT PROFILE -->
+<!-- ================================================
+     MODAL — Edit Profil
+================================================ -->
 <div class="modal fade" id="modalProfile" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-
             <form id="formProfile" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Profil</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 </div>
-
                 <div class="modal-body">
-
-                    <div class="text-center mb-4">
-                        <img id="previewPhoto"
-                             src="{{ asset('template/img/undraw_profile.svg') }}"
+                    <div class="text-center mb-3">
+                        <img id="previewPhoto" src="{{ asset('template/img/undraw_profile.svg') }}"
                              class="rounded-circle img-thumbnail"
-                             style="width:100px;height:100px;object-fit:cover;">
+                             style="width:90px;height:90px;object-fit:cover;">
                     </div>
-
                     <div class="form-group">
                         <label for="inputName">Nama Lengkap</label>
                         <input type="text" name="name" id="inputName" class="form-control" required>
                     </div>
-
-                    <div class="form-group">
+                    <div class="form-group mb-0">
                         <label for="inputPhoto">Foto Profil</label>
                         <div class="custom-file">
                             <input type="file" name="photo" id="inputPhoto" class="custom-file-input" accept="image/*">
@@ -467,29 +622,27 @@
                         </div>
                         <small class="form-text text-muted">Format: JPG, PNG. Maks: 2MB</small>
                     </div>
-
                 </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </form>
-
         </div>
     </div>
 </div>
 
+<!-- ================================================
+     MODAL — Logout
+================================================ -->
 <div class="modal fade" id="logoutModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" style="color: var(--dark);">Konfirmasi Logout</h5>
-                <button class="close" data-dismiss="modal">×</button>
+                <h5 class="modal-title">Konfirmasi Logout</h5>
+                <button class="close" data-dismiss="modal">&times;</button>
             </div>
-            <div class="modal-body">
-                Apakah kamu yakin ingin logout?
-            </div>
+            <div class="modal-body">Apakah kamu yakin ingin keluar?</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-dismiss="modal">Tidak</button>
                 <button id="btnLogout" class="btn btn-danger">Logout</button>
@@ -498,12 +651,13 @@
     </div>
 </div>
 
-<!-- Scroll -->
-<a class="scroll-to-top rounded" href="#page-top">
+<a class="scroll-to-top" href="#page-top" title="Kembali ke atas">
     <i class="fas fa-angle-up"></i>
 </a>
 
-<!-- JS -->
+<!-- ================================================
+     SCRIPTS
+================================================ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('template/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -512,165 +666,200 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    document.getElementById("togglePassword").addEventListener("click", function () {
-        const password = document.getElementById("passwordInput");
-        const icon = document.getElementById("iconPassword");
+/**
+ * SIDEBAR CONTROLLER
+ * Dijalankan SETELAH sb-admin-2.js load.
+ * Teknik "clone node" dipakai untuk membunuh semua event listener
+ * yang sudah dipasang oleh sb-admin-2 pada tombol hamburger,
+ * lalu kita pasang listener kita sendiri yang bersih.
+ */
+document.addEventListener('DOMContentLoaded', function () {
 
-        if (password.type === "password") {
-            password.type = "text";
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
-        } else {
-            password.type = "password";
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
-        }
+    var MOBILE_BP = 768;
+
+    var sidebar  = document.getElementById('accordionSidebar');
+    var overlay  = document.getElementById('sidebarOverlay');
+
+    /* --- Clone tombol agar terlepas dari semua listener sb-admin-2 --- */
+    function freshClone(id) {
+        var el = document.getElementById(id);
+        if (!el) return null;
+        var clone = el.cloneNode(true);
+        el.parentNode.replaceChild(clone, el);
+        return clone;
+    }
+
+    var btnMobile  = freshClone('sidebarToggleTop');
+    var btnDesktop = freshClone('sidebarToggle');
+
+    if (!sidebar) return;
+
+    var isOpen = false;
+
+    /* --- Mobile: buka / tutup --- */
+    function openSidebar() {
+        isOpen = true;
+        sidebar.classList.add('mobile-open');
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        isOpen = false;
+        sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    /* --- Desktop: collapse / expand --- */
+    function toggleDesktop() {
+        sidebar.classList.toggle('toggled');
+    }
+
+    /* --- Bind events --- */
+    if (btnMobile) {
+        btnMobile.addEventListener('click', function (e) {
+            e.stopPropagation();
+            isOpen ? closeSidebar() : openSidebar();
+        });
+    }
+
+    if (btnDesktop) {
+        btnDesktop.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleDesktop();
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+    }
+
+    /* Tutup saat menu diklik di mobile */
+    sidebar.querySelectorAll('.nav-link').forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (window.innerWidth < MOBILE_BP) closeSidebar();
+        });
     });
+
+    /* Tutup saat resize ke desktop */
+    window.addEventListener('resize', function () {
+        if (window.innerWidth >= MOBILE_BP && isOpen) closeSidebar();
+    });
+
+});
 </script>
 
 <script>
+/* Auth guard */
 if (!localStorage.getItem('token')) {
     window.location.href = '/';
 }
 
+/* Logout */
 document.getElementById('btnLogout').addEventListener('click', function () {
     fetch('http://127.0.0.1:8000/api/logout', {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
             'Accept': 'application/json'
         }
-    }).finally(() => {
+    }).finally(function () {
         localStorage.removeItem('token');
         window.location.href = '/';
     });
 });
-
 </script>
+
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener('DOMContentLoaded', function () {
 
-    // =====================
-    // LOAD USER NAVBAR
-    // =====================
-    async function loadUser(){
-        const token = localStorage.getItem('token');
-        if(!token) return;
-
-        const res = await fetch('/api/me1',{
-            headers:{ Authorization:'Bearer '+token }
-        });
-
-        if(!res.ok) return;
-
-        const data = await res.json();
-
-        document.getElementById('navName').innerText = data.name;
-        document.getElementById('navPhoto').src =
-            data.photo + '?t=' + new Date().getTime();
-
-        // isi modal otomatis
-        document.getElementById('inputName').value = data.name;
-        document.getElementById('previewPhoto').src = data.photo;
-    }
-
-    loadUser();
-
-    // PREVIEW FOTO & VALIDASI
-    // =====================
-    const inputPhoto = document.getElementById('inputPhoto');
-
-    // Inisialisasi Toast SweetAlert2
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'center',
+    var Toast = Swal.mixin({
+        toast: true, position: 'center',
         showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true
+        timer: 3000, timerProgressBar: true
     });
 
-    if(inputPhoto){
-        inputPhoto.addEventListener('change', e => {
-            const file = e.target.files[0];
-            if(!file) return;
+    /* Load user info */
+    async function loadUser() {
+        var token = localStorage.getItem('token');
+        if (!token) return;
+        try {
+            var res = await fetch('/api/me1', { headers: { Authorization: 'Bearer ' + token } });
+            if (!res.ok) return;
+            var d = await res.json();
+            document.getElementById('navName').textContent = d.name;
+            document.getElementById('navPhoto').src = d.photo + '?t=' + Date.now();
+            document.getElementById('inputName').value = d.name;
+            document.getElementById('previewPhoto').src = d.photo;
+        } catch(e) {}
+    }
+    loadUser();
 
-            // 1. Validasi Ukuran (2MB = 2048 * 1024 bytes)
-            const maxSize = 2 * 1024 * 1024; 
-            if(file.size > maxSize) {
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Ukuran file terlalu besar! Maksimal 2MB.'
-                });
-                inputPhoto.value = ""; // Reset input
-                return;
+    /* Preview foto */
+    var inputPhoto = document.getElementById('inputPhoto');
+    if (inputPhoto) {
+        inputPhoto.addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                Toast.fire({ icon: 'error', title: 'Ukuran file terlalu besar! Maksimal 2MB.' });
+                inputPhoto.value = ''; return;
             }
-
-            // 2. Validasi Format
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-            if(!allowedTypes.includes(file.type)) {
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Format tidak didukung! Gunakan JPG atau PNG.'
-                });
-                inputPhoto.value = ""; // Reset input
-                return;
+            if (!['image/jpeg','image/jpg','image/png'].includes(file.type)) {
+                Toast.fire({ icon: 'error', title: 'Format tidak didukung! Gunakan JPG atau PNG.' });
+                inputPhoto.value = ''; return;
             }
-
-            // Jika lolos validasi, tampilkan preview
             document.getElementById('previewPhoto').src = URL.createObjectURL(file);
-            
-            // Update label input file
-            const fileName = file.name;
-            document.querySelector('.custom-file-label').innerText = fileName;
+            var lbl = document.querySelector('.custom-file-label');
+            if (lbl) lbl.textContent = file.name;
         });
     }
 
-
-    // =====================
-    // SUBMIT PROFILE
-    // =====================
-    const formProfile = document.getElementById('formProfile');
-
-    if(formProfile){
-        formProfile.addEventListener('submit',async e=>{
+    /* Submit profil */
+    var formProfile = document.getElementById('formProfile');
+    if (formProfile) {
+        formProfile.addEventListener('submit', async function (e) {
             e.preventDefault();
-
-            const token = localStorage.getItem('token');
-            const form = new FormData(e.target);
-
-            console.log([...form]); // ← DEBUG
-
-            const res = await fetch('/api/update-profile1',{
-               method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Accept': 'application/json'
-                },
-                body:form
-            });
-
-            const data = await res.json();
-            console.log(data);
-
-            if (res.ok) {
-                Toast.fire({
-                    icon: 'success',
-                    title: data.message || 'Profil berhasil diperbarui'
+            try {
+                var res = await fetch('/api/update-profile1', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                        'Accept': 'application/json'
+                    },
+                    body: new FormData(e.target)
                 });
-                $('#modalProfile').modal('hide');
-                loadUser(); 
-            } else {
-                Toast.fire({
-                    icon: 'error',
-                    title: data.message || 'Gagal memperbarui profil'
-                });
+                var d = await res.json();
+                if (res.ok) {
+                    Toast.fire({ icon: 'success', title: d.message || 'Profil berhasil diperbarui' });
+                    $('#modalProfile').modal('hide');
+                    loadUser();
+                } else {
+                    Toast.fire({ icon: 'error', title: d.message || 'Gagal memperbarui profil' });
+                }
+            } catch(err) {
+                Toast.fire({ icon: 'error', title: 'Terjadi kesalahan. Coba lagi.' });
             }
+        });
+    }
+
+    /* Toggle password */
+    var togglePw = document.getElementById('togglePassword');
+    if (togglePw) {
+        togglePw.addEventListener('click', function () {
+            var pw   = document.getElementById('passwordInput');
+            var icon = document.getElementById('iconPassword');
+            var show = pw.type === 'password';
+            pw.type = show ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', show);
+            icon.classList.toggle('fa-eye-slash', !show);
         });
     }
 
 });
 </script>
-@yield('scripts')
 
+@yield('scripts')
 </body>
 </html>

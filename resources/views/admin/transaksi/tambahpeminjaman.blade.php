@@ -85,7 +85,7 @@
             <div class="modal-header border-0 px-4 pt-4 pb-0">
                 <div>
                     <h5 class="modal-title font-weight-bold">Katalog Buku</h5>
-                    <small class="text-muted">Klik <strong>Pilih Eksemplar</strong> untuk memilih nomor fisik buku.</small>
+                    <small class="text-muted">Klik <strong>Pilih Kode Buku</strong> untuk memilih nomor fisik buku.</small>
                 </div>
                 <button class="close" data-dismiss="modal">&times;</button>
             </div>
@@ -122,9 +122,9 @@
             <div class="modal-header border-0 px-4 pt-4 pb-2">
                 <div>
                     <h5 class="font-weight-bold text-gray-800 mb-0">
-                        <i class="fas fa-barcode mr-2 text-primary"></i>Pilih Eksemplar
+                        <i class="fas fa-barcode mr-2 text-primary"></i>Pilih Kode Buku
                     </h5>
-                    <small class="text-muted" id="eksemplarSubtitle">Pilih nomor eksemplar yang ingin dipinjam.</small>
+                    <small class="text-muted" id="eksemplarSubtitle">Pilih kode buku yang ingin dipinjam.</small>
                 </div>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
@@ -144,11 +144,11 @@
             <div class="modal-body px-4 pt-2 pb-3">
                 <div id="eksemplarLoading" class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2 text-muted small">Memuat daftar eksemplar...</p>
+                    <p class="mt-2 text-muted small">Memuat daftar kode buku...</p>
                 </div>
                 <div id="eksemplarEmpty" class="text-center py-5" style="display: none;">
                     <i class="fas fa-box-open fa-3x text-light mb-3 d-block"></i>
-                    <p class="text-muted mb-0">Tidak ada eksemplar tersedia untuk buku ini.</p>
+                    <p class="text-muted mb-0">Tidak ada kode buku tersedia untuk buku ini.</p>
                 </div>
                 <div id="eksemplarListContainer" style="display: none;"></div>
             </div>
@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                 {{-- Eksemplar dipilih --}}
                                 <div class="mt-2 mb-2">
-                                    <span class="small font-weight-bold text-muted text-uppercase" style="font-size:0.65rem;letter-spacing:1px;">Eksemplar</span><br>
+                                    <span class="small font-weight-bold text-muted text-uppercase" style="font-size:0.65rem;letter-spacing:1px;">Kode Buku</span><br>
                                     <span class="eksemplar-badge mt-1">
                                         <i class="fas fa-barcode" style="font-size:0.75rem;"></i>
                                         ${item.kodeEksemplar}
@@ -344,11 +344,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </div>
                                     <div class="col-auto">
                                         <label class="small font-weight-bold text-muted mb-0">Tgl Pinjam</label>
-                                        <input type="date" class="form-control form-control-sm" value="${tglPinjam}" readonly style="width:140px;">
+                                        <input type="date" class="form-control form-control-sm" value="${tglPinjam}" readonly style="width:150px;">
                                     </div>
                                     <div class="col-auto">
                                         <label class="small font-weight-bold text-muted mb-0">Jatuh Tempo</label>
-                                        <input type="date" class="form-control form-control-sm" value="${tglKembali}" readonly style="width:140px;">
+                                        <input type="date" class="form-control form-control-sm" value="${tglKembali}" readonly style="width:150px;">
                                     </div>
                                 </div>
                             </div>
@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const image   = book.image || 'https://via.placeholder.com/300x400?text=No+Image';
 
             let btnClass = 'btn-primary';
-            let btnText  = '<i class="fas fa-list-ul mr-1"></i> Pilih Eksemplar';
+            let btnText  = '<i class="fas fa-list-ul mr-1"></i> Pilih Kode Buku';
             let disabled = '';
             if (isHabis) { btnClass = 'btn-secondary'; btnText = '<i class="fas fa-times-circle mr-1"></i> Habis'; disabled = 'disabled'; }
             if (inCart)  { btnClass = 'btn-success';   btnText = '<i class="fas fa-check mr-1"></i> Sudah Dipilih'; disabled = 'disabled'; }
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('eksemplarBookJudul').innerText   = book.judul;
         document.getElementById('eksemplarBookPenulis').innerText = book.penerbit || '-';
         document.getElementById('eksemplarBookCover').src         = book.image || 'https://via.placeholder.com/300x400?text=No+Cover';
-        document.getElementById('eksemplarSubtitle').innerText    = `Tersedia ${book.available_stock} eksemplar — pilih satu`;
+        document.getElementById('eksemplarSubtitle').innerText    = `Tersedia ${book.available_stock} kode buku — pilih satu`;
 
         document.getElementById('eksemplarLoading').style.display       = '';
         document.getElementById('eksemplarEmpty').style.display         = 'none';
@@ -473,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('eksemplarListContainer').innerHTML     = `
                 <div class="text-center py-4 text-danger">
                     <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
-                    <p class="mb-0 small">Gagal memuat eksemplar. Silakan coba lagi.</p>
+                    <p class="mb-0 small">Gagal memuat kode buku. Silakan coba lagi.</p>
                 </div>`;
         });
     };

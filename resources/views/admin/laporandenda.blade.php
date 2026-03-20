@@ -30,11 +30,11 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <label class="small font-weight-bold text-muted">Dari Tanggal</label>
+                <label class="small font-weight-bold text-muted">Tgl Pinjam (Dari)</label>
                 <input type="date" id="startDate" class="form-control" style="border-radius: 12px; border-color: var(--border);">
             </div>
             <div class="col-md-3">
-                <label class="small font-weight-bold text-muted">Sampai Tanggal</label>
+                <label class="small font-weight-bold text-muted">Tgl Kembali (Sampai)</label>
                 <input type="date" id="endDate" class="form-control" style="border-radius: 12px; border-color: var(--border);">
             </div>
             <div class="col-md-2">
@@ -101,9 +101,9 @@
 <style>
 :root {
     --primary: #2C5AA0;
+    --orange: #fd7e14;
     --primary-soft: #e8f0fe;
     --success: #10b981;
-    --success-soft: #ecfdf5;
     --warning: #f59e0b;
     --warning-soft: #fffbeb;
     --danger: #ef4444;
@@ -114,6 +114,7 @@
     --border: #e2e8f0;
 }
 
+.text-orange-custom { color: var(--orange) !important;}
 .btn-main { height: 45px; border-radius: 12px; border: none; font-weight: 600; font-size: 0.85rem; transition: all 0.3s; }
 .form-control:focus { border-color: var(--primary); box-shadow: none; }
 .table td { vertical-align: middle !important; border-top: 1px solid var(--border); padding: 1rem 0.75rem; color: var(--dark); font-size: 0.9rem; }
@@ -123,11 +124,10 @@
     font-weight: 600; 
     padding: 0.45rem 0.85rem; 
     border-radius: 30px; 
-    font-size: 0.7rem; 
+    font-size: 0.75rem; 
     display: inline-block;
-    min-width: 95px;
+    min-width: 100px;
     text-align: center;
-    text-transform: uppercase;
 }
 </style>
 
@@ -180,18 +180,21 @@ function renderTable(data) {
         let tglPinjam = formatTanggal(item.transaction?.tanggal_pinjam);
         let tglKembali = formatTanggal(item.tanggal_kembali);
         let hariTelat = parseInt(item.jumlah_hari_telat) || 0;
-        
+
         // Logika Warna untuk Jenis Denda
         let jenisDendaLabel = item.jenis_denda ? item.jenis_denda.toLowerCase() : 'telat';
-        let colorClass = "text-primary"; // Default untuk telat
         let badgeHariClass = "badge-light text-dark";
 
         if (jenisDendaLabel === 'rusak') {
-            colorClass = "text-warning"; // Oranye/Kuning untuk Rusak
+    
+            badgeClass = "background: var(--warning-soft); color: var(--warning);";
         } else if (jenisDendaLabel === 'hilang') {
-            colorClass = "text-danger"; // Merah untuk Hilang
+            
+            badgeClass = "background: var(--danger-soft); color: var(--danger);";
+        } else {
+           
+            badgeClass = "background: #fff5eb; color: var(--orange);"; 
         }
-
         // Status Badge Pembayaran
         let statusHtml = item.status_denda === "lunas" 
             ? `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Lunas</span>`
@@ -207,8 +210,10 @@ function renderTable(data) {
                 <td class="text-center">
                     <span class="badge ${badgeHariClass}" style="border-radius: 6px;">${hariTelat} Hari</span>
                 </td>
-                <td class="text-center font-weight-bold ${colorClass}">
-                    ${jenisDendaLabel.charAt(0).toUpperCase() + jenisDendaLabel.slice(1)}
+                <td class="text-center">
+                    <span class="badge-custom" style="${badgeClass}">
+                        ${jenisDendaLabel.charAt(0).toUpperCase() + jenisDendaLabel.slice(1)}
+                    </span>
                 </td>
                 <td class="text-center">${statusHtml}</td>
                 <td class="text-center">
@@ -235,14 +240,25 @@ function applyFilter() {
     const filtered = allDenda.filter(item => {
         const nama = (item.transaction?.user?.name ?? '').toLowerCase();
         const judul = (item.judul_buku ?? '').toLowerCase();
-        const tglPinjam = item.transaction?.tanggal_pinjam;
+        // Ambil hanya bagian YYYY-MM-DD (potong timestamp jika ada)
+        const tglPinjam = (item.transaction?.tanggal_pinjam ?? '').substring(0, 10);
+        const tglKembali = (item.tanggal_kembali ?? '').substring(0, 10);
 
         const matchKeyword = nama.includes(keyword) || judul.includes(keyword);
         
         let matchDate = true;
-        if (start && end) matchDate = tglPinjam >= start && tglPinjam <= end;
-        else if (start) matchDate = tglPinjam >= start;
-        else if (end) matchDate = tglPinjam <= end;
+        if (start && end) {
+            // Keduanya diisi = range: tgl pinjam >= start DAN tgl kembali <= end
+            const matchStart = tglPinjam ? tglPinjam >= start : false;
+            const matchEnd = tglKembali ? tglKembali <= end : true;
+            matchDate = matchStart && matchEnd;
+        } else if (start) {
+            // Hanya start diisi = exact match tgl pinjam
+            matchDate = tglPinjam === start;
+        } else if (end) {
+            // Hanya end diisi = exact match tgl kembali
+            matchDate = tglKembali === end;
+        }
 
         return matchKeyword && matchDate;
     });

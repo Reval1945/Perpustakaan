@@ -62,13 +62,12 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content border-0 shadow" style="border-radius: 18px; overflow: hidden;">
             
-            <div class="modal-header border-0 pb-0 pt-3 px-4">
-                <h5 class="modal-title font-weight-bold text-gray-800" id="modalTambahBukuLabel">
-                    <i class="fas fa-plus-circle text-primary mr-2"></i> Tambah / Edit Buku
+            <div class="modal-header text-white" style="background: var(--primary); border-radius: 16px 16px 0 0;">
+                <h5 class="modal-title font-weight-bold" id="modalTambahBukuLabel">
+                    <i id="modalBukuIcon" class="fas fa-plus-circle text-primary mr-2"></i>
+                    <span id="modalBukuTitle">Tambah Buku</span>
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
             </div>
 
             <div class="modal-body p-4 pt-2">
@@ -302,7 +301,7 @@
                         <small class="text-muted font-weight-bold">Stok Tersedia:</small>
                         <span id="modalStok" class="h5 font-weight-bold mb-0 ml-2 text-primary">0</span>
                     </div>
-                    <button type="button" class="btn btn-light rounded px-4 shadow-sm" data-dismiss="modal" style="height: 38px;">
+                    <button type="button" class="btn btn-secondary rounded px-4 shadow-sm" data-dismiss="modal" style="height: 38px;">
                         <i class="fas fa-times mr-1"></i>Tutup
                     </button>
                 </div>
@@ -772,6 +771,10 @@ document.addEventListener('click', async e => {
                 if(el) el.value = book[k] ?? '';
             });
 
+        // Ubah judul modal menjadi Edit
+        document.getElementById('modalBukuTitle').innerText = 'Edit Buku';
+        document.getElementById('modalBukuIcon').className = 'fas fa-edit text-white mr-2';
+
         $('#modalTambahBuku').modal('show');
     }
 
@@ -1005,6 +1008,10 @@ function resetBookForm(){
     
     const fileLabel = document.querySelector('.custom-file-label');
     if(fileLabel) fileLabel.innerText = 'Pilih file gambar (jpg, png)';
+
+    // Reset judul modal ke Tambah
+    document.getElementById('modalBukuTitle').innerText = 'Tambah Buku';
+    document.getElementById('modalBukuIcon').className = 'fas fa-plus-circle text-white mr-2';
 }
 
 document.addEventListener('click', e => {

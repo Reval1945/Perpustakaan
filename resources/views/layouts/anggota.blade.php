@@ -9,6 +9,7 @@
     <title>@yield('title', 'Anggota')</title>
 
     <!-- Fonts -->
+     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="{{ asset('template/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Inter:200,300,400,600,700,800,900" rel="stylesheet">
 
@@ -35,7 +36,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Sora', sans-serif !important;
             background: #f8fafc;
         }
 
@@ -669,7 +670,7 @@ async function cetakKartu() {
         // Opsional: Berikan notifikasi sukses kecil (toast)
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true

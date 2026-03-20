@@ -29,11 +29,11 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <label class="small font-weight-bold text-muted">Dari Tanggal</label>
+                <label class="small font-weight-bold text-muted">Tgl Pinjam (Dari)</label>
                 <input type="date" id="startDate" class="form-control" style="border-radius: 12px; border-color: var(--border);">
             </div>
             <div class="col-md-3">
-                <label class="small font-weight-bold text-muted">Sampai Tanggal</label>
+                <label class="small font-weight-bold text-muted">Tgl Kembali (Sampai)</label>
                 <input type="date" id="endDate" class="form-control" style="border-radius: 12px; border-color: var(--border);">
             </div>
             <div class="col-md-2">
@@ -77,6 +77,7 @@
     --warning-soft: #fffbeb;
     --danger: #ef4444;
     --danger-soft: #fef2f2;
+    --info: #0ea5e9;
     --dark: #1e293b;
     --gray: #64748b;
     --gray-light: #f8fafc;
@@ -146,7 +147,7 @@
             } else if (item.status === 'dipinjam') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
             } else if (item.status === 'diperpanjang') {
-                badgeHtml = `<span class="badge-custom" style="background: #e1f5fe; color: var(--info);">Diperpanjang</span>`;
+                badgeHtml = `<span class="badge-custom" style="background: var(--info-soft); color: var(--info);">Diperpanjang</span>`;
             } else if (item.status === 'terlambat') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Terlambat</span>`;
             } else if (item.status === 'rusak') {
@@ -178,17 +179,24 @@
         const filtered = allData.filter(item => {
             const nama = (item.transaction?.user?.name ?? '').toLowerCase();
             const judul = (item.judul_buku ?? '').toLowerCase();
-            const tglPinjam = item.transaction?.tanggal_pinjam;
+            // Ambil hanya bagian YYYY-MM-DD (potong timestamp jika ada)
+            const tglPinjam = (item.transaction?.tanggal_pinjam ?? '').substring(0, 10);
+            const tglKembali = (item.tanggal_kembali ?? '').substring(0, 10);
 
             const matchKeyword = nama.includes(keyword) || judul.includes(keyword);
             
             let matchDate = true;
             if (start && end) {
-                matchDate = tglPinjam >= start && tglPinjam <= end;
+                // Keduanya diisi = range: tgl pinjam >= start DAN tgl kembali <= end
+                const matchStart = tglPinjam ? tglPinjam >= start : false;
+                const matchEnd = tglKembali ? tglKembali <= end : true;
+                matchDate = matchStart && matchEnd;
             } else if (start) {
-                matchDate = tglPinjam >= start;
+                // Hanya start diisi = exact match tgl pinjam
+                matchDate = tglPinjam === start;
             } else if (end) {
-                matchDate = tglPinjam <= end;
+                // Hanya end diisi = exact match tgl kembali
+                matchDate = tglKembali === end;
             }
 
             return matchKeyword && matchDate;
