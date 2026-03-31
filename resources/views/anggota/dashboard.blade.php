@@ -23,66 +23,87 @@
     <div class="row mb-4" style="row-gap:1.25rem;">
 
         <div class="col-xl-3 col-md-6 mb-0">
-            <div class="kpi-card kpi-blue">
-                <div class="kpi-top">
-                    <span class="kpi-label">Total Pinjam</span>
-                    <div class="kpi-icon"><i class="fas fa-book-reader"></i></div>
+            <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--blue);">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="stat-label">Total Pinjam</div>
+                            <div class="stat-value" id="totalBuku">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-icon-wrap" style="background: rgba(78,115,223,.1);">
+                                <i class="fas fa-book-reader fa-2x" style="color: var(--blue);"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <i class="fas fa-circle stat-dot" style="color:var(--blue);"></i> Semua Waktu
+                    </div>
                 </div>
-                <div id="totalBuku" class="kpi-value">0</div>
-                <div class="kpi-footer">
-                    <span class="kpi-tag">
-                        <i class="fas fa-circle kpi-dot"></i> Semua Waktu
-                    </span>
-                </div>
-                <div class="kpi-glow"></div>
             </div>
         </div>
 
         <div class="col-xl-3 col-md-6 mb-0">
-            <div class="kpi-card kpi-amber">
-                <div class="kpi-top">
-                    <span class="kpi-label">Sedang Dipinjam</span>
-                    <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--amber);">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="stat-label">Sedang Dipinjam</div>
+                            <div class="stat-value" id="belumKembali">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-icon-wrap" style="background: rgba(246,194,62,.1);">
+                                <i class="fas fa-clock fa-2x" style="color: var(--amber);"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <i class="fas fa-circle stat-dot" style="color:var(--amber);"></i> Belum Kembali
+                    </div>
                 </div>
-                <div id="belumKembali" class="kpi-value">0</div>
-                <div class="kpi-footer">
-                    <span class="kpi-tag">
-                        <i class="fas fa-circle kpi-dot"></i> Belum Kembali
-                    </span>
-                </div>
-                <div class="kpi-glow"></div>
             </div>
         </div>
 
         <div class="col-xl-3 col-md-6 mb-0">
-            <div class="kpi-card kpi-green">
-                <div class="kpi-top">
-                    <span class="kpi-label">Selesai</span>
-                    <div class="kpi-icon"><i class="fas fa-check-double"></i></div>
+            <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--green);">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="stat-label">Selesai</div>
+                            <div class="stat-value" id="sudahKembali">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-icon-wrap" style="background: rgba(28,200,138,.1);">
+                                <i class="fas fa-check-double fa-2x" style="color: var(--green);"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <i class="fas fa-circle stat-dot" style="color:var(--green);"></i> Sudah Kembali
+                    </div>
                 </div>
-                <div id="sudahKembali" class="kpi-value">0</div>
-                <div class="kpi-footer">
-                    <span class="kpi-tag">
-                        <i class="fas fa-circle kpi-dot"></i> Sudah Kembali
-                    </span>
-                </div>
-                <div class="kpi-glow"></div>
             </div>
         </div>
 
         <div class="col-xl-3 col-md-6 mb-0">
-            <div class="kpi-card kpi-red">
-                <div class="kpi-top">
-                    <span class="kpi-label">Terlambat</span>
-                    <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--red);">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="stat-label">Terlambat</div>
+                            <div class="stat-value" id="terlambat">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-icon-wrap" style="background: rgba(231,74,59,.1);">
+                                <i class="fas fa-exclamation-triangle fa-2x" style="color: var(--red);"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <i class="fas fa-circle stat-dot" style="color:var(--danger);"></i>
+                        <span style="color:var(--danger);">Perlu Dikembalikan</span>
+                    </div>
                 </div>
-                <div id="terlambat" class="kpi-value">0</div>
-                <div class="kpi-footer">
-                    <span class="kpi-tag kpi-tag-danger">
-                        <i class="fas fa-circle kpi-dot"></i> Perlu Dikembalikan
-                    </span>
-                </div>
-                <div class="kpi-glow"></div>
             </div>
         </div>
 
@@ -212,80 +233,38 @@ p,span,div,a,li,td,th,button,input,select,textarea {
 }
 .meta-text { font-size: .77rem; font-weight: 600; color: var(--text-2); }
 
-/* --- KPI Cards --- */
-.kpi-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--r-xl); padding: 24px 26px 20px;
-    position: relative; overflow: hidden;
-    transition: transform .3s ease, box-shadow .3s ease;
-    height: 100%;
+/* --- Stat Cards (style superadmin) --- */
+.stat-card {
+    background: var(--surface);
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.04);
+    transition: transform .2s ease, box-shadow .2s ease;
 }
-.kpi-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,.07); }
-
-.kpi-top {
-    display: flex; align-items: flex-start;
-    justify-content: space-between; margin-bottom: 12px;
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,.07);
 }
-.kpi-label {
-    font-size: .68rem; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--text-3);
+.stat-card .card-body { padding: 1.25rem 1.5rem; }
+.stat-label {
+    font-size: .72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px;
+    color: var(--text-2); margin-bottom: 6px;
 }
-.kpi-icon {
-    width: 40px; height: 40px; border-radius: var(--r-md);
-    display: flex; align-items: center; justify-content: center;
-    font-size: .95rem; flex-shrink: 0;
-    transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+.stat-value {
+    font-size: 2rem; font-weight: 700;
+    color: var(--text-1); line-height: 1;
+    margin-bottom: 10px; min-height: 36px;
 }
-.kpi-card:hover .kpi-icon {
-    transform: scale(1.18) rotate(-6deg);
-    filter: brightness(1.15);
-    box-shadow: 0 6px 18px rgba(0,0,0,.13);
+.stat-icon-wrap {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.kpi-value {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 2.4rem; font-weight: 700; color: var(--text-1);
-    letter-spacing: -2px; line-height: 1;
-    margin-bottom: 14px; min-height: 40px;
+.stat-footer {
+    display: inline-flex; align-items: center;
+    gap: 5px; font-size: .71rem; font-weight: 600; color: var(--text-2);
 }
-.kpi-footer { display: flex; align-items: center; }
-.kpi-tag {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: .69rem; font-weight: 600;
-    padding: 4px 10px; border-radius: 50px;
-    background: var(--surface2); color: var(--text-2);
-}
-.kpi-dot { font-size: .35rem; }
-.kpi-tag-danger { background: rgba(231,74,59,.08) !important; color: var(--danger) !important; }
-
-.kpi-blue  { border-top: 3px solid var(--blue);  }
-.kpi-blue  .kpi-icon { background: rgba(78,115,223,.1);  color: var(--blue);  }
-.kpi-blue  .kpi-dot  { color: var(--blue);  }
-
-.kpi-amber { border-top: 3px solid var(--amber); }
-.kpi-amber .kpi-icon { background: rgba(246,194,62,.1); color: var(--amber); }
-.kpi-amber .kpi-dot  { color: var(--amber); }
-
-.kpi-green { border-top: 3px solid var(--green); }
-.kpi-green .kpi-icon { background: rgba(28,200,138,.1); color: var(--green); }
-.kpi-green .kpi-dot  { color: var(--green); }
-
-.kpi-red   { border-top: 3px solid var(--red);   }
-.kpi-red   .kpi-icon { background: rgba(231,74,59,.1);  color: var(--red);   }
-.kpi-red   .kpi-dot  { color: var(--red);   }
-
-.kpi-glow {
-    position: absolute; width: 120px; height: 120px; border-radius: 50%;
-    right: -30px; bottom: -40px; opacity: .055; pointer-events: none;
-    transition: opacity .3s ease, transform .3s ease;
-}
-.kpi-card:hover .kpi-glow {
-    opacity: .13;
-    transform: scale(1.25);
-}
-.kpi-blue  .kpi-glow { background: var(--blue);  }
-.kpi-amber .kpi-glow { background: var(--amber); }
-.kpi-green .kpi-glow { background: var(--green); }
-.kpi-red   .kpi-glow { background: var(--red);   }
+.stat-dot { font-size: .38rem; }
 
 /* --- Panels --- */
 .panel {
@@ -383,14 +362,14 @@ p,span,div,a,li,td,th,button,input,select,textarea {
     to   { opacity: 1; transform: translateY(0); }
 }
 .dash-topbar { animation: fadeUp .4s ease both; }
-.col-xl-3:nth-child(1) .kpi-card,
-.col-md-6:nth-child(1) .kpi-card { animation: fadeUp .4s .08s ease both; }
-.col-xl-3:nth-child(2) .kpi-card,
-.col-md-6:nth-child(2) .kpi-card { animation: fadeUp .4s .16s ease both; }
-.col-xl-3:nth-child(3) .kpi-card,
-.col-md-6:nth-child(3) .kpi-card { animation: fadeUp .4s .24s ease both; }
-.col-xl-3:nth-child(4) .kpi-card,
-.col-md-6:nth-child(4) .kpi-card { animation: fadeUp .4s .32s ease both; }
+.col-xl-3:nth-child(1) .stat-card,
+.col-md-6:nth-child(1) .stat-card { animation: fadeUp .4s .08s ease both; }
+.col-xl-3:nth-child(2) .stat-card,
+.col-md-6:nth-child(2) .stat-card { animation: fadeUp .4s .16s ease both; }
+.col-xl-3:nth-child(3) .stat-card,
+.col-md-6:nth-child(3) .stat-card { animation: fadeUp .4s .24s ease both; }
+.col-xl-3:nth-child(4) .stat-card,
+.col-md-6:nth-child(4) .stat-card { animation: fadeUp .4s .32s ease both; }
 .panel { animation: fadeUp .4s .36s ease both; }
 
 /* --- Compat --- */

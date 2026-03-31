@@ -78,11 +78,11 @@
             <div class="modal-body p-4">
                 <input type="hidden" id="editId">
                 <div class="form-group">
-                    <label class="font-weight-bold text-dark"><i class="fas fa-comment-alt mr-1 text-primary"></i> Keperluan</label>
+                    <label class="font-weight-bold text-dark">Keperluan</label>
                     <textarea id="editKeperluan" class="form-control" rows="3" placeholder="Masukkan keperluan kunjungan"></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="font-weight-bold text-dark"><i class="fas fa-calendar-alt mr-1 text-primary"></i> Tanggal Kunjungan</label>
+                    <label class="font-weight-bold text-dark">Tanggal Kunjungan</label>
                     <input type="date" id="editTanggal" class="form-control">
                 </div>
             </div>
@@ -185,7 +185,7 @@ function renderTable(data) {
                 <span class="text-dark" style="font-size: 0.9rem;">${p.keperluan}</span>
             </td>
             <td class="text-center align-middle">
-                <div class="text-dark" style="font-weight: 500;">${formatTanggal(p.tanggal_kunjungan)}</div>
+                <div class="text-dark small" style="font-weight: 500;">${formatTanggal(p.tanggal_kunjungan)}</div>
             </td>
             <td class="text-center align-middle">
                 <div class="d-flex justify-content-center">

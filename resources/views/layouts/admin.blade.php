@@ -20,7 +20,7 @@
         --primary-soft:   #e8f0fe;
         --danger:         #ef4444;
         --danger-soft:    #fef2f2;
-        --dark:           #1e293b;
+        --dark:           #1e293b; 
         --gray:           #64748b;
         --gray-light:     #f1f5f9;
         --border:         #e2e8f0;

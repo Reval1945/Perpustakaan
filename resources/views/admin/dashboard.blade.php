@@ -21,53 +21,69 @@
     </div>
 
     {{-- ======= STAT CARDS ======= --}}
-    <div class="row kpi-row mb-4">
+    <div class="row mb-4">
 
-        <div class="col-4 mb-3 mb-xl-0">
-            <div class="kpi-card kpi-blue">
-                <div class="kpi-top">
-                    <span class="kpi-label">Total Anggota</span>
-                    <div class="kpi-icon"><i class="fas fa-users"></i></div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--blue);">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="stat-label">Total Anggota</div>
+                            <div class="stat-value" id="countAnggota">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-icon-wrap" style="background: rgba(78,115,223,.1);">
+                                <i class="fas fa-users fa-2x" style="color: var(--blue);"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <i class="fas fa-circle stat-dot" style="color:var(--blue);"></i> User Aktif
+                    </div>
                 </div>
-                <div id="countAnggota" class="kpi-value"><div class="kpi-skeleton"></div></div>
-                <div class="kpi-footer">
-                    <span class="kpi-tag">
-                        <i class="fas fa-circle kpi-status-dot"></i> User Aktif
-                    </span>
-                </div>
-                <div class="kpi-glow"></div>
             </div>
         </div>
 
-        <div class="col-4 mb-3 mb-xl-0">
-            <div class="kpi-card kpi-green">
-                <div class="kpi-top">
-                    <span class="kpi-label">Koleksi Buku</span>
-                    <div class="kpi-icon"><i class="fas fa-book-open"></i></div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--green);">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="stat-label">Koleksi Buku</div>
+                            <div class="stat-value" id="countBuku">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-icon-wrap" style="background: rgba(28,200,138,.1);">
+                                <i class="fas fa-book-open fa-2x" style="color: var(--green);"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <i class="fas fa-circle stat-dot" style="color:var(--green);"></i> Judul Terdaftar
+                    </div>
                 </div>
-                <div id="countBuku" class="kpi-value"><div class="kpi-skeleton"></div></div>
-                <div class="kpi-footer">
-                    <span class="kpi-tag">
-                        <i class="fas fa-circle kpi-status-dot"></i> Judul Terdaftar
-                    </span>
-                </div>
-                <div class="kpi-glow"></div>
             </div>
         </div>
 
-        <div class="col-4 mb-3 mb-xl-0">
-            <div class="kpi-card kpi-amber">
-                <div class="kpi-top">
-                    <span class="kpi-label">Peminjaman Aktif</span>
-                    <div class="kpi-icon"><i class="fas fa-exchange-alt"></i></div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--amber);">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div class="stat-label">Peminjaman Aktif</div>
+                            <div class="stat-value" id="countTransaksi">0</div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stat-icon-wrap" style="background: rgba(246,194,62,.1);">
+                                <i class="fas fa-exchange-alt fa-2x" style="color: var(--amber);"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-footer" id="countTerlambat">
+                        <i class="fas fa-clock stat-dot" style="color:var(--danger);"></i>
+                        <span style="color:var(--danger);">0 Terlambat</span>
+                    </div>
                 </div>
-                <div id="countTransaksi" class="kpi-value"><div class="kpi-skeleton"></div></div>
-                <div class="kpi-footer">
-                    <span id="countTerlambat" class="kpi-tag kpi-tag-danger">
-                        <i class="fas fa-clock"></i> 0 Terlambat
-                    </span>
-                </div>
-                <div class="kpi-glow"></div>
             </div>
         </div>
 
@@ -200,105 +216,56 @@ p,span,div,a,li,td,th,button,input,select,textarea {
     white-space: nowrap;
 }
 
-/* --- KPI Cards ----------------------------------- */
-.kpi-card {
+/* --- Stat Cards (style superadmin) --------------- */
+.stat-card {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--r-xl);
-    padding: 22px 22px 18px;
-    position: relative;
-    overflow: hidden;
-    transition: transform .3s ease, box-shadow .3s ease;
-    height: 100%;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.04);
+    transition: transform .2s ease, box-shadow .2s ease;
 }
-.kpi-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 32px rgba(0,0,0,.07);
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,.07);
 }
-.kpi-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 14px;
+.stat-card .card-body {
+    padding: 1.25rem 1.5rem;
 }
-.kpi-label {
-    font-size: .69rem;
+.stat-label {
+    font-size: .72rem;
     font-weight: 700;
-    letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--text-3);
+    letter-spacing: .5px;
+    color: var(--text-2);
+    margin-bottom: 6px;
 }
-.kpi-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: var(--r-md);
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-1);
+    line-height: 1;
+    margin-bottom: 10px;
+    min-height: 36px;
+}
+.stat-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
     flex-shrink: 0;
 }
-.kpi-value {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: var(--text-1);
-    letter-spacing: -2px;
-    line-height: 1;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 14px;
-}
-.kpi-footer { display: flex; align-items: center; }
-.kpi-tag {
+.stat-footer {
     display: inline-flex;
     align-items: center;
     gap: 5px;
     font-size: .71rem;
     font-weight: 600;
-    padding: 4px 11px;
-    border-radius: 50px;
-    background: var(--surface2);
     color: var(--text-2);
 }
-.kpi-tag .kpi-status-dot { font-size: .35rem; }
-.kpi-tag-danger { background: rgba(231,74,59,.08) !important; color: var(--danger) !important; }
+.stat-dot { font-size: .38rem; }
 
-.kpi-blue  { border-top: 3px solid var(--blue); }
-.kpi-blue  .kpi-icon { background: rgba(78,115,223,.1); color: var(--blue); }
-.kpi-blue  .kpi-status-dot { color: var(--blue); }
-
-.kpi-green { border-top: 3px solid var(--green); }
-.kpi-green .kpi-icon { background: rgba(28,200,138,.1); color: var(--green); }
-.kpi-green .kpi-status-dot { color: var(--green); }
-
-.kpi-amber { border-top: 3px solid var(--amber); }
-.kpi-amber .kpi-icon { background: rgba(246,194,62,.1); color: var(--amber); }
-.kpi-amber .kpi-status-dot { color: var(--amber); }
-
-.kpi-glow {
-    position: absolute;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    right: -35px;
-    bottom: -45px;
-    opacity: .055;
-    pointer-events: none;
-}
-.kpi-blue  .kpi-glow { background: var(--blue); }
-.kpi-green .kpi-glow { background: var(--green); }
-.kpi-amber .kpi-glow { background: var(--amber); }
-
-.kpi-skeleton {
-    width: 88px;
-    height: 38px;
-    border-radius: 8px;
-    background: linear-gradient(90deg,#eef0f7 25%,#f5f6fc 50%,#eef0f7 75%);
-    background-size: 600px 100%;
-    animation: skshim 1.4s infinite linear;
-}
 
 /* --- Panels -------------------------------------- */
 .panel {
@@ -428,9 +395,9 @@ p,span,div,a,li,td,th,button,input,select,textarea {
     to   { opacity: 1; transform: translateY(0); }
 }
 .dash-topbar         { animation: fadeUp .4s ease both; }
-.kpi-row > *:nth-child(1) .kpi-card { animation: fadeUp .4s .08s ease both; }
-.kpi-row > *:nth-child(2) .kpi-card { animation: fadeUp .4s .16s ease both; }
-.kpi-row > *:nth-child(3) .kpi-card { animation: fadeUp .4s .24s ease both; }
+.row > *:nth-child(1) .stat-card { animation: fadeUp .4s .08s ease both; }
+.row > *:nth-child(2) .stat-card { animation: fadeUp .4s .16s ease both; }
+.row > *:nth-child(3) .stat-card { animation: fadeUp .4s .24s ease both; }
 .panel               { animation: fadeUp .4s .32s ease both; }
 
 /* --- Compat overrides --------------------------- */
@@ -631,7 +598,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('countBuku').innerText      = data.total_buku;
         document.getElementById('countTransaksi').innerText = data.peminjaman_aktif;
         document.getElementById('countTerlambat').innerHTML =
-            `<i class="fas fa-clock"></i> ${data.terlambat} Terlambat`;
+            `<i class="fas fa-clock stat-dot" style="color:var(--danger);"></i>
+             <span style="color:var(--danger);">${data.terlambat} Terlambat</span>`;
 
         // 2. Chart
         myChart.data.labels           = data.chart_labels;
@@ -655,9 +623,9 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch(err => {
         console.error('Error fetching dashboard stats:', err);
-        document.getElementById('countAnggota').innerText   = 'Error';
-        document.getElementById('countBuku').innerText      = 'Error';
-        document.getElementById('countTransaksi').innerText = 'Error';
+        document.getElementById('countAnggota').innerText   = '0';
+        document.getElementById('countBuku').innerText      = '0';
+        document.getElementById('countTransaksi').innerText = '0';
     });
 });
 </script>

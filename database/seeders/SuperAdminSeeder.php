@@ -24,6 +24,7 @@ class SuperAdminSeeder extends Seeder
                 'password'  => Hash::make('password'),
                 'role'      => 'superadmin',
             ]);
+            
         }
     }
 }

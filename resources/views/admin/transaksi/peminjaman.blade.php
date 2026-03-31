@@ -74,6 +74,14 @@
     </div>
 </div>
 
+<!-- Pagination -->
+<div class="d-flex align-items-center justify-content-between mt-3 px-1" id="paginationWrapper" style="display:none!important;">
+    <div class="text-muted small" id="paginationInfo"></div>
+    <nav>
+        <ul class="pagination pagination-sm mb-0" id="paginationLinks" style="gap: 4px;"></ul>
+    </nav>
+</div>
+
 <div class="modal fade" id="modalAccDetail" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border: none; border-radius: 16px;">
@@ -149,11 +157,37 @@
 /* Dropdown Expand Style */
 .expand-row { background-color: var(--gray-light); }
 .inner-table { background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+
+/* Pagination Style */
+#paginationLinks .page-item .page-link {
+    border-radius: 8px !important;
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+    transition: all 0.2s;
+}
+#paginationLinks .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+#paginationLinks .page-item.disabled .page-link {
+    color: var(--gray);
+    pointer-events: none;
+}
+#paginationLinks .page-item .page-link:hover:not(.active) {
+    background: var(--primary-soft, #eef2ff);
+    color: var(--primary);
+}
 </style>
 
 <script>
 
 let allTransactions = []; // Menyimpan semua transaksi untuk keperluan filter
+let currentPage = 1;
+const ITEMS_PER_PAGE = 10;
 
 function formatTanggal(dateString) {
     if (!dateString) return '-';
@@ -208,9 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchTransactions();
 
     // Event Listeners untuk Filter
-    document.getElementById('searchInput').addEventListener('input', applyFilters);
-    document.getElementById('startDate').addEventListener('change', applyFilters);
-    document.getElementById('endDate').addEventListener('change', applyFilters);
+    document.getElementById('searchInput').addEventListener('input', () => { currentPage = 1; applyFilters(); });
+    document.getElementById('startDate').addEventListener('change', () => { currentPage = 1; applyFilters(); });
+    document.getElementById('endDate').addEventListener('change', () => { currentPage = 1; applyFilters(); });
 });
 
 // 3. Fungsi Fetch Data dari API
@@ -245,44 +279,100 @@ function fetchTransactions() {
 // Fetch Status
 // Fetch Status Utama (Header)
 function getTransactionStatus(trx) {
-    const detailStatus = trx.details.map(d => d.status);
-    const total = detailStatus.length;
+    const details = trx.details;
+    const total = details.length;
+    if (total === 0) return trx.status;
 
-    const adaMintaPerpanjang = trx.details.some(d => d.status === 'mengajukan_perpanjangan');
-    const menungguKembali = detailStatus.filter(s => s === 'menunggu_verifikasi_kembali').length;
-    
-    // PRIORITAS 1: Jika ada yang minta perpanjang, ini harus langsung kelihatan
-    if (adaMintaPerpanjang) return 'sebagian_minta_perpanjang';
+    const count = (fn) => details.filter(fn).length;
 
-    // PRIORITAS 2: Verifikasi kembali (buku sudah di meja admin)
-    if (menungguKembali > 0) return 'menunggu_verifikasi_kembali'; 
+    const jmlMintaPerpanjang  = count(d => d.status === 'mengajukan_perpanjangan');
+    const jmlMenungguKembali  = count(d => d.status === 'menunggu_verifikasi_kembali');
+    const jmlMenungguPinjam   = count(d => d.status === 'menunggu_verifikasi');
+    const jmlDiperpanjang     = count(d => d.status === 'diperpanjang');
+    const jmlDipinjam         = count(d => d.status === 'dipinjam');
+    const jmlSelesai          = count(d => ['dikembalikan', 'rusak', 'hilang'].includes(d.status));
+    const jmlAktif            = jmlDipinjam + jmlDiperpanjang;
 
-    // PRIORITAS 3: Verifikasi pinjam baru
-    const menungguPinjam = detailStatus.filter(s => s === 'menunggu_verifikasi').length;
-    if (menungguPinjam > 0) return 'menunggu_verifikasi';
-    
-    const dikembalikan = detailStatus.filter(s => s === 'dikembalikan' || s === 'rusak' || s === 'hilang').length;
-    const dipinjam = detailStatus.filter(s => s === 'dipinjam' || s === 'diperpanjang').length;
+    // ── PRIORITAS 1: Ada yang minta perpanjangan (butuh aksi admin segera) ──
+    if (jmlMintaPerpanjang > 0) {
+        if (jmlMintaPerpanjang === total) return 'semua_minta_perpanjang';
+        return 'sebagian_minta_perpanjang';
+    }
 
-    if (dikembalikan === total) return 'dikembalikan';
-    if (dipinjam === total) return 'dipinjam';
-    if (dikembalikan > 0 && dipinjam > 0) return 'sebagian_dipinjam';
-    
+    // ── PRIORITAS 2: Ada buku yang menunggu verifikasi kembali ──
+    if (jmlMenungguKembali > 0) {
+        if (jmlMenungguKembali === total) return 'menunggu_verifikasi_kembali';
+        return 'sebagian_menunggu_kembali';
+    }
+
+    // ── PRIORITAS 3: Ada buku yang menunggu verifikasi pinjam ──
+    if (jmlMenungguPinjam > 0) {
+        if (jmlMenungguPinjam === total) return 'menunggu_verifikasi';
+        return 'sebagian_menunggu_verifikasi';
+    }
+
+    // ── KONDISI FINAL: semua buku sudah terverifikasi ──
+
+    // Semua selesai dikembalikan
+    if (jmlSelesai === total) return 'dikembalikan';
+
+    // Semua masih diperpanjang
+    if (jmlDiperpanjang === total) return 'diperpanjang';
+
+    // Semua masih dipinjam (tanpa perpanjangan)
+    if (jmlDipinjam === total) return 'dipinjam';
+
+    // Campuran dipinjam & diperpanjang (ada yang diperpanjang, ada yang belum)
+    if (jmlAktif === total && jmlDiperpanjang > 0) return 'sebagian_diperpanjang';
+
+    // Sebagian sudah kembali, sebagian masih diperpanjang
+    if (jmlSelesai > 0 && jmlDiperpanjang > 0 && jmlDipinjam === 0) return 'sebagian_diperpanjang';
+
+    // Sebagian sudah kembali, sebagian masih aktif
+    if (jmlSelesai > 0 && jmlAktif > 0) return 'sebagian_dipinjam';
+
     return trx.status;
 }
 
 // Badge untuk Tabel Utama
 function statusBadge(status) {
-    if (status === 'sebagian_minta_perpanjang') {
-        return `<span class="badge-custom" style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba;">Sebagian Minta Perpanjang</span>`;
+    const badge = (bg, color, border, label) =>
+        `<span class="badge-custom" style="background:${bg};color:${color};${border ? `border:1px solid ${border};` : ''}">${label}</span>`;
+
+    switch (status) {
+        // ── Antrian / Verifikasi ──
+        case 'menunggu_verifikasi':
+            return badge('var(--warning-soft)', 'var(--warning)', null, 'Menunggu Verifikasi');
+        case 'sebagian_menunggu_verifikasi':
+            return badge('#fff8e1', '#b45309', '#fde68a', 'Sebagian Verifikasi');
+        case 'menunggu_verifikasi_kembali':
+            return badge('#fef3c7', '#92400e', '#fcd34d', 'Verifikasi Kembali');
+        case 'sebagian_menunggu_kembali':
+            return badge('#fef3c7', '#92400e', '#fcd34d', 'Sebagian Verifikasi');
+
+        // ── Perpanjangan ──
+        case 'semua_minta_perpanjang':
+            return badge('#fff3cd', '#856404', '#ffeeba', ' Minta Perpanjang');
+        case 'sebagian_minta_perpanjang':
+            return badge('#ede9fe', '#5b21b6', '#c4b5fd', 'Sebagian Perpanjang');
+        case 'diperpanjang':
+            return badge('#e1f5fe', '#36b9cc', null, 'Diperpanjang');
+        case 'sebagian_diperpanjang':
+            return badge('#e0f2fe', '#0369a1', '#bae6fd', 'Sebagian Diperpanjang');
+
+        // ── Aktif ──
+        case 'dipinjam':
+            return badge('var(--primary-soft)', 'var(--primary)', null, 'Dipinjam');
+        case 'sebagian_dipinjam':
+            return badge('#dbeafe', '#1d4ed8', '#bfdbfe', 'Sebagian Dipinjam');
+
+        // ── Selesai ──
+        case 'dikembalikan':
+            return badge('var(--success-soft)', 'var(--success)', null, 'Selesai');
+
+        default:
+            return badge('var(--gray-light)', 'var(--dark)', null, status);
     }
-    if (status === 'dipinjam') return `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
-    if (status === 'menunggu_verifikasi') return `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Verifikasi</span>`;
-    if (status === 'menunggu_verifikasi_kembali') return `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Verifikasi Kembali</span>`;
-    if (status === 'dikembalikan') return `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
-    if (status === 'sebagian_dipinjam') return `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Sebagian</span>`;
-    
-    return `<span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">${status}</span>`;
 }
 
 // Badge khusus untuk Tabel Detail (Row Expanded)
@@ -302,7 +392,7 @@ function statusBadgeDetail(status) {
 }
 
 // 4. Fungsi Render Tabel (Logika Utama Tampilan)
-function renderTable(data) {
+function renderTable(data, page) {
     const tbody = document.getElementById('transactionTable');
     tbody.innerHTML = '';
 
@@ -315,10 +405,20 @@ function renderTable(data) {
 
     if (filteredData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">Tidak ada data peminjaman aktif</td></tr>`;
+        renderPagination(0, 1);
         return;
     }
 
-    filteredData.forEach((trx, index) => {
+    // Pagination
+    const activePage = page || currentPage;
+    const totalItems = filteredData.length;
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+    if (activePage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const pageData = filteredData.slice(start, end);
+
+    pageData.forEach((trx, index) => {
         // --- Render Detail Rows (Expanded) ---
         // Di dalam trx.details.map
         const detailRows = trx.details.map((d, i) => {
@@ -368,9 +468,10 @@ function renderTable(data) {
         }).join('');
 
         // --- Render Baris Utama ---
+        const globalIndex = start + index + 1;
         const row = `
             <tr class="main-row" data-id="${trx.id}" style="cursor:pointer;">
-                <td class="text-center small">${index + 1}</td> 
+                <td class="text-center small">${globalIndex}</td> 
                 <td class="align-middle">
                     <span class="badge badge-light text-primary p-2" style="font-weight: 700; border-radius:8px;">${trx.kode_transaksi}</span>
                 </td>
@@ -404,6 +505,74 @@ function renderTable(data) {
         `;
         tbody.innerHTML += row;
     });
+
+    renderPagination(totalItems, totalPages);
+}
+
+// Render Pagination
+function renderPagination(totalItems, totalPages) {
+    const wrapper = document.getElementById('paginationWrapper');
+    const info = document.getElementById('paginationInfo');
+    const links = document.getElementById('paginationLinks');
+
+    if (totalItems === 0 || totalPages <= 1) {
+        wrapper.style.display = 'none';
+        return;
+    }
+
+    wrapper.style.display = 'flex';
+
+    const start = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+    const end = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+    info.innerHTML = `Menampilkan <strong>${start}–${end}</strong> dari <strong>${totalItems}</strong> data`;
+
+    let html = '';
+
+    // Tombol Prev
+    html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;">
+            <i class="fas fa-chevron-left" style="font-size:0.7rem;"></i>
+        </a>
+    </li>`;
+
+    // Nomor halaman
+    const maxVisible = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+    if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+
+    if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(1); return false;">1</a></li>`;
+        if (startPage > 2) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>
+        </li>`;
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a></li>`;
+    }
+
+    // Tombol Next
+    html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;">
+            <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
+        </a>
+    </li>`;
+
+    links.innerHTML = html;
+}
+
+// Navigasi halaman
+function goToPage(page) {
+    currentPage = page;
+    // Re-apply filter supaya pagination konsisten dengan filter aktif
+    applyFilters();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Render tombol action utama
@@ -548,7 +717,7 @@ document.addEventListener('click', function(e) {
                                 <tr>
                                     <td style="padding:6px 8px; font-size:0.85rem;">${d.judul_buku}</td>
                                     <td style="padding:6px 8px; text-align:center;">
-                                        <span style="background:#eef2ff;color:#4e73df;border-radius:6px;padding:2px 10px;font-weight:700;font-size:0.8rem;">
+                                        <span style="background:#eef2ff;color:#2C5AA0;border-radius:6px;padding:2px 10px;font-weight:700;font-size:0.8rem;">
                                             <i class="fas fa-barcode" style="font-size:0.7rem;margin-right:4px;"></i>${kode}
                                         </span>
                                     </td>
@@ -758,6 +927,7 @@ function resetFilter() {
     document.getElementById('searchInput').value = '';
     document.getElementById('startDate').value = '';
     document.getElementById('endDate').value = '';
+    currentPage = 1;
     renderTable(allTransactions); // Kembalikan ke data awal
 }
 
@@ -840,7 +1010,7 @@ document.getElementById('jenis_denda').addEventListener('change', function(){
             icon: 'warning',
             title: 'Status Buku Hilang',
             text: 'Denda uang otomatis diset Rp 0. Pastikan anggota mengganti dengan buku fisik asli yang sama!',
-            confirmButtonColor: '#4e73df', // Sesuaikan dengan warna primary admin Anda
+            confirmButtonColor: '#2C5AA0', // Sesuaikan dengan warna primary admin Anda
             confirmButtonText: 'Saya Mengerti'
         });
     } 

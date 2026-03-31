@@ -129,7 +129,6 @@
             </label>
             <select id="adminRole" class="form-control">
                 <option value="admin">Admin</option>
-                <option value="superadmin">Super Admin</option>
             </select>
             <small class="form-text" style="color: var(--gray);">
                 <i class="fas fa-exclamation-circle mr-1"></i>

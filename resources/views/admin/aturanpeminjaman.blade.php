@@ -49,8 +49,8 @@
                     <div class="form-group">
                         <label class="font-weight-bold text-dark">Status Aturan</label>
                         <select id="aktif" class="form-control custom-select-lg">
-                            <option value="1">🟢 Aktif (Gunakan Aturan Ini)</option>
-                            <option value="0">🔴 Non-Aktif (Tangguhkan)</option>
+                            <option value="1">Aktif</option>
+                            <option value="0">Non-Aktif</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -70,9 +70,6 @@
         <div class="card shadow-sm border-0 mb-4 h-90 w-100" style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);">
             <div class="card-body p-4">
                 <div class="text-center mb-4">
-                    <div class="bg-primary-soft mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; border-radius: 20px;">
-                        <i class="fas fa-shield-alt fa-2x text-primary"></i>
-                    </div>
                     <h5 class="font-weight-bold text-dark">Ringkasan Aturan</h5>
                     <p class="text-muted small">Detail parameter peminjaman aktif saat ini</p>
                 </div>
