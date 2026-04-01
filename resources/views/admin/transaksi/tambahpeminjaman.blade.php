@@ -10,7 +10,7 @@
         <button class="btn-main btn-white text-primary" data-toggle="modal" data-target="#modalBuku">
             <i class="fas fa-plus"></i> <span>Tambah Buku</span>
         </button>
-        <button class="btn-main btn-white text-danger shadow-none border" id="btnReset">
+        <button class="btn-main text-danger shadow-sm" id="btnReset" style="background:#fee2e2">
             <i class="fas fa-undo"></i> <span>Reset</span>
         </button>
         <button class="btn-main btn-primary shadow-sm" id="btnAjukan">
@@ -22,10 +22,6 @@
 <div class="row">
     {{-- Kiri: Daftar Buku Dipilih --}}
     <div class="col-lg-8">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <h5 class="mb-0 font-weight-bold" style="color: var(--dark);">Daftar Buku yang Dipilih</h5>
-        </div>
-
         <div id="bookContainer">
             <div id="emptyState" class="card shadow-sm border-0 text-center py-5" style="border-radius: 16px;">
                 <div class="card-body">
@@ -79,34 +75,35 @@
 {{-- ══════════════════════════════════════════
      MODAL A — KATALOG BUKU
 ══════════════════════════════════════════ --}}
-<div class="modal fade" id="modalBuku" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+<div class="modal fade" id="modalBuku" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            
             <div class="modal-header border-0 px-4 pt-4 pb-0">
                 <div>
-                    <h5 class="modal-title font-weight-bold">Katalog Buku</h5>
+                    <h5 class="font-weight-bold text-gray-800 mb-0">Katalog Buku</h5>
                     <small class="text-muted">Klik <strong>Pilih Kode Buku</strong> untuk memilih nomor fisik buku.</small>
                 </div>
-                <button class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
-            <div class="modal-body px-4">
-                <div class="input-group mb-4 shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #e3e6f0;">
+
+            <div class="px-4 pt-3">
+                <div class="input-group shadow-sm" style="border-radius:12px; overflow:hidden; border:1px solid #e3e6f0;">
                     <div class="input-group-prepend">
-                        <span class="input-group-text bg-white border-0 pl-3"><i class="fas fa-search text-muted"></i></span>
+                        <span class="input-group-text bg-white border-0"><i class="fas fa-search text-muted"></i></span>
                     </div>
                     <input type="text" id="searchBuku" class="form-control border-0 py-4"
                            placeholder="Cari judul buku, penerbit atau kategori...">
                 </div>
+            </div>
 
-                <div class="row" id="listBuku" style="max-height: 500px; overflow-y: auto;">
-                    <div class="col-12 text-center text-muted py-5">
+            <div class="modal-body px-4 mt-2">
+                <div class="row" id="listBuku">
+                    <div class="col-12 text-center py-5">
                         <div class="spinner-border text-primary" role="status"></div>
-                        <p class="mt-2">Memuat buku...</p>
+                        <p class="mt-2 text-muted">Memuat buku...</p>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer border-0 pb-4 pr-4">
-                <button class="btn btn-light px-4" data-dismiss="modal" style="border-radius: 10px;">Tutup</button>
             </div>
         </div>
     </div>
@@ -117,26 +114,35 @@
 ══════════════════════════════════════════ --}}
 <div class="modal fade" id="modalPilihEksemplar" tabindex="-1">
     <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
+        <div class="modal-content border-0 shadow" style="border-radius: 20px; overflow: hidden;">
 
-            <div class="modal-header border-0 px-4 pt-4 pb-2">
+            <div class="modal-header border-0 px-4 pt-4 pb-3"
+                 style="border-bottom: 1px solid #f0f2f8 !important;">
                 <div>
-                    <h5 class="font-weight-bold text-gray-800 mb-0">
-                        <i class="fas fa-barcode mr-2 text-primary"></i>Pilih Kode Buku
+                    <h5 class="mb-0" style="font-weight: 600; font-size: 16px; color: #1e293b;">
+                        <i class="fas fa-barcode mr-2" style="color: #4e73df;"></i>Pilih Kode Buku
                     </h5>
                     <small class="text-muted" id="eksemplarSubtitle">Pilih kode buku yang ingin dipinjam.</small>
                 </div>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <button type="button" class="close d-flex align-items-center justify-content-center"
+                        data-dismiss="modal"
+                        style="width: 34px; height: 34px; border-radius: 50%; background: #f4f6fb;
+                               opacity: 1; font-size: 18px; color: #8a92a6; border: none; padding: 0; margin: 0;">
+                    <span>&times;</span>
+                </button>
             </div>
 
             {{-- Ringkasan buku --}}
-            <div class="px-4 pb-2">
-                <div class="d-flex align-items-center p-2 rounded-lg" style="background: #f0f4ff; gap: 12px;">
+            <div class="px-4 pt-3 pb-2">
+                <div class="d-flex align-items-center p-3 rounded"
+                     style="background: #f0f4ff; gap: 14px; border-radius: 12px !important;">
                     <img id="eksemplarBookCover" src="" alt=""
-                         style="width: 42px; height: 58px; object-fit: cover; border-radius: 6px; flex-shrink: 0;">
+                         style="width: 44px; height: 60px; object-fit: cover; border-radius: 8px;
+                                flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.12);">
                     <div style="min-width: 0;">
-                        <div class="font-weight-bold small text-truncate" id="eksemplarBookJudul"></div>
-                        <div class="text-muted" style="font-size: 0.72rem;" id="eksemplarBookPenulis"></div>
+                        <div style="font-weight: 600; font-size: 13px; color: #1e293b;"
+                             class="text-truncate" id="eksemplarBookJudul"></div>
+                        <div class="text-muted mt-1" style="font-size: 12px;" id="eksemplarBookPenulis"></div>
                     </div>
                 </div>
             </div>
@@ -153,8 +159,10 @@
                 <div id="eksemplarListContainer" style="display: none;"></div>
             </div>
 
-            <div class="modal-footer border-0 px-4 pb-3 pt-0">
-                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="btnBackToBuku">
+            <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                <button type="button" class="btn btn-sm px-4" id="btnBackToBuku"
+                        style="border-radius: 10px; background: #f4f6fb; border: 1px solid #e8ecf5;
+                               color: #64748b; font-size: 13px; font-weight: 500;">
                     <i class="fas fa-arrow-left mr-1"></i> Kembali ke Katalog
                 </button>
             </div>
@@ -167,17 +175,21 @@
 ══════════════════════════════════════════ --}}
 <div class="modal fade" id="modalAnggota" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow" style="border-radius: 20px;">
-            <div class="modal-header border-0 px-4 pt-4 text-white" style="border-radius: 20px 20px 0 0; background:var(--primary);">
-                <h5 class="modal-title font-weight-bold">Daftar Anggota</h5>
-                <button class="close text-white" data-dismiss="modal">&times;</button>
+        <div class="modal-content border-0 shadow" style="border-radius: 20px; overflow: hidden;">
+            <div class="modal-header border-0 px-4 pt-4 text-white"
+                 style="border-radius: 20px 20px 0 0; background: var(--primary);">
+                <h5 class="modal-title font-weight-bold text-white">Daftar Anggota</h5>
+                <button class="close text-white" data-dismiss="modal"
+                        style="opacity: 0.85; font-size: 20px;">&times;</button>
             </div>
             <div class="modal-body px-4 pb-4">
-                <div class="input-group mb-3 mt-2 shadow-sm" style="border-radius: 10px; overflow: hidden;">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-white border-0"><i class="fas fa-search"></i></span>
-                    </div>
-                    <input type="text" id="searchUser" class="form-control border-0" placeholder="Cari Nama atau NISN...">
+                <div class="d-flex align-items-center mt-2 mb-3"
+                     style="background: #f8f9fc; border-radius: 12px; padding: 0 16px;
+                            border: 1px solid #e8ecf5;">
+                    <i class="fas fa-search text-muted" style="font-size: 13px; opacity: 0.55; margin-right: 10px;"></i>
+                    <input type="text" id="searchUser" class="form-control border-0 py-3"
+                           placeholder="Cari Nama atau NISN..."
+                           style="background: transparent; font-size: 14px; box-shadow: none;">
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover">
@@ -231,7 +243,7 @@
 .badge-success-soft { background: #dffff3; color: var(--success); }
 
 /* Modal buku cards */
-.modal-book-card { border-radius: 15px; border: 1px solid #edf0f5; transition: all 0.2s; height: 100%; }
+.modal-book-card {border-radius:15px; border:1px solid #edf0f5; transition:all 0.2s; height:100%;}
 .modal-book-card:hover { border-color: #4e73df; transform: scale(1.02); }
 .img-modal-cover { height: 180px; object-fit: cover; border-radius: 15px 15px 0 0; }
 
@@ -247,9 +259,6 @@
 .eksemplar-meta { font-size: 0.72rem; color: #a0aec0; margin-top: 2px; }
 .badge-tersedia { background: #d4edda; color: #155724; border-radius: 7px; padding: 2px 9px; font-size: 0.7rem; font-weight: 700; }
 
-/* Scrollbar */
-#listBuku::-webkit-scrollbar { width: 6px; }
-#listBuku::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 </style>
 
 <script>
@@ -263,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let allBooks      = [];
     let allUsers      = [];
     let _currentBook  = null;
-    let maxHari       = 7;
+    let maxHari       = 0;
 
     // ── Helpers ──────────────────────────────────────────────────────────────
     async function getJSON(url) {
@@ -366,7 +375,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ── Modal A — Katalog Buku ────────────────────────────────────────────────
+
+    // ── Modal A — Katalog Buku (Updated Style) ────────────────────────────────────────────────
     async function loadBooks() {
         try {
             const json = await getJSON('/books');
@@ -374,13 +384,18 @@ document.addEventListener('DOMContentLoaded', function () {
             renderBooksModal(allBooks);
         } catch {
             document.getElementById('listBuku').innerHTML =
-                `<div class="col-12 text-danger text-center py-5">Gagal memuat katalog buku</div>`;
+                `<div class="col-12 text-danger text-center py-5">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                    <p>Gagal memuat katalog buku</p>
+                </div>`;
         }
     }
 
     function renderBooksModal(books) {
         const container = document.getElementById('listBuku');
         const kw = (document.getElementById('searchBuku')?.value || '').toLowerCase();
+        
+        // Filter pencarian berdasarkan Judul, Penerbit, atau Kategori
         const filtered = kw
             ? books.filter(b =>
                 b.judul.toLowerCase().includes(kw) ||
@@ -389,6 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
             : books;
 
         container.innerHTML = '';
+        
         if (filtered.length === 0) {
             container.innerHTML = `<div class="col-12 text-center text-muted py-5">Buku tidak ditemukan</div>`;
             return;
@@ -400,26 +416,48 @@ document.addEventListener('DOMContentLoaded', function () {
             const inCart  = !!selectedItems.find(i => i.bookId == book.id);
             const image   = book.image || 'https://via.placeholder.com/300x400?text=No+Image';
 
+            // Logika Status Tombol
             let btnClass = 'btn-primary';
             let btnText  = '<i class="fas fa-list-ul mr-1"></i> Pilih Kode Buku';
             let disabled = '';
-            if (isHabis) { btnClass = 'btn-secondary'; btnText = '<i class="fas fa-times-circle mr-1"></i> Habis'; disabled = 'disabled'; }
-            if (inCart)  { btnClass = 'btn-success';   btnText = '<i class="fas fa-check mr-1"></i> Sudah Dipilih'; disabled = 'disabled'; }
+
+            if (isHabis) { 
+                btnClass = 'btn-secondary'; 
+                btnText = '<i class="fas fa-times-circle mr-1"></i> Habis'; 
+                disabled = 'disabled'; 
+            }
+            if (inCart) { 
+                btnClass = 'btn-success';   
+                btnText = '<i class="fas fa-check mr-1"></i> Sudah Terpilih'; 
+                disabled = 'disabled'; 
+            }
 
             container.innerHTML += `
-            <div class="col-md-3 mb-4">
-                <div class="card modal-book-card shadow-sm ${isHabis ? 'opacity-75' : ''}">
-                    <img src="${image}" class="img-modal-cover">
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card modal-book-card ${isHabis ? 'opacity-75' : ''}" 
+                    style="border-radius: 15px; border: 1px solid #edf0f5; transition: all 0.2s;">
+                    
+                    <img src="${image}" class="img-modal-cover" 
+                        style="height: 180px; object-fit: cover; border-radius: 15px 15px 0 0;">
+                    
                     <div class="card-body p-3 d-flex flex-column">
-                        <h6 class="font-weight-bold mb-1 small"
-                            style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:2.4em;">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge badge-light text-primary px-2 py-1" style="font-size: 10px; background-color: #f0f2f5;">
+                                ${book.kategori || 'Umum'}
+                            </span>
+                            <span class="small font-weight-bold ${isHabis ? 'text-danger' : 'text-success'}">
+                                <i class="fas fa-box mr-1"></i>${stok}
+                            </span>
+                        </div>
+
+                        <h6 class="font-weight-bold text-gray-800 small mb-1" 
+                            style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; height:2.6em; line-height:1.3;">
                             ${book.judul}
                         </h6>
-                        <p class="small text-muted mb-2">${book.penerbit || '-'}</p>
+                        
                         <div class="mt-auto">
-                            <span class="badge ${stok > 0 ? 'badge-success' : 'badge-danger'} mb-2">Stok: ${stok}</span>
-                            <button class="btn ${btnClass} btn-sm btn-block" style="border-radius: 8px;" ${disabled}
-                                    onclick="openEksemplarModal('${book.id}')">
+                            <button class="btn ${btnClass} btn-sm btn-block rounded-pill shadow-sm py-2" ${disabled}
+                                    onclick="openEksemplarModal('${book.id}')" style="font-weight: 600; font-size: 0.75rem;">
                                 ${btnText}
                             </button>
                         </div>
@@ -443,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('eksemplarBookJudul').innerText   = book.judul;
         document.getElementById('eksemplarBookPenulis').innerText = book.penerbit || '-';
         document.getElementById('eksemplarBookCover').src         = book.image || 'https://via.placeholder.com/300x400?text=No+Cover';
-        document.getElementById('eksemplarSubtitle').innerText    = `Tersedia ${book.available_stock} kode buku — pilih satu`;
+        document.getElementById('eksemplarSubtitle').innerText    = `Tersedia ${book.available_stock} eksemplar — pilih satu`;
 
         document.getElementById('eksemplarLoading').style.display       = '';
         document.getElementById('eksemplarEmpty').style.display         = 'none';
@@ -612,8 +650,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: JSON.stringify({
                     user_id:  userId,
                     book_ids: selectedItems.map(i => i.bookId),
-                    // Kirim juga book_stock_ids jika backend AdminStore sudah support
-                    // book_stock_ids: selectedItems.map(i => i.bookStockId),
+                    book_stock_ids: selectedItems.map(i => i.bookStockId),
                 }),
             });
             const json = await res.json();

@@ -831,19 +831,39 @@ async function cetakKartu() {
         if (!res.ok) throw new Error('Gagal generate kartu. Silakan coba lagi nanti.');
 
         var blob = await res.blob();
-        var url  = window.URL.createObjectURL(blob);
-        Swal.close();
-        window.open(url, '_blank');
+        
+        // PENTING: Gunakan type yang spesifik
+        var pdfBlob = new Blob([blob], { type: 'application/pdf' });
+        var url = window.URL.createObjectURL(pdfBlob);
 
-        var Toast = Swal.mixin({
-            toast: true, position: 'center',
+        // Tutup loading SEBELUM membuka window agar tidak terjadi tabrakan fokus
+        Swal.close();
+
+        // Gunakan bantuan link sementara untuk memicu pembukaan tab
+        const win = window.open(url, '_blank');
+        if (!win) {
+            throw new Error('Pop-up diblokir! Harap izinkan pop-up untuk situs ini.');
+        }
+
+        // Opsional: Bersihkan memori setelah beberapa saat
+        setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+
+        Swal.fire({
+            toast: true,
+            position: 'center',
+            icon: 'success',
+            title: 'Kartu berhasil dibuat',
             showConfirmButton: false,
-            timer: 3000, timerProgressBar: true
+            timer: 3000
         });
-        Toast.fire({ icon: 'success', title: 'Kartu berhasil dibuat' });
 
     } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Oops...', text: err.message, confirmButtonColor: '#3085d6' });
+        Swal.fire({ 
+            icon: 'error', 
+            title: 'Oops...', 
+            text: err.message, 
+            confirmButtonColor: '#3085d6' 
+        });
     }
 }
 </script>

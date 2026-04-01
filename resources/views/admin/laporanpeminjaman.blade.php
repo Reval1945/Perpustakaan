@@ -57,6 +57,7 @@
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Pinjam</th>
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Kembali</th>
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Status</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Catatan</th>
                     </tr>
                 </thead>
                 <tbody id="laporan-body">
@@ -65,6 +66,13 @@
             </table>
         </div>
     </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-between mt-3 px-1" id="paginationWrapper" style="display:none!important;">
+    <div class="text-muted small" id="paginationInfo"></div>
+    <nav>
+        <ul class="pagination pagination-sm mb-0" id="paginationLinks" style="gap: 4px;"></ul>
+    </nav>
 </div>
 
 <style>
@@ -84,7 +92,6 @@
     --border: #e2e8f0;
 }
 
-/* Base Badge Style */
 .badge-custom { 
     font-weight: 600; 
     padding: 0.45rem 0.85rem; 
@@ -98,10 +105,32 @@
 .btn-main { height: 45px; border-radius: 12px; border: none; font-weight: 600; font-size: 0.85rem; transition: all 0.3s; }
 .form-control:focus { border-color: var(--primary); box-shadow: none; }
 .table td { vertical-align: middle !important; border-color: var(--border); padding: 1rem 0.75rem; color: var(--dark); }
+
+/* Pagination Styling Identik Anggota */
+#paginationLinks .page-item .page-link {
+    border-radius: 8px !important;
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+    transition: all 0.2s;
+}
+#paginationLinks .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+#paginationLinks .page-item.disabled .page-link {
+    color: var(--gray);
+    pointer-events: none;
+}
 </style>
 
 <script>
     let allData = [];
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 10;
     const token = localStorage.getItem("token");
     const tbody = document.getElementById("laporan-body");
 
@@ -122,7 +151,7 @@
             });
             const json = await res.json();
             allData = json.data || [];
-            renderTable(allData);
+            applyFilter(); // Memanggil filter pertama kali untuk render awal
         } catch(err) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-danger">Gagal memuat data</td></tr>`;
         }
@@ -131,44 +160,99 @@
     function renderTable(data) {
         if(data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Data tidak ditemukan</td></tr>`;
+            renderPagination(0, 1);
             return;
         }
 
-        tbody.innerHTML = data.map((item, index) => {
+        const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+        if (currentPage > totalPages) currentPage = totalPages;
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const pageData = data.slice(start, start + ITEMS_PER_PAGE);
+
+        tbody.innerHTML = pageData.map((item, index) => {
+            const globalNo = start + index + 1;
             let nama = item.transaction?.user?.name ?? '-';
             let judul = item.judul_buku ?? '-';
             let tglPinjam = formatTanggal(item.transaction?.tanggal_pinjam);
             let tglKembali = item.tanggal_kembali ? formatTanggal(item.tanggal_kembali) : "-";
             
-            // Logika Badge Modern
             let badgeHtml = '';
             if (item.status === 'dikembalikan') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
             } else if (item.status === 'dipinjam') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
-            } else if (item.status === 'diperpanjang') {
-                badgeHtml = `<span class="badge-custom" style="background: var(--info-soft); color: var(--info);">Diperpanjang</span>`;
             } else if (item.status === 'terlambat') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Terlambat</span>`;
-            } else if (item.status === 'rusak') {
-                badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Rusak</span>`;
-            } else if (item.status === 'hilang') {
-                badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Hilang</span>`;
             } else {
-                badgeHtml = `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">Verifikasi...</span>`;
+                badgeHtml = `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">${item.status}</span>`;
             }
 
             return `
                 <tr>
-                    <td class="text-center text-muted">${index + 1}</td>
+                    <td class="text-center text-muted">${globalNo}</td>
                     <td class="px-4 font-weight-bold">${nama}</td>
                     <td>${judul}</td>
                     <td class="text-center">${tglPinjam}</td>
                     <td class="text-center">${tglKembali}</td>
                     <td class="text-center">${badgeHtml}</td>
+                    <td class="text-center">${item.catatan ?? '-'}</td>
                 </tr>
             `;
         }).join('');
+
+        renderPagination(data.length, totalPages);
+    }
+
+    function renderPagination(totalItems, totalPages) {
+        const wrapper = document.getElementById('paginationWrapper');
+        const info    = document.getElementById('paginationInfo');
+        const links   = document.getElementById('paginationLinks');
+
+        // Sembunyikan jika data <= 10 (Sesuai file anggota)
+        if (totalItems <= ITEMS_PER_PAGE) {
+            wrapper.style.setProperty('display', 'none', 'important');
+            return;
+        }
+
+        wrapper.style.setProperty('display', 'flex', 'important');
+        const startPos = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+        const endPos   = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+        info.innerHTML = `Menampilkan <strong>${startPos}–${endPos}</strong> dari <strong>${totalItems}</strong> data`;
+
+        const maxVisible = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        let endPage   = Math.min(totalPages, startPage + maxVisible - 1);
+        if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+
+        let html = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;"><i class="fas fa-chevron-left" style="font-size:0.7rem;"></i></a>
+        </li>`;
+
+        if (startPage > 1) {
+            html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(1); return false;">1</a></li>`;
+            if (startPage > 2) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+        }
+        for (let i = startPage; i <= endPage; i++) {
+            html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>
+            </li>`;
+        }
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+            html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a></li>`;
+        }
+
+        html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
+        </li>`;
+
+        links.innerHTML = html;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        applyFilter();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function applyFilter() {
@@ -179,7 +263,6 @@
         const filtered = allData.filter(item => {
             const nama = (item.transaction?.user?.name ?? '').toLowerCase();
             const judul = (item.judul_buku ?? '').toLowerCase();
-            // Ambil hanya bagian YYYY-MM-DD (potong timestamp jika ada)
             const tglPinjam = (item.transaction?.tanggal_pinjam ?? '').substring(0, 10);
             const tglKembali = (item.tanggal_kembali ?? '').substring(0, 10);
 
@@ -187,15 +270,12 @@
             
             let matchDate = true;
             if (start && end) {
-                // Keduanya diisi = range: tgl pinjam >= start DAN tgl kembali <= end
                 const matchStart = tglPinjam ? tglPinjam >= start : false;
                 const matchEnd = tglKembali ? tglKembali <= end : true;
                 matchDate = matchStart && matchEnd;
             } else if (start) {
-                // Hanya start diisi = exact match tgl pinjam
                 matchDate = tglPinjam === start;
             } else if (end) {
-                // Hanya end diisi = exact match tgl kembali
                 matchDate = tglKembali === end;
             }
 
@@ -205,15 +285,16 @@
         renderTable(filtered);
     }
 
-    document.getElementById('searchInput').addEventListener('input', applyFilter);
-    document.getElementById('startDate').addEventListener('change', applyFilter);
-    document.getElementById('endDate').addEventListener('change', applyFilter);
+    document.getElementById('searchInput').addEventListener('input', () => { currentPage = 1; applyFilter(); });
+    document.getElementById('startDate').addEventListener('change', () => { currentPage = 1; applyFilter(); });
+    document.getElementById('endDate').addEventListener('change', () => { currentPage = 1; applyFilter(); });
 
     function resetFilter() {
         document.getElementById('searchInput').value = "";
         document.getElementById('startDate').value = "";
         document.getElementById('endDate').value = "";
-        renderTable(allData);
+        currentPage = 1;
+        applyFilter();
     }
 
     async function cetakLaporan() {

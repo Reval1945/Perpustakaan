@@ -344,11 +344,11 @@ function statusBadge(status) {
         case 'menunggu_verifikasi':
             return badge('var(--warning-soft)', 'var(--warning)', null, 'Menunggu Verifikasi');
         case 'sebagian_menunggu_verifikasi':
-            return badge('#fff8e1', '#b45309', '#fde68a', 'Sebagian Verifikasi');
+            return badge('var(--warning-soft)', 'var(--warning)', null, 'Sebagian Verifikasi');
         case 'menunggu_verifikasi_kembali':
-            return badge('#fef3c7', '#92400e', '#fcd34d', 'Verifikasi Kembali');
+            return badge('var(--warning-soft)', '#F77F00', null, 'Verifikasi Kembali');
         case 'sebagian_menunggu_kembali':
-            return badge('#fef3c7', '#92400e', '#fcd34d', 'Sebagian Verifikasi');
+            return badge('var(--warning-soft)', 'var(--warning)', null, 'Sebagian Verifikasi Kembali');
 
         // ── Perpanjangan ──
         case 'semua_minta_perpanjang':
@@ -364,7 +364,7 @@ function statusBadge(status) {
         case 'dipinjam':
             return badge('var(--primary-soft)', 'var(--primary)', null, 'Dipinjam');
         case 'sebagian_dipinjam':
-            return badge('#dbeafe', '#1d4ed8', '#bfdbfe', 'Sebagian Dipinjam');
+            return badge('var(--primary-soft)', 'var(--primary)', null, 'Sebagian Dipinjam');
 
         // ── Selesai ──
         case 'dikembalikan':
@@ -386,6 +386,15 @@ function statusBadgeDetail(status) {
             return `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
         case 'dikembalikan':
             return `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
+
+         // Status denda
+        case 'terlambat':
+            return `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Terlambat</span>`;
+        case 'rusak':
+            return `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Rusak</span>`;
+        case 'hilang':
+            return `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Hilang</span>`;
+
         default:
             return `<span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">${status}</span>`;
     }

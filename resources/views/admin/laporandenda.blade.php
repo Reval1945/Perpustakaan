@@ -60,42 +60,15 @@
             <table class="table table-hover mb-0">
                 <thead style="background: var(--gray-light);">
                     <tr>
-                        <th class="text-center py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none; width: 50px;">
-                            No
-                        </th>
-                        <th class="py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">
-                            Peminjam
-                        </th>
-                        <th class="py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none; width: 200px;">
-                            Buku
-                        </th>
-                        <th class="text-center py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">
-                            Tgl Pinjam
-                        </th>
-                        <th class="text-center py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">
-                            Tgl Kembali
-                        </th>
-                        <th class="text-center py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">
-                            Telat
-                        </th>
-                        <th class="text-center py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">
-                            Jenis Denda
-                        </th>
-                        <th class="text-center py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">
-                            Status Denda
-                        </th>
-                        <th class="text-center py-3"
-                            style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">
-                            Aksi
-                        </th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none; width: 50px;">No</th>
+                        <th class="py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Peminjam</th>
+                        <th class="py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none; width: 200px;">Buku</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Pinjam</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Kembali</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Telat</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Jenis Denda</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Status Denda</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="table-denda">
@@ -108,6 +81,13 @@
             </table>
         </div>
     </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-between mt-3 px-1" id="paginationWrapper" style="display:none!important;">
+    <div class="text-muted small" id="paginationInfo"></div>
+    <nav>
+        <ul class="pagination pagination-sm mb-0" id="paginationLinks" style="gap: 4px;"></ul>
+    </nav>
 </div>
 
 {{-- Modal Update Status Denda --}}
@@ -144,285 +124,247 @@
 </div>
 
 <style>
-/* ── Sama dengan peminjaman ── */
-.btn-main {
-    height: 45px;
-    border-radius: 12px;
-    border: none;
-    font-weight: 600;
-    font-size: 0.85rem;
-    transition: all 0.3s;
-}
+.btn-main { height: 45px; border-radius: 12px; border: none; font-weight: 600; font-size: 0.85rem; transition: all 0.3s; }
+.form-control:focus { border-color: var(--primary); box-shadow: none; }
+.table td { vertical-align: middle !important; border-color: var(--border); padding: 1rem 0.75rem; color: var(--dark); }
+.badge-custom { font-weight: 600; padding: 0.45rem 0.85rem; border-radius: 30px; font-size: 0.75rem; display: inline-block; min-width: 90px; text-align: center; }
 
-.form-control:focus {
+/* Pagination Styling Identik Anggota */
+#paginationLinks .page-item .page-link {
+    border-radius: 8px !important;
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+    transition: all 0.2s;
+}
+#paginationLinks .page-item.active .page-link {
+    background: var(--primary);
     border-color: var(--primary);
-    box-shadow: none;
+    color: #fff;
 }
-
-/* Baris tabel */
-.table td {
-    vertical-align: middle !important;
-    border-color: var(--border);
-    padding: 1rem 0.75rem;
-    color: var(--dark);
-}
-
-/* Badge — identik dengan peminjaman */
-.badge-custom {
-    font-weight: 600;
-    padding: 0.45rem 0.85rem;
-    border-radius: 30px;
-    font-size: 0.75rem;
-    display: inline-block;
-    min-width: 90px;
-    text-align: center;
+#paginationLinks .page-item.disabled .page-link {
+    color: var(--gray);
+    pointer-events: none;
 }
 </style>
 
 <script>
 let allDenda = [];
+let currentPage = 1;
+const ITEMS_PER_PAGE = 10;
 const token = localStorage.getItem('token');
 
-/* ── Helpers ── */
 function formatTanggal(dateString) {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('id-ID', {
-        day: '2-digit', month: 'long', year: 'numeric'
-    });
+    return new Date(dateString).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
 }
 
-function formatRupiah(number) {
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency', currency: 'IDR', minimumFractionDigits: 0
-    }).format(number);
-}
-
-/* ── Load Data ── */
 document.addEventListener('DOMContentLoaded', loadDenda);
 
 async function loadDenda() {
     const tbody = document.getElementById('table-denda');
-    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status"></div>
-    </td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
 
     try {
         const res = await fetch('http://127.0.0.1:8000/api/denda/details', {
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Accept': 'application/json',
-                'X-Application': 'perpus-admin'
-            }
+            headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/json', 'X-Application': 'perpus-admin' }
         });
         const json = await res.json();
         allDenda = json.data || [];
         renderTable(allDenda);
     } catch(err) {
-        document.getElementById('table-denda').innerHTML =
-            `<tr><td colspan="9" class="text-center py-5 text-danger">Gagal memuat data</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-danger">Gagal memuat data</td></tr>`;
     }
 }
 
-/* ── Render Tabel ── */
 function renderTable(data) {
     const tbody = document.getElementById('table-denda');
-
+    
     if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">
-            Tidak ada riwayat denda ditemukan
-        </td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">Data tidak ditemukan</td></tr>`;
+        renderPagination(0, 1);
         return;
     }
 
-    tbody.innerHTML = data.map((item, index) => {
+    const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const pageData = data.slice(start, start + ITEMS_PER_PAGE);
 
-        const tglPinjam  = formatTanggal(item.transaction?.tanggal_pinjam);
+    tbody.innerHTML = pageData.map((item, index) => {
+        const globalNo = start + index + 1;
+        const tglPinjam = formatTanggal(item.transaction?.tanggal_pinjam);
         const tglKembali = formatTanggal(item.tanggal_kembali);
-        const hariTelat  = parseInt(item.jumlah_hari_telat) || 0;
-
-        /* Badge jenis denda — identik style peminjaman */
-        const jenisDendaRaw   = item.jenis_denda ? item.jenis_denda.toLowerCase() : 'telat';
+        const hariTelat = parseInt(item.jumlah_hari_telat) || 0;
+        const jenisDendaRaw = item.jenis_denda ? item.jenis_denda.toLowerCase() : 'telat';
         const jenisDendaLabel = jenisDendaRaw.charAt(0).toUpperCase() + jenisDendaRaw.slice(1);
 
-        let jenisBadgeStyle;
-        if      (jenisDendaRaw === 'rusak')  jenisBadgeStyle = 'background: var(--warning-soft); color: var(--warning);';
-        else if (jenisDendaRaw === 'hilang') jenisBadgeStyle = 'background: var(--danger-soft);  color: var(--danger);';
-        else                                  jenisBadgeStyle = 'background: #fff5eb; color: #fd7e14;'; // telat / orange
+        let jenisBadgeStyle = (jenisDendaRaw === 'rusak') ? 'background: var(--warning-soft); color: var(--warning);' : 
+                             (jenisDendaRaw === 'hilang') ? 'background: var(--danger-soft); color: var(--danger);' : 
+                             'background: #fff5eb; color: #fd7e14;';
 
-        /* Badge status pembayaran */
         const statusHtml = item.status_denda === 'lunas'
             ? `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Lunas</span>`
             : `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Belum Lunas</span>`;
 
-        /* ── Tombol Aksi — sama persis style dengan peminjaman ── */
-        const aksiHtml = `
-            <div class="d-flex justify-content-center">
-                <button class="btn btn-sm btn-light btn-edit-denda mr-1"
-                        data-id="${item.id}"
-                        title="Edit Status Denda"
-                        style="border-radius: 8px; border: 1px solid var(--border);">
-                    <i class="fas fa-edit text-warning"></i>
-                </button>
-                <button class="btn btn-sm btn-light"
-                        onclick="cetakDendaSatu('${item.id}')"
-                        title="Cetak Invoice PDF"
-                        style="border-radius: 8px; border: 1px solid var(--border);">
-                    <i class="fas fa-file-pdf text-danger"></i>
-                </button>
-            </div>
-        `;
-
         return `
             <tr>
-                <td class="text-center small">${index + 1}</td>
+                <td class="text-center small">${globalNo}</td>
                 <td class="font-weight-bold small">${item.transaction?.user?.name ?? '-'}</td>
                 <td class="small">${item.judul_buku ?? '-'}</td>
                 <td class="text-center small">${tglPinjam}</td>
                 <td class="text-center small">${tglKembali}</td>
-                <td class="text-center">
-                    <span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">
-                        ${hariTelat} Hari
-                    </span>
-                </td>
-                <td class="text-center">
-                    <span class="badge-custom" style="${jenisBadgeStyle}">
-                        ${jenisDendaLabel}
-                    </span>
-                </td>
+                <td class="text-center"><span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">${hariTelat} Hari</span></td>
+                <td class="text-center"><span class="badge-custom" style="${jenisBadgeStyle}">${jenisDendaLabel}</span></td>
                 <td class="text-center">${statusHtml}</td>
-                <td class="text-center">${aksiHtml}</td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-sm btn-light btn-edit-denda mr-1" data-id="${item.id}" style="border-radius: 8px; border: 1px solid var(--border);"><i class="fas fa-edit text-warning"></i></button>
+                        <button class="btn btn-sm btn-light" onclick="cetakDendaSatu('${item.id}')" style="border-radius: 8px; border: 1px solid var(--border);"><i class="fas fa-file-pdf text-danger"></i></button>
+                    </div>
+                </td>
             </tr>
         `;
     }).join('');
+
+    renderPagination(data.length, totalPages);
 }
 
-/* ── Filter & Search ── */
+function renderPagination(totalItems, totalPages) {
+    const wrapper = document.getElementById('paginationWrapper');
+    const info    = document.getElementById('paginationInfo');
+    const links   = document.getElementById('paginationLinks');
+
+    // Sembunyikan jika data <= 10
+    if (totalItems <= ITEMS_PER_PAGE) {
+        wrapper.style.setProperty('display', 'none', 'important');
+        return;
+    }
+
+    wrapper.style.setProperty('display', 'flex', 'important');
+    const start = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+    const end   = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+    info.innerHTML = `Menampilkan <strong>${start}–${end}</strong> dari <strong>${totalItems}</strong> data`;
+
+    const maxVisible = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let endPage   = Math.min(totalPages, startPage + maxVisible - 1);
+    if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+
+    let html = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;"><i class="fas fa-chevron-left" style="font-size:0.7rem;"></i></a>
+    </li>`;
+
+    if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(1); return false;">1</a></li>`;
+        if (startPage > 2) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+    }
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>
+        </li>`;
+    }
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a></li>`;
+    }
+
+    html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
+    </li>`;
+
+    links.innerHTML = html;
+}
+
+function goToPage(page) {
+    currentPage = page;
+    applyFilter(); // Memanggil filter untuk me-render data sesuai halaman
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function applyFilter() {
     const keyword = document.getElementById('searchInput').value.toLowerCase();
     const start   = document.getElementById('startDate').value;
     const end     = document.getElementById('endDate').value;
 
     const filtered = allDenda.filter(item => {
-        const nama    = (item.transaction?.user?.name ?? '').toLowerCase();
-        const judul   = (item.judul_buku ?? '').toLowerCase();
-        const tglPinjam  = (item.transaction?.tanggal_pinjam ?? '').substring(0, 10);
-        const tglKembali = (item.tanggal_kembali ?? '').substring(0, 10);
-
+        const nama = (item.transaction?.user?.name ?? '').toLowerCase();
+        const judul = (item.judul_buku ?? '').toLowerCase();
+        const tglP = (item.transaction?.tanggal_pinjam ?? '').substring(0, 10);
         const matchKeyword = nama.includes(keyword) || judul.includes(keyword);
-
         let matchDate = true;
-        if (start && end) {
-            matchDate = (tglPinjam ? tglPinjam >= start : false)
-                     && (tglKembali ? tglKembali <= end : true);
-        } else if (start) {
-            matchDate = tglPinjam === start;
-        } else if (end) {
-            matchDate = tglKembali === end;
-        }
-
+        if (start && end) matchDate = (tglP >= start && tglP <= end);
+        else if (start) matchDate = (tglP === start);
         return matchKeyword && matchDate;
     });
 
     renderTable(filtered);
 }
 
-document.getElementById('searchInput').addEventListener('input',  applyFilter);
-document.getElementById('startDate').addEventListener('change',   applyFilter);
-document.getElementById('endDate').addEventListener('change',     applyFilter);
+document.getElementById('searchInput').addEventListener('input', () => { currentPage = 1; applyFilter(); });
+document.getElementById('startDate').addEventListener('change', () => { currentPage = 1; applyFilter(); });
+document.getElementById('endDate').addEventListener('change', () => { currentPage = 1; applyFilter(); });
 
 function resetFilter() {
     document.getElementById('searchInput').value = '';
-    document.getElementById('startDate').value   = '';
-    document.getElementById('endDate').value     = '';
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    currentPage = 1;
     renderTable(allDenda);
 }
 
-/* ── Modal Edit ── */
+/* ── Modal Edit & Cetak (Sama seperti sebelumnya) ── */
 document.addEventListener('click', function(e) {
     const btn = e.target.closest('.btn-edit-denda');
     if (!btn) return;
-    const id   = btn.dataset.id;
+    const id = btn.dataset.id;
     const item = allDenda.find(d => d.id == id);
-    document.getElementById('denda_id').value      = id;
-    document.getElementById('status_denda').value  = item.status_denda;
+    document.getElementById('denda_id').value = id;
+    document.getElementById('status_denda').value = item.status_denda;
     $('#modalEditDenda').modal('show');
 });
 
 document.getElementById('btnUpdateDenda').addEventListener('click', async function() {
-    const id     = document.getElementById('denda_id').value;
+    const id = document.getElementById('denda_id').value;
     const status = document.getElementById('status_denda').value;
-
     try {
         const res = await fetch(`http://127.0.0.1:8000/api/denda/details/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token,
-                'Accept': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify({ status_denda: status })
         });
-
         if (res.ok) {
-            Swal.fire({
-                icon: 'success', title: 'Berhasil',
-                text: 'Status denda diperbarui!',
-                timer: 1500, showConfirmButton: false
-            });
+            Swal.fire({ icon: 'success', title: 'Berhasil', timer: 1500, showConfirmButton: false });
             $('#modalEditDenda').modal('hide');
             loadDenda();
         }
-    } catch (err) {
-        Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
-    }
+    } catch (err) { Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
 });
 
-/* ── Cetak Laporan Excel ── */
 async function cetakLaporan() {
-    Swal.fire({
-        title: 'Menyiapkan File...',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-    });
+    Swal.fire({ title: 'Menyiapkan File...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
-        const res  = await fetch('http://127.0.0.1:8000/api/laporan/denda/excel', {
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
+        const res = await fetch('http://127.0.0.1:8000/api/laporan/denda/excel', { headers: { 'Authorization': 'Bearer ' + token } });
         const blob = await res.blob();
-        const url  = window.URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href     = url;
-        a.download = `Laporan_Denda_${Date.now()}.xlsx`;
-        a.click();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `Laporan_Denda_${Date.now()}.xlsx`; a.click();
         Swal.close();
-    } catch (err) {
-        Swal.fire('Gagal', 'Gagal mengunduh laporan', 'error');
-    }
+    } catch (err) { Swal.fire('Gagal', 'Gagal mengunduh laporan', 'error'); }
 }
 
-/* ── Cetak Invoice PDF (satu item) ── */
 async function cetakDendaSatu(id) {
-    Swal.fire({
-        title: 'Menghasilkan PDF...',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-    });
+    Swal.fire({ title: 'Menghasilkan PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
-        const res = await fetch(`http://127.0.0.1:8000/api/laporan/denda/${id}`, {
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
-        if (!res.ok) throw new Error();
+        const res = await fetch(`http://127.0.0.1:8000/api/laporan/denda/${id}`, { headers: { 'Authorization': 'Bearer ' + token } });
         const blob = await res.blob();
-        const url  = window.URL.createObjectURL(blob);
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href     = url;
-        link.download = `Invoice_Denda_${id}.pdf`;
-        link.click();
+        link.href = url; link.download = `Invoice_Denda_${id}.pdf`; link.click();
         Swal.close();
-    } catch (err) {
-        Swal.fire('Gagal', 'Gagal mencetak dokumen', 'error');
-    }
+    } catch (err) { Swal.fire('Gagal', 'Gagal mencetak dokumen', 'error'); }
 }
 </script>
-
 @endsection

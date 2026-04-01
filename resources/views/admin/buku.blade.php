@@ -55,6 +55,14 @@
             <p class="mt-2 text-muted small">Memuat data buku...</p>
         </div>
     </div>
+
+    <!-- Pagination Buku -->
+    <div class="d-flex align-items-center justify-content-between mt-3 px-1" id="bookPaginationWrapper" style="display:none!important;">
+        <div class="text-muted small" id="bookPaginationInfo"></div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0" id="bookPaginationLinks" style="gap: 4px;"></ul>
+        </nav>
+    </div>
 </div>
 
 <!-- Modal Tambah/Edit Buku -->
@@ -539,8 +547,31 @@
         box-shadow: 0 3px 10px rgba(78, 115, 223, 0.1);
         border-color: transparent;
     }
-    
-</style>
+
+    /* Pagination Buku */
+    #bookPaginationLinks .page-item .page-link {
+        border-radius: 8px !important;
+        border: 1px solid #e2e8f0;
+        color: var(--primary, #4e73df);
+        font-weight: 600;
+        font-size: 0.8rem;
+        padding: 0.35rem 0.65rem;
+        transition: all 0.2s;
+    }
+    #bookPaginationLinks .page-item.active .page-link {
+        background: var(--primary, #4e73df);
+        border-color: var(--primary, #4e73df);
+        color: #fff;
+    }
+    #bookPaginationLinks .page-item.disabled .page-link {
+        color: #94a3b8;
+        pointer-events: none;
+    }
+    #bookPaginationLinks .page-item .page-link:hover:not(.active) {
+        background: #eef2ff;
+        color: var(--primary, #4e73df);
+    }
+    </style>
 
 <!-- Script untuk menampilkan nama file yang dipilih -->
 <script>
@@ -554,6 +585,8 @@
 <!-- DATA BUKU (Script tetap sama) -->
 <script>
 let allBooks = []; // Master data buku
+let bookCurrentPage = 1;
+const BOOK_PER_PAGE = 12; // 12 kartu per halaman (kelipatan 4 kolom)
 const API = 'http://127.0.0.1:8000/api';
 const token = localStorage.getItem('token');
 
@@ -604,6 +637,7 @@ function applyFilters() {
         return matchSearch && matchCat;
     });
 
+    bookCurrentPage = 1;
     renderBooks(filtered);
 }
 
@@ -643,12 +677,18 @@ function renderBooks(books){
             <div class="col-12 text-center py-4">
                 <p class="text-muted">Tidak ada buku ditemukan.</p>
             </div>`;
+        renderBookPagination(0, 1);
         return;
     }
 
+    const totalPages = Math.ceil(books.length / BOOK_PER_PAGE);
+    if (bookCurrentPage > totalPages) bookCurrentPage = totalPages;
+    const start = (bookCurrentPage - 1) * BOOK_PER_PAGE;
+    const pageData = books.slice(start, start + BOOK_PER_PAGE);
+
     container.innerHTML = '';
 
-    books.forEach(book => {
+    pageData.forEach(book => {
         const image = book.image || 'https://via.placeholder.com/300x400?text=No+Cover';
         const stok = book.available_stock ?? 0;
         const isAvailable = stok > 0;
@@ -690,6 +730,59 @@ function renderBooks(books){
             </div>
         </div>`;
     });
+
+    renderBookPagination(books.length, totalPages);
+}
+
+function renderBookPagination(totalItems, totalPages) {
+    const wrapper = document.getElementById('bookPaginationWrapper');
+    const info    = document.getElementById('bookPaginationInfo');
+    const links   = document.getElementById('bookPaginationLinks');
+
+    if (totalItems === 0 || totalPages <= 1) {
+        wrapper.style.display = 'none';
+        return;
+    }
+
+    wrapper.style.display = 'flex';
+    const start = (bookCurrentPage - 1) * BOOK_PER_PAGE + 1;
+    const end   = Math.min(bookCurrentPage * BOOK_PER_PAGE, totalItems);
+    info.innerHTML = `Menampilkan <strong>${start}–${end}</strong> dari <strong>${totalItems}</strong> buku`;
+
+    const maxVisible = 5;
+    let startPage = Math.max(1, bookCurrentPage - Math.floor(maxVisible / 2));
+    let endPage   = Math.min(totalPages, startPage + maxVisible - 1);
+    if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+
+    let html = `<li class="page-item ${bookCurrentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToBookPage(${bookCurrentPage - 1}); return false;"><i class="fas fa-chevron-left" style="font-size:0.7rem;"></i></a>
+    </li>`;
+
+    if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToBookPage(1); return false;">1</a></li>`;
+        if (startPage > 2) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+    }
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<li class="page-item ${i === bookCurrentPage ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="goToBookPage(${i}); return false;">${i}</a>
+        </li>`;
+    }
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToBookPage(${totalPages}); return false;">${totalPages}</a></li>`;
+    }
+
+    html += `<li class="page-item ${bookCurrentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToBookPage(${bookCurrentPage + 1}); return false;"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
+    </li>`;
+
+    links.innerHTML = html;
+}
+
+function goToBookPage(page) {
+    bookCurrentPage = page;
+    applyFilters();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Simpan / Update Buku

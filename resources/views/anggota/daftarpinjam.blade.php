@@ -264,9 +264,9 @@ function renderTabel(dataTransaksi) {
             } else {
                 // Status Menunggu (Proses)
                 tombol = `
-                    <button class="btn-action-custom btn-light text-muted" disabled style="opacity:0.7; border-style: dashed;">
+                    <span class="badge" style="background: var(--warning-soft); color: var(--warning);">
                         <i class="fas fa-clock mr-2"></i> Sedang Diproses
-                    </button>`;
+                    </span>`;
             }
 
             tbody.innerHTML += `

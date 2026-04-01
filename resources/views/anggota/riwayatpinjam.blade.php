@@ -207,9 +207,7 @@ function renderRiwayat(data) {
                 <td class="text-center">${badgeBuku}</td>
                 <td class="text-center font-weight-bold text-dark">${infoDenda}</td>
                 <td class="text-center">${badgeDenda}</td>
-                <td style="line-height: 1.2;">
-                    <small class="text-muted italic">${detail.catatan ?? '-'}</small>
-                </td>
+                <td class="text-center italic">${detail.catatan ?? '-'}</td>
             </tr>`;
         });
     });

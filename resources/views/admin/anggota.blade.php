@@ -61,6 +61,14 @@
     </div>
 </div>
 
+<!-- Pagination Anggota -->
+<div class="d-flex align-items-center justify-content-between mt-3 px-1" id="paginationWrapper" style="display:none!important;">
+    <div class="text-muted small" id="paginationInfo"></div>
+    <nav>
+        <ul class="pagination pagination-sm mb-0" id="paginationLinks" style="gap: 4px;"></ul>
+    </nav>
+</div>
+
 <!-- Modal Tambah Anggota -->
 <div class="modal fade" id="modalTambahAnggota" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -217,10 +225,36 @@ body { background-color: #f8fafc; }
 .table td { vertical-align: middle; border-top: 1px solid var(--border); }
 .badge { font-weight: 600; }
 .card { transition: transform 0.2s; }
+
+/* Pagination */
+#paginationLinks .page-item .page-link {
+    border-radius: 8px !important;
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.65rem;
+    transition: all 0.2s;
+}
+#paginationLinks .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+#paginationLinks .page-item.disabled .page-link {
+    color: var(--gray);
+    pointer-events: none;
+}
+#paginationLinks .page-item .page-link:hover:not(.active) {
+    background: var(--primary-soft, #eef2ff);
+    color: var(--primary);
+}
 </style>
 
 <script>
 let semuaUsers = [];
+let currentPage = 1;
+const ITEMS_PER_PAGE = 10;
 const API_URL = 'http://127.0.0.1:8000/api/users';
 
 // --- 1. AMBIL DATA (FETCH) ---
@@ -249,20 +283,26 @@ function renderTable(users) {
 
     if (users.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-gray">Tidak ada data anggota.</td></tr>`;
+        renderPagination(0, 1);
         return;
     }
 
-    // Tambahkan parameter index di sini
-    users.forEach((user, index) => {
+    const totalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const pageData = users.slice(start, start + ITEMS_PER_PAGE);
+
+    pageData.forEach((user, index) => {
+        const globalNo = start + index + 1;
         tbody.innerHTML += `
             <tr>
-                <td class="text-center align-middle text-muted" style="font-size: 0.9rem;">${index + 1}</td>
+                <td class="text-center align-middle text-muted" style="font-size: 0.9rem;">${globalNo}</td>
                 <td class="align-middle">
                     <span class="badge badge-light text-primary p-2" style="font-weight: 700;">${user.kode_user}</span>
                 </td>
                 <td class="align-middle font-weight-bold" style="color: var(--dark);">${user.name}</td>
                 <td class="text-center align-middle">
-                    <span class="text-muted" style="font-size: 0.9rem; font-family: monospace;" >${user.nisn ?? '-'}</span>
+                    <span class="text-muted" style="font-size: 0.9rem; font-family: monospace;">${user.nisn ?? '-'}</span>
                 </td>
                 <td class="text-center align-middle">
                     <span class="badge badge-pill border px-3" style="color: var(--gray);">${user.class ?? '-'}</span>
@@ -280,6 +320,65 @@ function renderTable(users) {
             </tr>
         `;
     });
+
+    renderPagination(users.length, totalPages);
+}
+
+function renderPagination(totalItems, totalPages) {
+    const wrapper = document.getElementById('paginationWrapper');
+    const info    = document.getElementById('paginationInfo');
+    const links   = document.getElementById('paginationLinks');
+
+    if (totalItems === 0 || totalPages <= 1) {
+        wrapper.style.display = 'none';
+        return;
+    }
+
+    wrapper.style.display = 'flex';
+    const start = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+    const end   = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+    info.innerHTML = `Menampilkan <strong>${start}–${end}</strong> dari <strong>${totalItems}</strong> anggota`;
+
+    const maxVisible = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let endPage   = Math.min(totalPages, startPage + maxVisible - 1);
+    if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+
+    let html = `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;"><i class="fas fa-chevron-left" style="font-size:0.7rem;"></i></a>
+    </li>`;
+
+    if (startPage > 1) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(1); return false;">1</a></li>`;
+        if (startPage > 2) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+    }
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>
+        </li>`;
+    }
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<li class="page-item disabled"><span class="page-link">…</span></li>`;
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a></li>`;
+    }
+
+    html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;"><i class="fas fa-chevron-right" style="font-size:0.7rem;"></i></a>
+    </li>`;
+
+    links.innerHTML = html;
+}
+
+function goToPage(page) {
+    currentPage = page;
+    const kw = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = semuaUsers.filter(u =>
+        u.name.toLowerCase().includes(kw) ||
+        (u.nisn ?? '').toString().includes(kw) ||
+        (u.class ?? '').toLowerCase().includes(kw)
+    );
+    renderTable(filtered);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // --- 3. SIMPAN & UPDATE ---
@@ -437,6 +536,7 @@ document.getElementById('btnTambahAnggota').addEventListener('click', () => {
 });
 
 document.getElementById('searchInput').addEventListener('input', function() {
+    currentPage = 1;
     const kw = this.value.toLowerCase();
     const filtered = semuaUsers.filter(u => 
         u.name.toLowerCase().includes(kw) || 

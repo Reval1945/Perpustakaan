@@ -13,7 +13,7 @@
             <button class="btn-main btn-white text-primary" data-toggle="modal" data-target="#modalPilihBuku">
                 <i class="fas fa-plus"></i> <span>Tambah Buku</span>
             </button>
-            <button class="btn-main btn-white text-danger shadow-none border" id="btnReset">
+            <button class="btn-main text-danger shadow-sm" id="btnReset" style="background:#fee2e2">
                 <i class="fas fa-undo"></i> <span>Reset</span>
             </button>
             <button class="btn-main btn-primary shadow-sm" id="btnAjukan">
