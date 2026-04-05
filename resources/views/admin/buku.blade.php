@@ -296,7 +296,7 @@
                         </div>
 
                         <label class="text-overline text-primary">Sinopsis</label>
-                        <div id="modalDeskripsi" class="text-muted p-3 bg-light rounded" style="max-height: 100px; overflow-y: auto; line-height: 1.5;">
+                        <div id="modalDeskripsi" class="text-muted p-3 bg-light rounded" style="max-height: 200px; overflow-y: auto; line-height: 1.5;">
                             Sinopsis tidak tersedia.
                         </div>
                     </div>
@@ -960,9 +960,10 @@ async function loadStok(bookId){
         data.data.forEach(stok => {
             let badgeClass = 'badge-secondary-soft';
             if(stok.status === 'tersedia') badgeClass = 'badge-success-soft';
-            else if(stok.status === 'dipinjam') badgeClass = 'badge-warning-soft';
+            else if(stok.status === 'dipinjam') badgeClass = 'badge-primary-soft';
             else if(stok.status === 'rusak') badgeClass = 'badge-danger-soft';
             else if(stok.status === 'hilang') badgeClass = 'badge-danger-soft';
+            else if(stok.status === 'direservasi') badgeClass = 'badge-primary-soft';
 
             list.innerHTML += `
             <li class="list-group-item d-flex justify-content-between align-items-center">

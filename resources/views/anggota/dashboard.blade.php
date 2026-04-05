@@ -141,7 +141,7 @@
                 <div class="panel-body d-flex flex-column align-items-center justify-content-center">
                     <div class="donut-wrap">
                         <canvas id="myPieChart"></canvas>
-                        <div class="donut-center" id="donutCenter">—</div>
+                        <div class="donut-center" id="donutCenter"></div>
                     </div>
                     <div class="legend-row mt-4">
                         <div class="legend-item">
@@ -419,9 +419,7 @@ async function loadDashboardStats() {
         document.getElementById('sudahKembali').innerText  = data.sudah_kembali || 0;
         document.getElementById('terlambat').innerText     = data.terlambat || 0;
 
-        // Donut center total
-        document.getElementById('donutCenter').innerText = data.total || 0;
-
+        
         // Alert
         const alertBox = document.getElementById('alertBelumKembali');
         if (data.belum_kembali > 0) {

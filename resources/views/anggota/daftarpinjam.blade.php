@@ -39,8 +39,9 @@
                 </div>
             </div>
             <div class="col-md-2 text-md-right mt-2 mt-md-0">
-                <button class="btn btn-light btn-block shadow-sm" id="btnRefresh" onclick="loadTransaksi()" style="border-radius: 30px; border-color: var(--border); transition: all 0.3s;">
-                    <i class="fas fa-sync-alt" id="iconRefresh"></i>
+                
+                <button id="btnRefresh" onclick="loadTransaksi()" class="btn btn-light w-100" style="border-radius: 12px; height: 45px; border: 1px solid var(--border);">
+                    <i class="fas fa-undo mr-1" id="iconRefresh"></i> Reset
                 </button>
             </div>
         </div>

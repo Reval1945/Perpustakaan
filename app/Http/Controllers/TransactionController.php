@@ -21,6 +21,8 @@ use App\Http\Requests\Admin\UpdateTransactionRequest;
 use App\Http\Requests\Transaction\StorePeminjamanRequest;
 use App\Http\Requests\Transaction\VerifyReturnAllRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
@@ -140,7 +142,6 @@ class TransactionController extends Controller
             if ($data['status'] === 'hilang') {
                 $data['denda'] = 0;
                 $data['jenis_denda'] = 'hilang';
-                $data['catatan'] = "[HILANG] " . ($data['catatan'] ?? 'Wajib ganti buku fisik.');
             } elseif ($data['status'] === 'rusak') {
                 $data['jenis_denda'] = 'rusak';
             }
@@ -169,7 +170,6 @@ class TransactionController extends Controller
             if ($validatedData['status'] === 'hilang') {
                 $validatedData['denda'] = 0; // Ketua minta ganti buku, jadi uang 0
                 $validatedData['jenis_denda'] = 'hilang';
-                $validatedData['catatan'] = "[HILANG - WAJIB GANTI BUKU] " . ($validatedData['catatan'] ?? '');
             } 
             
             // 2. LOGIKA UNTUK RUSAK
@@ -188,6 +188,56 @@ class TransactionController extends Controller
 
         } catch (ValidationException $e) {
             return response()->json(['message' => collect($e->errors())->flatten()->first()], 422);
+        }
+    }
+
+    /**
+     * Tolak satu detail transaksi (admin).
+     */
+    public function tolakDetail(Request $request, string $detailId)
+    {
+        try {
+            $request->validate(['catatan' => 'required|string']);
+
+            $detail = TransactionDetail::with('transaction')->findOrFail($detailId);
+
+            $this->admin_service->rejectDetail($detail, [
+                'catatan' => $request->input('catatan')
+            ]);
+
+            return response()->json(['message' => 'Detail transaksi berhasil ditolak']);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => collect($e->errors())->flatten()->first()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal menolak detail transaksi'], 500);
+        }
+    }
+
+    /**
+     * Tolak transaksi (header) — menolak semua detail yang menunggu.
+     */
+    public function tolakTransaksi(Request $request, string $id)
+    {
+        try {
+            $request->validate(['catatan' => 'required|string']);
+
+            $transaction = Transactions::findOrFail($id);
+
+            $this->admin_service->rejectTransaction($transaction, [
+                'catatan' => $request->input('catatan')
+            ]);
+
+            return response()->json(['message' => 'Transaksi berhasil ditolak']);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => collect($e->errors())->flatten()->first()], 422);
+        } catch (\Exception $e) {
+            Log::error('tolakTransaksi error: ' . $e->getMessage()); // ← tambah ini
+            return response()->json([
+                'message' => 'Gagal menolak transaksi',
+                'debug'   => $e->getMessage() // ← tambah ini sementara
+            ], 500);
         }
     }
 

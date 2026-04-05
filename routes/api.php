@@ -68,6 +68,7 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
     Route::post('/transactions', [TransactionController::class, 'AdminStore']);
     Route::put('/transactions/{id}/verifikasi-pinjam', [TransactionController::class, 'verifikasiPinjam']);
     Route::put('/transactions/{id}/verifikasi-kembali', [TransactionController::class, 'verifikasiKembali']);
+    Route::put('/transactions/{id}/tolak', [TransactionController::class, 'tolakTransaksi']);
     Route::put('/transactions/{id}', [TransactionController::class, 'update']);
     Route::get('/laporan/peminjaman/excel', [TransactionController::class, 'exportLaporanPeminjaman']);
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
@@ -79,6 +80,7 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
     Route::put("/transactions/{id}/verifikasi-detail", [TransactionController::class, 'verifikasiPinjamDetail']);
     Route::get('/transactions/export/excel', [TransactionController::class, 'exportExcel']);
     Route::get('/transaction-details', [TransactionController::class, 'getDetails']);
+    Route::put('/transaction-detail/{id}/tolak', [TransactionController::class, 'tolakDetail']);
     Route::put('/transaction-detail/{id}/verify-return',[TransactionController::class, 'verifikasiKembaliDetail']);
 
     // CETAK TRANSAKSI DENDA

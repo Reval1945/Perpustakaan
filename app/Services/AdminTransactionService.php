@@ -289,4 +289,72 @@ class AdminTransactionService
             }
         });
     }
+
+    /**
+     * Tolak satu detail transaksi.
+     */
+    public function rejectDetail(TransactionDetail $detail, array $data)
+    {
+        return DB::transaction(function () use ($detail, $data) {
+            $detail->update([
+                'status'  => 'ditolak',
+                'catatan' => $data['catatan'] ?? null,
+            ]);
+
+            if ($detail->book_stock_id) {
+                // kembalikan status eksemplar ke tersedia
+                BookStock::where('id', $detail->book_stock_id)
+                    ->update(['status' => 'tersedia']);
+            }
+
+            $transaction = $detail->transaction->fresh('details');
+            $statuses    = $transaction->details->pluck('status');
+
+            if ($statuses->every(fn ($s) => $s === 'ditolak')) {
+                $transaction->status = 'ditolak';
+            } elseif ($statuses->contains(fn ($s) => in_array($s, ['menunggu_verifikasi', 'menunggu_verifikasi_kembali']))) {
+                // masih ada yang menunggu verifikasi → tetap menunggu_verifikasi agar tombol aksi muncul
+                $transaction->status = 'menunggu_verifikasi';
+            } elseif ($statuses->contains('dipinjam') || $statuses->contains('diperpanjang')) {
+                $transaction->status = 'dipinjam';
+            } else {
+                $transaction->status = 'ditolak';
+            }
+
+            $transaction->save();
+
+            return $detail;
+        });
+    }
+
+    /**
+     * Tolak seluruh / sebagian transaksi (header).
+     * Akan menandai detail yang relevan sebagai 'ditolak' dan mengembalikan stok.
+     */
+    public function rejectTransaction(Transactions $transaction, array $data)
+    {
+        return DB::transaction(function () use ($transaction, $data) {
+            $transaction->load('details');
+
+
+            foreach ($transaction->details as $detail) {
+                // Tolak semua detail pada level header
+                $detail->update([
+                    'status'  => 'ditolak',
+                    'catatan' => $data['catatan'] ?? null,
+                ]);
+
+                if ($detail->book_stock_id) {
+                    BookStock::where('id', $detail->book_stock_id)
+                        ->update(['status' => 'tersedia']);
+                }
+            }
+
+            // Set header transaksi menjadi ditolak
+            $transaction->status = 'ditolak';
+            $transaction->save();
+
+            return $transaction;
+        });
+    }
 }

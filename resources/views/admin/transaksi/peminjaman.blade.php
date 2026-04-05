@@ -139,6 +139,29 @@
     </div>
 </div>
 
+<!-- Modal Tolak (untuk detail & header) -->
+<div class="modal fade" id="modalReject" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border: none; border-radius: 16px 16px 0 0;">
+            <div class="modal-header pt-4 px-4" style="background: var(--primary); border-radius: 16px 16px 0 0;">
+                <h5 class="modal-title" id="modalRejectTitle" style="font-weight: 700; color: var(--light);">Tolak Peminjaman</h5>
+                <button type="button" class="close" style="color: var(--light);" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body px-4">
+                <input type="hidden" id="rejectTargetId">
+                <div class="form-group mb-3">
+                    <label class="small font-weight-bold">Alasan Penolakan (catatan)</label>
+                    <textarea id="rejectCatatan" class="form-control" rows="3" placeholder="Isi alasan penolakan..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pb-4 px-4">
+                <button class="btn btn-light px-4" data-dismiss="modal" style="border-radius: 10px; font-weight: 600;">Batal</button>
+                <button class="btn btn-danger px-4" id="btnConfirmReject" style="border-radius: 10px; font-weight: 600;">Tolak</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 .badge-custom { 
     font-weight: 600; 
@@ -291,6 +314,7 @@ function getTransactionStatus(trx) {
     const jmlDiperpanjang     = count(d => d.status === 'diperpanjang');
     const jmlDipinjam         = count(d => d.status === 'dipinjam');
     const jmlSelesai          = count(d => ['dikembalikan', 'rusak', 'hilang'].includes(d.status));
+    const jmlDitolak          = count(d => d.status === 'ditolak');
     const jmlAktif            = jmlDipinjam + jmlDiperpanjang;
 
     // ── PRIORITAS 1: Ada yang minta perpanjangan (butuh aksi admin segera) ──
@@ -306,12 +330,19 @@ function getTransactionStatus(trx) {
     }
 
     // ── PRIORITAS 3: Ada buku yang menunggu verifikasi pinjam ──
+    // Termasuk kasus mix menunggu + ditolak (sebagian ditolak, sisanya masih menunggu)
     if (jmlMenungguPinjam > 0) {
         if (jmlMenungguPinjam === total) return 'menunggu_verifikasi';
-        return 'sebagian_menunggu_verifikasi';
+        return 'sebagian_menunggu_verifikasi'; // mencakup mix dengan ditolak
     }
 
-    // ── KONDISI FINAL: semua buku sudah terverifikasi ──
+    // ── KONDISI FINAL ──
+
+    // Semua ditolak
+    if (jmlDitolak === total) return 'ditolak';
+
+    // Sebagian ditolak, sisanya sudah dipinjam/selesai (tidak ada lagi yang menunggu)
+    if (jmlDitolak > 0) return 'sebagian_ditolak';
 
     // Semua selesai dikembalikan
     if (jmlSelesai === total) return 'dikembalikan';
@@ -322,7 +353,7 @@ function getTransactionStatus(trx) {
     // Semua masih dipinjam (tanpa perpanjangan)
     if (jmlDipinjam === total) return 'dipinjam';
 
-    // Campuran dipinjam & diperpanjang (ada yang diperpanjang, ada yang belum)
+    // Campuran dipinjam & diperpanjang
     if (jmlAktif === total && jmlDiperpanjang > 0) return 'sebagian_diperpanjang';
 
     // Sebagian sudah kembali, sebagian masih diperpanjang
@@ -344,7 +375,7 @@ function statusBadge(status) {
         case 'menunggu_verifikasi':
             return badge('var(--warning-soft)', 'var(--warning)', null, 'Menunggu Verifikasi');
         case 'sebagian_menunggu_verifikasi':
-            return badge('var(--warning-soft)', 'var(--warning)', null, 'Sebagian Verifikasi');
+            return badge('var(--warning-soft)', 'var(--warning)', null, 'Sebagian Menunggu');
         case 'menunggu_verifikasi_kembali':
             return badge('var(--warning-soft)', '#F77F00', null, 'Verifikasi Kembali');
         case 'sebagian_menunggu_kembali':
@@ -370,8 +401,11 @@ function statusBadge(status) {
         case 'dikembalikan':
             return badge('var(--success-soft)', 'var(--success)', null, 'Selesai');
 
-        default:
-            return badge('var(--gray-light)', 'var(--dark)', null, status);
+        // ── Ditolak ──
+        case 'ditolak':
+            return badge('var(--danger-soft)', 'var(--danger)', null, 'Ditolak');
+        case 'sebagian_ditolak':
+            return badge('var(--danger-soft)', 'var(--danger)', null, 'Sebagian Ditolak');
     }
 }
 
@@ -394,6 +428,8 @@ function statusBadgeDetail(status) {
             return `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Rusak</span>`;
         case 'hilang':
             return `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Hilang</span>`;
+        case 'ditolak':
+            return `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Ditolak</span>`;
 
         default:
             return `<span class="badge-custom" style="background: var(--gray-light); color: var(--dark);">${status}</span>`;
@@ -459,6 +495,19 @@ function renderTable(data, page) {
                     </button>
                 `;
             }
+
+                // 3. Tombol Tolak per detail (hanya jika sedang menunggu verifikasi)
+                if (d.status === 'menunggu_verifikasi') {
+                    actionDetail += `
+                        <button class="btn btn-danger btn-sm btn-reject-detail" 
+                                data-id="${d.id}" 
+                                data-judul="${d.judul_buku}"
+                                title="Tolak Peminjaman Buku Ini"
+                                style="border-radius: 8px;margin-left:6px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                }
 
             if (actionDetail === '') {
                 actionDetail = '<span class="text-muted small">-</span>';
@@ -599,19 +648,31 @@ function renderActionButton(trx) {
     `;
 
     // 2. Logika Tombol Konfirmasi (Muncul hanya jika butuh verifikasi)
-    if (statusUtama === 'menunggu_verifikasi' || statusUtama === 'menunggu_verifikasi_kembali') {
-        const isKembali = statusUtama === 'menunggu_verifikasi_kembali';
-        
+    const butuhVerifikasiPinjam = ['menunggu_verifikasi', 'sebagian_menunggu_verifikasi'].includes(statusUtama);
+    const butuhVerifikasiKembali = ['menunggu_verifikasi_kembali', 'sebagian_menunggu_kembali'].includes(statusUtama);
+
+    if (butuhVerifikasiPinjam || butuhVerifikasiKembali) {
+        const isKembali = butuhVerifikasiKembali;
+
         buttons += `
             <button class="btn btn-sm ${isKembali ? 'btn-info' : 'btn-success'} btn-acc" 
                     data-id="${trx.id}" 
-                    data-status-type="${statusUtama}"
+                    data-status-type="${isKembali ? 'menunggu_verifikasi_kembali' : 'menunggu_verifikasi'}"
                     data-jatuh-tempo="${trx.tanggal_jatuh_tempo}"
                     style="border-radius: 8px;"
                     title="${isKembali ? 'Konfirmasi Pengembalian' : 'Konfirmasi Peminjaman'}">
                 <i class="fas ${isKembali ? 'fa-undo-alt' : 'fa-check'}"></i>
             </button>
         `;
+
+        // Tombol Tolak Transaksi (header) — tampil jika masih ada yang menunggu verifikasi pinjam
+        if (!isKembali) {
+            buttons += `
+                <button class="btn btn-sm btn-danger btn-reject" data-id="${trx.id}" title="Tolak Peminjaman" style="border-radius:8px; margin-left:4px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+        }
     }
 
     return `<div class="d-flex justify-content-center">${buttons}</div>`;
@@ -1019,7 +1080,7 @@ document.getElementById('jenis_denda').addEventListener('change', function(){
             icon: 'warning',
             title: 'Status Buku Hilang',
             text: 'Denda uang otomatis diset Rp 0. Pastikan anggota mengganti dengan buku fisik asli yang sama!',
-            confirmButtonColor: '#2C5AA0', // Sesuaikan dengan warna primary admin Anda
+            confirmButtonColor: '#2C5AA0',
             confirmButtonText: 'Saya Mengerti'
         });
     } 
@@ -1030,5 +1091,65 @@ document.getElementById('jenis_denda').addEventListener('change', function(){
     }
 });
 
+</script>
+<script>
+// Rejection handlers
+let rejectEndpoint = '';
+document.addEventListener('click', function(e) {
+    // Tolak header
+    if (e.target.closest('.btn-reject')) {
+        const btn = e.target.closest('.btn-reject');
+        const id = btn.dataset.id;
+        rejectEndpoint = `/api/transactions/${id}/tolak`;
+        document.getElementById('rejectTargetId').value = id;
+        document.getElementById('modalRejectTitle').textContent = 'Tolak Transaksi ' + id;
+        document.getElementById('rejectCatatan').value = '';
+        $('#modalReject').modal('show');
+    }
+
+    // Tolak detail
+    if (e.target.closest('.btn-reject-detail')) {
+        const btn = e.target.closest('.btn-reject-detail');
+        const id = btn.dataset.id;
+        rejectEndpoint = `/api/transaction-detail/${id}/tolak`;
+        document.getElementById('rejectTargetId').value = id;
+        document.getElementById('modalRejectTitle').textContent = 'Tolak Item: ' + (btn.dataset.judul ?? id);
+        document.getElementById('rejectCatatan').value = '';
+        $('#modalReject').modal('show');
+    }
+});
+
+document.getElementById('btnConfirmReject').addEventListener('click', function() {
+    const catatan = document.getElementById('rejectCatatan').value || '';
+
+    if (!catatan.trim()) {
+        Swal.fire('Perhatian', 'Silakan isi catatan penolakan.', 'warning');
+        return;
+    }
+
+    Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    fetch(rejectEndpoint, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ catatan })
+    })
+    .then(async res => {
+        const result = await res.json();
+        if (!res.ok) {
+            Swal.fire('Gagal', result.message || 'Terjadi kesalahan', 'error');
+            return;
+        }
+
+        $('#modalReject').modal('hide');
+        Swal.fire({ icon: 'success', title: 'Berhasil', text: result.message || 'Berhasil ditolak', timer: 1400, showConfirmButton: false });
+        fetchTransactions();
+    })
+    .catch(() => Swal.fire('Gagal', 'Gagal menghubungi server', 'error'));
+});
 </script>
 @endsection

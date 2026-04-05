@@ -23,7 +23,7 @@
     {{-- ======= STAT CARDS ======= --}}
     <div class="row mb-4">
 
-        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
             <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--blue);">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
             <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--green);">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -65,7 +65,7 @@
             </div>
         </div>
 
-        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
             <div class="stat-card h-100 py-3" style="border-left: 4px solid var(--amber);">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -92,7 +92,7 @@
     {{-- ======= CHART + BUKU ======= --}}
     <div class="row">
 
-        <div class="col-8 mb-4">
+        <div class="col-12 col-md-8 mb-4">
             <div class="panel">
                 <div class="panel-head">
                     <div>
@@ -109,7 +109,7 @@
             </div>
         </div>
 
-        <div class="col-4 mb-4">
+        <div class="col-12 col-md-4 mb-4">
             <div class="panel">
                 <div class="panel-head">
                     <div>
@@ -421,12 +421,12 @@ p,span,div,a,li,td,th,button,input,select,textarea {
 ============================================ */
 @media (min-width: 768px) and (max-width: 991.98px) {
     .dash-headline { font-size: 1.6rem; }
-    .kpi-value { font-size: 1.8rem; letter-spacing: -1px; }
-    .kpi-card { padding: 16px 14px 13px; }
-    .kpi-icon { width: 36px; height: 36px; font-size: .85rem; }
-    .kpi-label { font-size: .62rem; }
-    .kpi-tag { font-size: .66rem; padding: 3px 9px; }
-    .chart-wrap { height: 210px; }
+    .stat-value { font-size: 1.8rem; letter-spacing: -1px; }
+    .stat-card .card-body { padding: 1rem 1.25rem; }
+    .stat-icon-wrap { width: 42px; height: 42px; font-size: .9rem; }
+    .stat-label { font-size: .65rem; }
+    .stat-footer { font-size: .65rem; }
+    .chart-wrap { height: 220px; }
     .panel-head { padding: 14px 16px 12px; }
     .panel-body { padding: 14px 16px; }
     .book-row { padding: 10px 14px; }
@@ -446,51 +446,45 @@ p,span,div,a,li,td,th,button,input,select,textarea {
     /* Header — tetap flex row tapi lebih compact */
     .dash-topbar { gap: 8px; margin-bottom: 0.75rem !important; }
     .dash-eyebrow { font-size: .58rem; letter-spacing: 1.5px; }
-    .dash-headline { font-size: 1.15rem; letter-spacing: -.5px; }
+    .dash-headline { font-size: 1.25rem; letter-spacing: -.5px; }
     .meta-chip { padding: 5px 10px; gap: 6px; }
     .meta-text { font-size: .65rem; }
     .meta-dot { width: 6px; height: 6px; }
 
-    /* KPI cards — 3 kolom tetap, konten diperkecil */
-    .kpi-card {
-        padding: 10px 10px 9px;
-        border-radius: 10px;
-        border-top-width: 2px;
-    }
-    .kpi-top { margin-bottom: 6px; }
-    .kpi-label { font-size: .54rem; letter-spacing: 1px; }
-    .kpi-icon { width: 28px; height: 28px; border-radius: 7px; font-size: .7rem; }
-    .kpi-value { font-size: 1.3rem; letter-spacing: -.5px; min-height: 28px; margin-bottom: 7px; }
-    .kpi-tag { font-size: .58rem; padding: 3px 7px; gap: 4px; }
-    .kpi-skeleton { width: 60px; height: 26px; }
+    /* Stat cards */
+    .stat-card .card-body { padding: 1rem 1.1rem; }
+    .stat-label { font-size: .62rem; }
+    .stat-value { font-size: 1.6rem; letter-spacing: -.5px; min-height: 30px; margin-bottom: 8px; }
+    .stat-icon-wrap { width: 42px; height: 42px; border-radius: 12px; }
+    .stat-footer { font-size: .65rem; }
 
     /* Panels */
-    .panel { border-radius: 10px; }
-    .panel-head { padding: 10px 12px 9px; flex-wrap: wrap; gap: 6px; }
-    .panel-eyebrow { font-size: .56rem; letter-spacing: 1.5px; }
-    .panel-title { font-size: .78rem; }
-    .panel-badge { font-size: .55rem; padding: 3px 9px; }
-    .panel-body { padding: 10px 12px; }
+    .panel { border-radius: 12px; }
+    .panel-head { padding: 12px 14px 10px; flex-wrap: wrap; gap: 6px; }
+    .panel-eyebrow { font-size: .58rem; letter-spacing: 1.5px; }
+    .panel-title { font-size: .82rem; }
+    .panel-badge { font-size: .58rem; padding: 4px 10px; }
+    .panel-body { padding: 12px 14px; }
 
-    /* Chart compact */
-    .chart-wrap { height: 160px; }
+    /* Chart full width, height compact */
+    .chart-wrap { height: 200px; }
 
     /* Book list compact */
-    .book-row { padding: 8px 12px; }
-    .book-num { font-size: .55rem; width: 16px; margin-right: 8px; }
-    .book-icon-wrap { width: 26px; height: 26px; border-radius: 7px; font-size: .65rem; margin-right: 8px; }
-    .book-title { font-size: .68rem; }
-    .book-sub { font-size: .58rem; }
+    .book-row { padding: 10px 14px; }
+    .book-num { font-size: .58rem; width: 18px; margin-right: 10px; }
+    .book-icon-wrap { width: 30px; height: 30px; border-radius: 8px; font-size: .72rem; margin-right: 10px; }
+    .book-title { font-size: .74rem; }
+    .book-sub { font-size: .62rem; }
 }
 
 /* ============================================
    RESPONSIVE — SMALL MOBILE (< 420px)
 ============================================ */
 @media (max-width: 419.98px) {
-    .dash-headline { font-size: 1rem; }
-    .kpi-value { font-size: 1.1rem; }
-    .kpi-icon { display: none; } /* sembunyikan icon agar angka lebih lebar */
-    .chart-wrap { height: 140px; }
+    .dash-headline { font-size: 1.05rem; }
+    .stat-value { font-size: 1.35rem; }
+    .stat-icon-wrap { width: 36px; height: 36px; font-size: .8rem; }
+    .chart-wrap { height: 170px; }
     .book-icon-wrap { display: none; }
     .book-num { display: none; }
 }

@@ -355,7 +355,10 @@
         }
         .sidebar .sidebar-brand { justify-content: center !important; padding-left: 0 !important; }
         .sidebar .sidebar-divider { margin: 0.4rem 0.6rem !important; }
-        #navName { display: none !important; }
+        /* Tampilkan toggle desktop di tablet agar bisa expand */
+        #sidebarToggle    { display: flex !important; }
+        #sidebarToggleTop { display: none !important; }
+        
     }
 
     /* ====================================================
@@ -392,17 +395,28 @@
         }
 
         #wrapper         { display: block; }
-        #content-wrapper { width: 100%; }
+        #content-wrapper { width: 100%; min-height: 100vh; }
 
         .topbar { padding: 0 0.875rem; }
 
         #sidebarToggleTop { display: flex !important; }
         #sidebarToggle    { display: none !important; }
 
-        #navName { display: none !important; }
-
+       
         .container-fluid { padding: 1rem 0.875rem 1.5rem; }
         .modal-dialog    { margin: 0.75rem; }
+
+        /* Button group wrap rapi di mobile */
+        .button-group-wrapper {
+            flex-wrap: wrap;
+            width: 100%;
+            gap: 8px !important;
+        }
+        .button-group-wrapper .btn-main {
+            flex: 1 1 calc(50% - 4px);
+            min-width: 0;
+            justify-content: center;
+        }
     }
     </style>
 </head>
@@ -478,7 +492,7 @@
 
         <li class="nav-item {{ Request::is('admin/laporanpeminjaman') ? 'active' : '' }}">
             <a class="nav-link" href="{{ url('/admin/laporanpeminjaman') }}" title="Laporan Peminjaman">
-                <i class="fas fa-fw fa-file-alt"></i><span>Laporan Peminjaman</span>
+                <i class="fas fa-fw fa-file-alt"></i><span>Laporan Transaksi</span>
             </a>
         </li>
 

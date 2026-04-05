@@ -16,7 +16,7 @@ class StoreBookRequest extends FormRequest
     {
         return [
             'judul'       => 'required|string|max:255',
-            'sinopsis'    => 'required|string|max:255',
+            'sinopsis'    => 'required|string|max:1000',
             'kode_buku'   => [
                 'required',
                 'string',

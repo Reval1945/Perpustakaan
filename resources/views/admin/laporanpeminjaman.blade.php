@@ -183,19 +183,25 @@
                 badgeHtml = `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
             } else if (item.status === 'terlambat') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Terlambat</span>`;
+            }   else if (item.status === 'rusak') {
+                badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Rusak</span>`;
+            } else if (item.status === 'hilang') {
+                badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Hilang</span>`;
+            } else if (item.status === 'ditolak') {
+                badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Ditolak</span>`;
             } else {
                 badgeHtml = `<span class="badge-custom" style="background: var(--warning-soft); color: var(--warning);">${item.status}</span>`;
             }
 
             return `
-                <tr>
+                <tr class="small">
                     <td class="text-center text-muted">${globalNo}</td>
                     <td class="px-4 font-weight-bold">${nama}</td>
                     <td>${judul}</td>
                     <td class="text-center">${tglPinjam}</td>
                     <td class="text-center">${tglKembali}</td>
                     <td class="text-center">${badgeHtml}</td>
-                    <td class="text-center">${item.catatan ?? '-'}</td>
+                    <td class="text-center small" style="max-width: 200px;">${item.catatan ?? '-'}</td>
                 </tr>
             `;
         }).join('');

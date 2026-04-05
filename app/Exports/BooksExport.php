@@ -157,7 +157,7 @@ class BooksExport implements
                 $sheet->getColumnDimension('B')->setWidth(15);  // Kode Buku
                 $sheet->getColumnDimension('C')->setWidth(35);  // Judul
                 $sheet->getColumnDimension('D')->setWidth(20);  // Kategori
-                $sheet->getColumnDimension('E')->setWidth(25);  // Penulis
+                $sheet->getColumnDimension('E')->setWidth(30);  // Penulis
                 $sheet->getColumnDimension('F')->setWidth(25);  // Penerbit
                 $sheet->getColumnDimension('G')->setWidth(20);  // Tahun
                 $sheet->getColumnDimension('H')->setWidth(12);  // Rak
