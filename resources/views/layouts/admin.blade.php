@@ -340,10 +340,42 @@
     #sidebarToggle { display: none !important; }
 
     /* ====================================================
+       DESKTOP (≥ 1200px) — sidebar penuh + toggle collapse
+    ==================================================== */
+    @media (min-width: 1200px) {
+        .sidebar { width: var(--sidebar-w) !important; }
+
+        /* Sembunyikan semua hamburger di desktop */
+        #sidebarToggle    { display: none !important; }
+        #sidebarToggleTop { display: none !important; }
+
+        /* Saat di-collapse */
+        .sidebar.toggled { width: var(--sidebar-icon-w) !important; }
+        .sidebar.toggled .sidebar-brand-text,
+        .sidebar.toggled .sidebar-heading,
+        .sidebar.toggled .nav-item .nav-link span { display: none !important; }
+        .sidebar.toggled .nav-item .nav-link {
+            justify-content: center !important;
+            padding: 0.75rem 0 !important;
+            margin: 0.15rem 0.4rem !important;
+            gap: 0 !important;
+        }
+        .sidebar.toggled .sidebar-brand { justify-content: center !important; padding-left: 0 !important; }
+        .sidebar.toggled .sidebar-divider { margin: 0.4rem 0.6rem !important; }
+
+        .container-fluid { padding: 1.75rem 2rem 2rem; }
+
+        /* Nama user terlihat di topbar */
+        #navName { display: inline !important; }
+    }
+
+    /* ====================================================
        TABLET (768px – 1199px) — sidebar icon-only
     ==================================================== */
     @media (min-width: 768px) and (max-width: 1199.98px) {
-        .sidebar { width: var(--sidebar-icon-w) !important; }
+        .sidebar {
+            width: var(--sidebar-icon-w) !important;
+        }
         .sidebar .sidebar-brand-text,
         .sidebar .sidebar-heading,
         .sidebar .nav-item .nav-link span { display: none !important; }
@@ -355,16 +387,65 @@
         }
         .sidebar .sidebar-brand { justify-content: center !important; padding-left: 0 !important; }
         .sidebar .sidebar-divider { margin: 0.4rem 0.6rem !important; }
-        /* Tampilkan toggle desktop di tablet agar bisa expand */
+
+        /* Tampilkan toggle desktop di tablet agar bisa expand ke full */
         #sidebarToggle    { display: flex !important; }
         #sidebarToggleTop { display: none !important; }
-        
+
+        /* Saat di-expand lewat toggle */
+        .sidebar.toggled {
+            width: var(--sidebar-w) !important;
+        }
+        .sidebar.toggled .sidebar-brand-text,
+        .sidebar.toggled .nav-item .nav-link span {
+            display: inline-block !important;
+        }
+        .sidebar.toggled .sidebar-heading {
+            display: block !important;
+        }
+        .sidebar.toggled .nav-item .nav-link {
+            justify-content: flex-start !important;
+            padding: 0.65rem 0.9rem !important;
+            margin: 0.15rem 0.75rem !important;
+            gap: 0.65rem !important;
+        }
+        .sidebar.toggled .sidebar-brand {
+            justify-content: flex-start !important;
+            padding-left: 1.25rem !important;
+        }
+        .sidebar.toggled .sidebar-divider { margin: 0.4rem 1rem !important; }
+
+        .container-fluid { padding: 1.25rem 1.25rem 1.75rem; }
+
+        /* Sembunyikan nama di topbar — hemat ruang */
+        #navName { display: none !important; }
+
+        /* Tooltip pada nav icon */
+        .sidebar:not(.toggled) .nav-item { position: relative; }
+        .sidebar:not(.toggled) .nav-item .nav-link[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: calc(var(--sidebar-icon-w) + 4px);
+            top: 50%; transform: translateY(-50%);
+            background: var(--dark);
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+        }
     }
 
     /* ====================================================
        MOBILE (< 768px) — off-canvas sidebar
     ==================================================== */
     @media (max-width: 767.98px) {
+        :root { --topbar-h: 56px; }
+
         .sidebar {
             position: fixed !important;
             top: 0; left: 0;
@@ -388,23 +469,64 @@
             margin: 0.15rem 0.75rem !important;
             gap: 0.65rem !important;
         }
-        .sidebar .sidebar-brand { justify-content: flex-start !important; padding-left: 1.25rem !important; }
+        .sidebar .sidebar-brand {
+            justify-content: flex-start !important;
+            padding-left: 1.25rem !important;
+        }
         .sidebar.mobile-open {
             transform: translateX(0) !important;
             box-shadow: 8px 0 32px rgba(0,0,0,0.2);
         }
 
-        #wrapper         { display: block; }
+        /* Pastikan nav-link di mobile-open punya margin & padding yang benar */
+        .sidebar.mobile-open .nav-item .nav-link {
+            justify-content: flex-start !important;
+            padding: 0.65rem 0.9rem !important;
+            margin: 0.15rem 0.75rem !important;
+            gap: 0.65rem !important;
+            width: auto !important;
+        }
+        /* Active item background hanya selebar konten nav-link (sudah pakai margin) */
+        .sidebar.mobile-open .nav-item.active .nav-link {
+            background: rgba(255,255,255,0.16) !important;
+        }
+        .sidebar.mobile-open .sidebar-brand {
+            justify-content: flex-start !important;
+            padding-left: 1.25rem !important;
+        }
+        .sidebar.mobile-open .sidebar-brand-text,
+        .sidebar.mobile-open .sidebar-heading,
+        .sidebar.mobile-open .nav-item .nav-link span {
+            display: inline-block !important;
+            opacity: 1 !important;
+        }
+
+        #wrapper         { display: block; width: 100%; }
         #content-wrapper { width: 100%; min-height: 100vh; }
 
-        .topbar { padding: 0 0.875rem; }
+        .topbar          { padding: 0 0.875rem; gap: 0.5rem; }
 
+        /* Hamburger mobile tampil, desktop sembunyi */
         #sidebarToggleTop { display: flex !important; }
         #sidebarToggle    { display: none !important; }
 
-       
+        /* Sembunyikan nama di topbar mobile */
+        #navName { display: none !important; }
+
         .container-fluid { padding: 1rem 0.875rem 1.5rem; }
+
+        /* Modal full-width di mobile */
         .modal-dialog    { margin: 0.75rem; }
+        .modal-content   { border-radius: 12px; }
+
+        /* Dropdown profile ke kiri agar tidak keluar layar */
+        .dropdown-menu-right {
+            right: 0 !important;
+            left: auto !important;
+        }
+
+        /* Foto profil sedikit lebih kecil */
+        .img-profile { width: 32px; height: 32px; }
 
         /* Button group wrap rapi di mobile */
         .button-group-wrapper {
@@ -417,6 +539,26 @@
             min-width: 0;
             justify-content: center;
         }
+
+        /* Tabel scroll horizontal */
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* Footer lebih compact */
+        .sticky-footer { padding: 0.6rem 0; }
+        .copyright      { font-size: 0.78rem; }
+
+        /* Scroll-to-top lebih kecil */
+        .scroll-to-top { width: 34px; height: 34px; bottom: 1rem; right: 1rem; }
+    }
+
+    /* ====================================================
+       MOBILE KECIL (< 400px) — penyesuaian ekstra
+    ==================================================== */
+    @media (max-width: 399.98px) {
+        .topbar { padding: 0 0.65rem; }
+        .container-fluid { padding: 0.875rem 0.65rem 1.25rem; }
+        .modal-dialog { margin: 0.5rem; }
+        .btn { font-size: 0.82rem; padding: 0.4rem 0.7rem; }
     }
     </style>
 </head>
@@ -674,6 +816,10 @@ document.addEventListener('DOMContentLoaded', function () {
         sidebar.classList.remove('mobile-open');
         overlay.classList.remove('show');
         document.body.style.overflow = '';
+    }
+
+    function isTablet() {
+        return window.innerWidth >= 768 && window.innerWidth < 1200;
     }
 
     function toggleDesktop() {

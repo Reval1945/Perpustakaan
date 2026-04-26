@@ -571,6 +571,23 @@
                 min-width: 120px;
             }
         }
+
+        @media (max-width: 320px) {
+            .navbar-brand {
+                font-size: 0.9rem;
+            }
+            .hero-content h1 {
+                font-size: 1.8rem;
+            }
+            
+            .feature-card {
+                padding: 30px 20px;
+            }
+
+            .footer-col ul{
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-offset="100">
@@ -622,7 +639,7 @@
                         <p class="lead">Akses buku, dan materi pembelajaran dari mana saja. Sistem perpustakaan modern untuk siswa dan guru SMKN 4 Bojonegoro.</p>
                         
                         <div class="d-flex flex-wrap gap-3 mb-4">
-                            <a href="#collections" class="btn btn-primary-custom btn-custom">Jelajahi Koleksi</a>
+                            <a href="/login" class="btn btn-primary-custom btn-custom">Jelajahi Koleksi</a>
                             <a href="#about" class="btn btn-outline-custom btn-custom">Tentang Kami</a>
                         </div>
                     </div>

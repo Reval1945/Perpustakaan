@@ -28,7 +28,7 @@ class RegisterRequest extends FormRequest
             'class'       => 'nullable|string|max:100',
             'roll_number' => 'nullable|string|max:50',
             'phone'       => 'nullable|string|max:20',
-            "nisn"     => 'nullable|string|max:35',
+            "nisn"     => 'nullable|string|min:10|max:35',
         ];
     }
 
@@ -44,6 +44,8 @@ class RegisterRequest extends FormRequest
             'class.max'         => 'Nama kelas terlalu panjang',
             'roll_number.max'   => 'Nomor absen terlalu panjang',
             'phone.max'         => 'Nomor telepon terlalu panjang',
+            'nisn.min'          => 'NISN minimal 10 karakter',
+            'nisn.max'          => 'NISN maksimal 35 karakter',
         ];
     }
 }

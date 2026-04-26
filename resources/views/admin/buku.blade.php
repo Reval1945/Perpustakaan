@@ -858,11 +858,26 @@ document.addEventListener('click', async e => {
         const book = JSON.parse(btn.dataset.book);
         document.getElementById('book_id').value = book.id;
 
-        ['judul', 'sinopsis', 'kode_buku', 'category_id', 'penulis', 'penerbit', 'tahun', 'rak', 'nomor_rak']
+        ['judul', 'sinopsis', 'kode_buku', 'penulis', 'penerbit', 'tahun', 'rak', 'nomor_rak']
             .forEach(k => {
                 const el = document.getElementById(k);
                 if(el) el.value = book[k] ?? '';
             });
+
+        // Set kategori: coba pakai category_id langsung,
+        // jika tidak ada, fallback cocokkan berdasarkan teks nama kategori
+        const selectKat = document.getElementById('category_id');
+        if(selectKat){
+            if(book.category_id){
+                selectKat.value = book.category_id;
+            } else if(book.kategori){
+                const opts = Array.from(selectKat.options);
+                const match = opts.find(o => o.text.trim().toLowerCase() === book.kategori.trim().toLowerCase());
+                selectKat.value = match ? match.value : '';
+            } else {
+                selectKat.value = '';
+            }
+        }
 
         // Ubah judul modal menjadi Edit
         document.getElementById('modalBukuTitle').innerText = 'Edit Buku';

@@ -19,12 +19,16 @@
         .title { text-align: center; text-transform: uppercase; font-weight: bold; margin: 20px 0; font-size: 18px; }
 
         /* Section Styling */
-        .section-header { background-color: #f2f2f2; padding: 8px 15px; font-weight: bold; margin-top: 20px; text-transform: uppercase; border-left: 5px solid #3498DB; }
+        .section-header { background-color: #2C5AA0; color: #fff; padding: 7px 15px; font-weight: bold; margin-top: 18px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
         
         .data-table { width: 100%; margin-top: 10px; border-collapse: collapse; }
         .data-table td { padding: 8px 0; vertical-align: top; font-size: 13px; }
         .data-table td.label { width: 150px; font-weight: bold; }
         .data-table td.separator { width: 20px; text-align: center; }
+        .ttd-section { margin-top: 40px; display: table; width: 100%; }
+        .ttd-box { display: table-cell; width: 50%; text-align: center; font-size: 12px; padding: 0 20px; }
+        .ttd-box .ttd-title { font-weight: bold; margin-bottom: 60px; }
+        .ttd-box .ttd-name { border-top: 1px solid #333; padding-top: 4px; margin-top: 4px; font-weight: bold; }
 
         /* Catatan Styling */
         .catatan-box { 
@@ -135,9 +139,21 @@
         </tr>
     </table>
 
+    <div class="ttd-section">
+        <div class="ttd-box">
+            <div class="ttd-title">Peminjam</div>
+            <div class="ttd-name">{{ $detail->transaction->user->name ?? '____________________' }}</div>
+        </div>
+        <div class="ttd-box">
+            <div class="ttd-title">Petugas Perpustakaan</div>
+            <div class="ttd-name">{{ auth()->user()->name ?? '____________________' }}</div>
+        </div>
+    </div>
+
+
     <div class="footer-note">
         * Laporan ini merupakan bukti sah transaksi denda perpustakaan.<br>
-        * Dicetak pada {{ date('d F Y, H:i') }} WIB oleh Sistem Informasi Perpustakaan SMKN 4 BOJONEGORO.
+        * Dicetak pada {{ \Carbon\Carbon::now('Asia/Jakarta')->translatedFormat('d F Y, H:i') }} WIB oleh Sistem Informasi Perpustakaan SMKN 4 BOJONEGORO.
     </div>
 </div>
 @endforeach

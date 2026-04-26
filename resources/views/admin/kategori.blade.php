@@ -111,6 +111,7 @@ async function fetchCategories() {
             headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
         });
         const result = await res.json();
+        
         renderTable(result.data);
     } catch (err) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-4">Gagal memuat data.</td></tr>`;

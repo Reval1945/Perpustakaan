@@ -189,10 +189,6 @@ function renderTable(data) {
             </td>
             <td class="text-center align-middle">
                 <div class="d-flex justify-content-center">
-                    <button class="btn btn-sm btn-light mr-1" onclick="openEdit('${p.id}','${p.keperluan}','${p.tanggal_kunjungan}')" 
-                        style="border-radius: 8px; border: 1px solid var(--border);">
-                        <i class="fas fa-edit text-warning"></i>
-                    </button>
                     <button class="btn btn-sm" onclick="hapusData('${p.id}')" 
                         style="background:#fee2e2;color:#ef4444;border-radius:10px;">
                         <i class="fas fa-trash"></i>

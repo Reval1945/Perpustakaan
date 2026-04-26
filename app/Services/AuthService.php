@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 
 class AuthService
@@ -76,6 +77,60 @@ class AuthService
 
         return [
             'message' => 'Logout berhasil'
+        ];
+    }
+
+    public function verifyUserForReset(array $data)
+    {
+        $validator = Validator::make($data, [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return ['status' => 422, 'errors' => $validator->errors()];
+        }
+
+        $user = User::where('email', $data['email'])
+                    ->first();
+
+        if (!$user) {
+            return [
+                'status' => 404, 
+                'message' => 'Kombinasi Email dan NISN tidak ditemukan.'
+            ];
+        }
+
+        return [
+            'status' => 200,
+            'message' => 'Verifikasi berhasil.',
+            'user_id' => $user->id
+        ];
+    }
+
+    public function resetPassword(array $data)
+    {
+        $validator = Validator::make($data, [
+            'user_id'  => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return ['status' => 422, 'errors' => $validator->errors()];
+        }
+
+        $user = User::find($data['user_id']);
+        
+        if (!$user) {
+            return ['status' => 404, 'message' => 'User tidak valid.'];
+        }
+
+        $user->update([
+            'password' => Hash::make($data['password'])
+        ]);
+
+        return [
+            'status' => 200,
+            'message' => 'Password berhasil diubah, silakan login.'
         ];
     }
 

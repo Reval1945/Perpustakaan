@@ -57,14 +57,14 @@
                         <th class="py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Nama Peminjam</th>
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Role</th>
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Pinjam</th>
-                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Jatuh Tempo</th>
+                       
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Status</th>
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="transactionTable">
                     <tr>
-                        <td colspan="7" class="text-center py-5">
+                        <td colspan="6" class="text-center py-5">
                             <div class="spinner-border text-primary" role="status"></div>
                         </td>
                     </tr>
@@ -301,6 +301,7 @@ function fetchTransactions() {
 
 // Fetch Status
 // Fetch Status Utama (Header)
+// Fetch Status Utama (Header)
 function getTransactionStatus(trx) {
     const details = trx.details;
     const total = details.length;
@@ -313,9 +314,13 @@ function getTransactionStatus(trx) {
     const jmlMenungguPinjam   = count(d => d.status === 'menunggu_verifikasi');
     const jmlDiperpanjang     = count(d => d.status === 'diperpanjang');
     const jmlDipinjam         = count(d => d.status === 'dipinjam');
-    const jmlSelesai          = count(d => ['dikembalikan', 'rusak', 'hilang'].includes(d.status));
+    const jmlTerlambat        = count(d => d.status === 'terlambat');
+    const jmlRusak            = count(d => d.status === 'rusak');
+    const jmlHilang           = count(d => d.status === 'hilang');
     const jmlDitolak          = count(d => d.status === 'ditolak');
-    const jmlAktif            = jmlDipinjam + jmlDiperpanjang;
+    const jmlSelesai          = count(d => ['dikembalikan', 'rusak', 'hilang'].includes(d.status));
+    const jmlAktif            = jmlDipinjam + jmlDiperpanjang + jmlTerlambat;
+    const jmlBermasalah       = jmlTerlambat + jmlRusak + jmlHilang;
 
     // ── PRIORITAS 1: Ada yang minta perpanjangan (butuh aksi admin segera) ──
     if (jmlMintaPerpanjang > 0) {
@@ -330,10 +335,15 @@ function getTransactionStatus(trx) {
     }
 
     // ── PRIORITAS 3: Ada buku yang menunggu verifikasi pinjam ──
-    // Termasuk kasus mix menunggu + ditolak (sebagian ditolak, sisanya masih menunggu)
     if (jmlMenungguPinjam > 0) {
         if (jmlMenungguPinjam === total) return 'menunggu_verifikasi';
-        return 'sebagian_menunggu_verifikasi'; // mencakup mix dengan ditolak
+        return 'sebagian_menunggu_verifikasi';
+    }
+
+    // ── PRIORITAS 4: Ada buku terlambat (masih aktif, belum dikembalikan) ──
+    if (jmlTerlambat > 0 && jmlSelesai === 0) {
+        if (jmlTerlambat === total) return 'terlambat';
+        return 'sebagian_terlambat';
     }
 
     // ── KONDISI FINAL ──
@@ -341,10 +351,22 @@ function getTransactionStatus(trx) {
     // Semua ditolak
     if (jmlDitolak === total) return 'ditolak';
 
-    // Sebagian ditolak, sisanya sudah dipinjam/selesai (tidak ada lagi yang menunggu)
+    // Sebagian ditolak, sisanya sudah selesai (tidak ada lagi yang menunggu/aktif)
     if (jmlDitolak > 0) return 'sebagian_ditolak';
 
-    // Semua selesai dikembalikan
+    // Semua hilang
+    if (jmlHilang === total) return 'hilang';
+
+    // Semua rusak
+    if (jmlRusak === total) return 'rusak';
+
+    // Semua bermasalah (kombinasi rusak/hilang/terlambat)
+    if (jmlBermasalah === total) return 'bermasalah';
+
+    // Ada yang bermasalah (rusak/hilang) di antara yang sudah selesai
+    if (jmlBermasalah > 0 && jmlSelesai === total) return 'selesai_bermasalah';
+
+    // Semua selesai dikembalikan (normal)
     if (jmlSelesai === total) return 'dikembalikan';
 
     // Semua masih diperpanjang
@@ -353,11 +375,14 @@ function getTransactionStatus(trx) {
     // Semua masih dipinjam (tanpa perpanjangan)
     if (jmlDipinjam === total) return 'dipinjam';
 
-    // Campuran dipinjam & diperpanjang
-    if (jmlAktif === total && jmlDiperpanjang > 0) return 'sebagian_diperpanjang';
+    // Campuran dipinjam & diperpanjang (semua masih aktif)
+    if (jmlAktif === total && jmlDiperpanjang > 0 && jmlTerlambat === 0) return 'sebagian_diperpanjang';
+
+    // Sebagian terlambat, sebagian masih aktif normal
+    if (jmlTerlambat > 0 && jmlAktif > 0) return 'sebagian_terlambat';
 
     // Sebagian sudah kembali, sebagian masih diperpanjang
-    if (jmlSelesai > 0 && jmlDiperpanjang > 0 && jmlDipinjam === 0) return 'sebagian_diperpanjang';
+    if (jmlSelesai > 0 && jmlDiperpanjang > 0 && jmlDipinjam === 0 && jmlTerlambat === 0) return 'sebagian_diperpanjang';
 
     // Sebagian sudah kembali, sebagian masih aktif
     if (jmlSelesai > 0 && jmlAktif > 0) return 'sebagian_dipinjam';
@@ -365,12 +390,16 @@ function getTransactionStatus(trx) {
     return trx.status;
 }
 
-// Badge untuk Tabel Utama
+
+// ============================================================
+// BADGE TABEL UTAMA
+// ============================================================
 function statusBadge(status) {
     const badge = (bg, color, border, label) =>
         `<span class="badge-custom" style="background:${bg};color:${color};${border ? `border:1px solid ${border};` : ''}">${label}</span>`;
 
     switch (status) {
+
         // ── Antrian / Verifikasi ──
         case 'menunggu_verifikasi':
             return badge('var(--warning-soft)', 'var(--warning)', null, 'Menunggu Verifikasi');
@@ -379,11 +408,11 @@ function statusBadge(status) {
         case 'menunggu_verifikasi_kembali':
             return badge('var(--warning-soft)', '#F77F00', null, 'Verifikasi Kembali');
         case 'sebagian_menunggu_kembali':
-            return badge('var(--warning-soft)', 'var(--warning)', null, 'Sebagian Verifikasi Kembali');
+            return badge('var(--warning-soft)', '#F77F00', null, 'Sebagian Verifikasi Kembali');
 
         // ── Perpanjangan ──
         case 'semua_minta_perpanjang':
-            return badge('#fff3cd', '#856404', '#ffeeba', ' Minta Perpanjang');
+            return badge('#fff3cd', '#856404', '#ffeeba', 'Minta Perpanjang');
         case 'sebagian_minta_perpanjang':
             return badge('#ede9fe', '#5b21b6', '#c4b5fd', 'Sebagian Perpanjang');
         case 'diperpanjang':
@@ -397,6 +426,22 @@ function statusBadge(status) {
         case 'sebagian_dipinjam':
             return badge('var(--primary-soft)', 'var(--primary)', null, 'Sebagian Dipinjam');
 
+        // ── Terlambat ──
+        case 'terlambat':
+            return badge('var(--danger-soft)', 'var(--danger)', null, 'Terlambat');
+        case 'sebagian_terlambat':
+            return badge('var(--danger-soft)', 'var(--danger)', null, 'Sebagian Terlambat');
+
+        // ── Bermasalah (rusak/hilang) ──
+        case 'rusak':
+            return badge('#fef3c7', '#92400e', '#fde68a', 'Rusak');
+        case 'hilang':
+            return badge('#fee2e2', '#991b1b', '#fca5a5', 'Hilang');
+        case 'bermasalah':
+            return badge('var(--danger-soft)', 'var(--danger)', null, 'Bermasalah');
+        case 'selesai_bermasalah':
+            return badge('var(--danger-soft)', 'var(--danger)', null, 'Selesai (Bermasalah)');
+
         // ── Selesai ──
         case 'dikembalikan':
             return badge('var(--success-soft)', 'var(--success)', null, 'Selesai');
@@ -406,6 +451,10 @@ function statusBadge(status) {
             return badge('var(--danger-soft)', 'var(--danger)', null, 'Ditolak');
         case 'sebagian_ditolak':
             return badge('var(--danger-soft)', 'var(--danger)', null, 'Sebagian Ditolak');
+
+        // ── Fallback ──
+        default:
+            return badge('var(--gray-light)', 'var(--dark)', null, status ?? 'Tidak Diketahui');
     }
 }
 
@@ -536,7 +585,6 @@ function renderTable(data, page) {
                 <td class="font-weight-bold small">${trx.user.name}</td>
                 <td class="text-center small">${trx.user.role}</td>
                 <td class="text-center small">${formatTanggal(trx.tanggal_pinjam)}</td>
-                <td class="text-center small">${formatTanggal(trx.tanggal_jatuh_tempo)}</td>
                 <td class="text-center">${statusBadge(getTransactionStatus(trx))}</td>
                 <td class="text-center">${renderActionButton(trx)}</td>
             </tr>

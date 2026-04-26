@@ -41,5 +41,20 @@ class AuthController extends Controller
         );
     }
 
+    public function verifyUser(Request $request)
+    {
+        // Anda bisa membuat Validation Request sendiri jika perlu
+        $result = $this->service->verifyUserForReset($request->all());
+        
+        return response()->json($result, $result['status']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $result = $this->service->resetPassword($request->all());
+        
+        return response()->json($result, $result['status']);
+    }
+
 }
 

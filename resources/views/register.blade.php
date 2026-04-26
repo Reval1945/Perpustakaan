@@ -10,6 +10,7 @@
     <link href="{{ asset('template/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
     <link href="{{ asset('template/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800,900" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         * {
@@ -540,66 +541,88 @@
 
 <script>
 $(document).ready(function() {
+    // Toggle Password Visibility
     $('#togglePassword').click(function() {
         const passwordInput = $('#password');
         const eyeIcon = $('#eyeIcon');
+        const isPassword = passwordInput.attr('type') === 'password';
         
-        if (passwordInput.attr('type') === 'password') {
-            passwordInput.attr('type', 'text');
-            eyeIcon.removeClass('fa-eye').addClass('fa-eye-slash');
-        } else {
-            passwordInput.attr('type', 'password');
-            eyeIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+        passwordInput.attr('type', isPassword ? 'text' : 'password');
+        eyeIcon.toggleClass('fa-eye fa-eye-slash');
+    });
+
+    // Handle Form Submit
+    $('#registerForm').on('submit', async function (e) {
+        e.preventDefault();
+
+        const btn = $('#registerButton');
+        const btnText = $('#buttonText');
+        const spinner = $('#loadingSpinner');
+
+        // Loading State
+        btn.prop('disabled', true);
+        btnText.text('Memproses...');
+        spinner.removeClass('d-none');
+
+        const payload = {
+            name: $('#name').val(),
+            email: $('#email').val(),
+            password: $('#password').val(),
+            phone: $('#no_telp').val(),
+            nisn: $('#nisn').val() || null,
+            class: $('#kelas').val() || null,
+            roll_number: $('#no_absen').val() || null
+        };
+
+        try {
+            const res = await fetch('http://localhost:8000/api/register', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Accept': 'application/json' 
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registrasi Berhasil!',
+                    text: 'Akun Anda telah dibuat. Silakan login.',
+                    confirmButtonColor: '#2C5AA0',
+                }).then(() => {
+                    window.location.href = '/login';
+                });
+            } else {
+                // Tangani error validasi (422 Unprocessable Entity)
+                let errorMsg = data.message || 'Gagal mendaftar';
+                if (data.errors) {
+                    errorMsg = Object.values(data.errors).flat().join('<br>');
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ups!',
+                    html: errorMsg,
+                    confirmButtonColor: '#E63946',
+                });
+            }
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Kesalahan Server',
+                text: 'Gagal menghubungi server. Pastikan koneksi atau API berjalan.',
+                confirmButtonColor: '#E63946',
+            });
+        } finally {
+            btn.prop('disabled', false);
+            btnText.text('Daftar');
+            spinner.addClass('d-none');
         }
     });
-    
-    $('.form-control').focus(function() {
-        $(this).removeClass('is-invalid');
-    });
-    
-    $('#name').focus();
-});
-
-$('#registerForm').on('submit', async function (e) {
-    e.preventDefault();
-
-    $('#registerButton').prop('disabled', true);
-    $('#buttonText').text('Memproses...');
-    $('#loadingSpinner').removeClass('d-none');
-
-    const payload = {
-        name: $('#name').val(),
-        email: $('#email').val(),
-        password: $('#password').val(),
-        phone: $('#no_telp').val(),
-        ...($('#nisn').val() && { nisn: $('#nisn').val() }),
-        ...($('#kelas').val() && { class: $('#kelas').val() }),
-        ...($('#no_absen').val() && { roll_number: $('#no_absen').val() })
-    };
-
-    try {
-        const res = await fetch('http://localhost:8000/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-
-        if (data.token) {
-            alert('Pendaftaran berhasil! Silakan login.');
-            window.location.href = '/login';
-        } else {
-            alert(data.message || 'Pendaftaran gagal');
-        }
-    } catch (err) {
-        console.error(err);
-        alert('Terjadi kesalahan server');
-    } finally {
-        $('#registerButton').prop('disabled', false);
-        $('#buttonText').text('Daftar');
-        $('#loadingSpinner').addClass('d-none');
-    }
 });
 </script>
 

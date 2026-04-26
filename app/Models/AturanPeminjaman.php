@@ -15,6 +15,7 @@ class AturanPeminjaman extends Model
     protected $fillable = [
         'id',
         'maks_hari_pinjam',
+        'maks_buku',
         'denda_per_hari',
         'aktif',
         'keterangan'

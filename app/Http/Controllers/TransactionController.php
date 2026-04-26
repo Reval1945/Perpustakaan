@@ -52,18 +52,26 @@ class TransactionController extends Controller
 
     public function store(StorePeminjamanRequest $request)
     {
-        $userId   = $request->user()->id;
+        $userId    = $request->user()->id;
         $validated = $request->validated();
 
-        $transaksi = $this->service->createPeminjaman(
-            $userId,
-            $validated['book_ids'],
-            $validated['book_stock_ids'] ?? []
-        );
-        return response()->json([
-            'message' => 'Peminjaman diajukan, menunggu verifikasi admin',
-            'data'    => $transaksi
-        ], 201);
+        try {
+            $transaksi = $this->service->createPeminjaman(
+                $userId,
+                $validated['book_ids'],
+                $validated['book_stock_ids'] ?? []
+            );
+
+            return response()->json([
+                'message' => 'Peminjaman diajukan, menunggu verifikasi admin',
+                'data'    => $transaksi
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 
     public function AdminStore(StoreTransactionRequest $request)
@@ -80,10 +88,15 @@ class TransactionController extends Controller
                 'data' => $transaksi->load('details.book')
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
-                'message' => 'Gagal membuat transaksi'
-            ], 500);
+                'message' => collect($e->errors())->flatten()->first()
+            ], 422);
+        } catch (\Exception $e) {
+            // Pesan dari validasi batas buku atau stok habis langsung diteruskan ke client
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
         }
     }
 
@@ -427,6 +440,34 @@ public function updateJatuhTempoDetail(Request $request, $id)
         return $pdf->stream('laporan-transaction-detail.pdf');
     }
 
+    /**
+     * Cetak PDF untuk satu detail transaksi berdasarkan ID.
+     * Digunakan oleh: laporan peminjaman (admin) & riwayat peminjaman (anggota).
+     */
+   public function cetakPdfDetail(Request $request, string $id)
+    {
+
+        $detail = TransactionDetail::with([
+            'transaction.user',
+            'book'
+        ])->findOrFail($id);
+
+        $user = $request->user(); 
+
+        if ($user->role !== 'admin') {
+            if ($detail->transaction->user_id !== $user->id) {
+                return response()->json(['message' => 'Tidak diizinkan'], 403);
+            }
+        }
+
+        // 4. Generate PDF
+        // Pastikan namespace 'Pdf' sudah di-import di atas (use Barryvdh\DomPDF\Facade\Pdf;)
+        $pdf = Pdf::loadView('laporan.transaction-detail', [
+            'details' => collect([$detail])
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->download("Invoice_Peminjaman_{$id}.pdf");
+    }
     public function create(Request $request)
     {
         $book = null;
@@ -450,4 +491,3 @@ public function updateJatuhTempoDetail(Request $request, $id)
         ]);
     }
 }
-

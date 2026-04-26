@@ -27,6 +27,8 @@ Route::get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/forgot-password', [AuthController::class, 'verifyUser']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // USER
 Route::middleware(['auth:sanctum', 'role.manual:admin,superadmin'])->group(function () {
@@ -85,6 +87,7 @@ Route::middleware(['auth:sanctum', 'role.manual:admin'])->group(function () {
 
     // CETAK TRANSAKSI DENDA
     Route::get('/laporan/transaction-detail', [TransactionController::class, 'cetakPdf']);
+    Route::get('/laporan/peminjaman/{id}', [TransactionController::class, 'cetakPdfDetail']);
 
     // CETAK DENDA
     Route::get('/laporan/denda/excel', [DendaController::class, 'exportExcel']);
@@ -147,4 +150,5 @@ Route::middleware(['auth:sanctum', 'role.manual:user'])->group(function () {
     Route::delete('/transaksi-aktif', [TransactionController::class, 'resetAktif']);
     Route::get('/aturanpeminjaman/aktif', [AturanPeminjamanController::class, 'getAktif']);
     Route::get('/transaksi-me/export', [TransactionController::class, 'exportMyTransactions']);
+    Route::get('/laporan/transaksi/{id}',  [TransactionController::class, 'cetakPdfDetail']);
 });

@@ -28,10 +28,13 @@ Route::get('/', fn () => view('welcome'));
 // Login
 Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
 
+// Forgot / Reset Password
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm']);
+
 // Register
 // Route::get('/pilihrole', [AuthController::class, 'pilihRolePage']);
 Route::get('/register', [RegisterController::class, 'showRegister']);
-Route::get('/registerwarga', [RegisterWargaController::class, 'showRegisterWarga']);
+// Route::get('/registerwarga', [RegisterWargaController::class, 'showRegisterWarga']);
 
 // Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -97,4 +100,8 @@ Route::get('/anggota/tambahpeminjaman', function () {
 
 Route::get('/anggota/peminjaman/create', [TransactionController::class, 'create'])
     ->name('anggota.peminjaman.create');
+
+Route::get('/anggota/petunjuk', function () {
+    return view('anggota.petunjuk');
+})->name('anggota.petunjuk');
 

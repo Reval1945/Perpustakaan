@@ -5,6 +5,9 @@ namespace App\Http\Controllers\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Illuminate\Auth\Events\PasswordReset;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 
@@ -52,7 +55,7 @@ class AuthController extends Controller
             'name'      => 'required|string|max:255',
             'email'     => 'required|email|unique:users,email',
             'password'  => 'required|string|min:6',
-            'nisn'      => 'required|string',
+            'nisn'      => 'required|string|min:10',
             'no_telp'   => 'required|string',
             'kelas'     => 'required|string',
             'no_absen'  => 'required|integer',
@@ -103,5 +106,11 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/login');
+    }
+
+    // Show form untuk meminta tautan reset password
+    public function showForgotPasswordForm()
+    {
+        return view('forgot-password');
     }
 }

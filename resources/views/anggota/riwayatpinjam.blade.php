@@ -61,11 +61,12 @@
                         <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Denda</th>
                         <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Status Denda</th>
                         <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Catatan</th>
+                        <th class="text-center" style="color: var(--gray); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; border: none;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="riwayat-body">
                     <tr>
-                        <td colspan="8" class="text-center py-5">
+                        <td colspan="9" class="text-center py-5">
                             <div class="spinner-border text-primary" role="status"></div>
                             <p class="mt-2 mb-0 text-muted">Memuat data...</p>
                         </td>
@@ -195,7 +196,7 @@ function renderRiwayat(data) {
     tbody.innerHTML = '';
 
     if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5 text-muted">Tidak ditemukan data</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">Tidak ditemukan data</td></tr>`;
         renderPagination(0, 1);
         return;
     }
@@ -245,6 +246,11 @@ function renderRiwayat(data) {
             <td class="text-center font-weight-bold text-dark small">${infoDenda}</td>
             <td class="text-center small">${badgeDenda}</td>
             <td class="text-center italic small" style="max-width: 200px;">${item.catatan ?? '-'}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-light" onclick="cetakRiwayatSatu('${item.id}')" style="border-radius: 8px; border: 1px solid var(--border);">
+                    <i class="fas fa-file-pdf text-danger"></i>
+                </button>
+            </td>
         </tr>`;
     });
 
@@ -359,6 +365,23 @@ document.getElementById('btn-cetak').addEventListener('click', function() {
         btn.innerHTML = originalContent;
     });
 });
+
+async function cetakRiwayatSatu(id) {
+    Swal.fire({ title: 'Menghasilkan PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/laporan/transaksi/${id}`, { 
+            headers: { 'Authorization': 'Bearer ' + token } 
+        });
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url; 
+        link.download = `Invoice_Riwayat_${id}.pdf`; 
+        link.click();
+        Swal.close();
+    } catch (err) { Swal.fire('Gagal', 'Gagal mencetak dokumen', 'error'); }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadRiwayat();

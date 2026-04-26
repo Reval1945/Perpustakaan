@@ -11,6 +11,7 @@ class StoreAturanPeminjamanRequest extends FormRequest
         return [
             'maks_hari_pinjam' => 'required|integer|min:1',
             'denda_per_hari'   => 'required|numeric|min:0',
+            'maks_buku'        => 'required|integer|min:1',
             'aktif'            => 'required|boolean',
             'keterangan'       => 'nullable|string'
         ];
@@ -20,6 +21,7 @@ class StoreAturanPeminjamanRequest extends FormRequest
     {
         return [
             'maks_hari_pinjam.required' => 'Maksimal hari pinjam wajib diisi',
+            'maks_buku.required'        => 'Maksimal buku wajib diisi',
             'denda_per_hari.required'   => 'Denda per hari wajib diisi',
             'aktif.required'            => 'Aktif wajib diisi',
             'aktif.boolean'             => 'Aktif harus bernilai true (1) atau false (0)'

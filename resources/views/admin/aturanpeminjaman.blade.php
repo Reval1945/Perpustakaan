@@ -46,12 +46,29 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="font-weight-bold text-dark">Status Aturan</label>
-                        <select id="aktif" class="form-control custom-select-lg">
-                            <option value="1">Aktif</option>
-                            <option value="0">Non-Aktif</option>
-                        </select>
+                   <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-dark">Maksimal Buku Per Anggota</label>
+                                <div class="input-group">
+                                    <input type="number" id="maksBuku" class="form-control" placeholder="3" min="1" max="20" required>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text bg-light border-left-0">Buku</span>
+                                    </div>
+                                </div>
+                                <small class="text-muted">Maks. buku dipinjam sekaligus</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold text-dark">Status Aturan</label>
+                                <select id="aktif" class="form-control custom-select-lg">
+                                    <option value="1">Aktif</option>
+                                </select>
+                                <small class="text-muted">Status pemberlakuan aturan ini</small>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="font-weight-bold text-dark">Keterangan / Catatan Tambahan</label>
@@ -79,9 +96,14 @@
                     <h3 class="font-weight-bold text-primary mb-0" id="infoHari">-</h3>
                 </div>
 
-                <div class="p-3 bg-white mb-4 shadow-sm" style="border-radius: 12px; border-left: 4px solid #1cc88a;">
+                <div class="p-3 bg-white mb-3 shadow-sm" style="border-radius: 12px; border-left: 4px solid #1cc88a;">
                     <small class="text-uppercase text-gray font-weight-bold" style="letter-spacing: 1px; font-size: 0.7rem;">Biaya Denda</small>
                     <h3 class="font-weight-bold text-success mb-0" id="infoDenda">-</h3>
+                </div>
+
+                <div class="p-3 bg-white mb-4 shadow-sm" style="border-radius: 12px; border-left: 4px solid #f59e0b;">
+                    <small class="text-uppercase text-gray font-weight-bold" style="letter-spacing: 1px; font-size: 0.7rem;">Maks. Buku Per Anggota</small>
+                    <h3 class="font-weight-bold mb-0" style="color: #f59e0b;" id="infoMaksBuku">-</h3>
                 </div>
 
                 <div class="alert alert-info border-0 p-3" style="border-radius: 12px; background: rgba(54, 185, 204, 0.1);">
@@ -137,6 +159,7 @@ async function loadAturan() {
         document.getElementById('denda').value = parseInt(aturan.denda_per_hari);
         document.getElementById('aktif').value = aturan.aktif ? 1 : 0;
         document.getElementById('keterangan').value = aturan.keterangan ?? '';
+        document.getElementById('maksBuku').value = aturan.maks_buku ?? '';
 
         renderInfo(aturan);
     } catch (err) {
@@ -150,12 +173,13 @@ function renderInfo(aturan) {
     
     document.getElementById('infoHari').innerText = `${aturan.maks_hari_pinjam} Hari`;
     document.getElementById('infoDenda').innerText = `${dendaFormatted} / Hari`;
-    
+    document.getElementById('infoMaksBuku').innerText = `${aturan.maks_buku ?? 0} Buku`;
+
     document.getElementById('infoAturanText').innerHTML = `
-        Sesuai kebijakan yang aktif, buku harus dikembalikan paling lambat 
-        <strong>${aturan.maks_hari_pinjam} hari</strong> setelah peminjaman. 
-        Keterlambatan akan dikenakan sanksi denda sebesar 
-        <strong>${dendaFormatted}</strong> untuk setiap hari keterlambatan.
+        Sesuai kebijakan yang aktif, anggota dapat meminjam maksimal 
+        <strong>${aturan.maks_buku ?? 0} buku</strong> sekaligus dengan durasi 
+        <strong>${aturan.maks_hari_pinjam} hari</strong>. 
+        Keterlambatan dikenakan denda <strong>${dendaFormatted}</strong> per hari.
     `;
 }
 
@@ -167,6 +191,7 @@ document.getElementById('aturanForm').addEventListener('submit', async function(
     const payload = {
         maks_hari_pinjam: document.getElementById('maksHari').value,
         denda_per_hari: document.getElementById('denda').value,
+        maks_buku: parseInt(document.getElementById('maksBuku').value),
         aktif: Boolean(Number(document.getElementById('aktif').value)),
         keterangan: document.getElementById('keterangan').value
     };

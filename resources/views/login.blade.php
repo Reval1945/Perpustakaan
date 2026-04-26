@@ -35,7 +35,7 @@
         html, body {
             height: 100%;
             width: 100%;
-            overflow: hidden;
+           
             font-family: 'Inter', sans-serif;
             background: #fff;
         }
@@ -238,7 +238,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
+           
         }
 
         /* Background pattern */
@@ -381,6 +381,7 @@
         }
 
         @media (max-width: 992px) {
+            
             .right-side {
                 display: none;
             }
@@ -444,6 +445,7 @@
                         <span class="spinner-border spinner-border-sm" role="status"></span>
                     </span>
                 </button>
+                
             </form>
 
             <!-- Link Registrasi -->

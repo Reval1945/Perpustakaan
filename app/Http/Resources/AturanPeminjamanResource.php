@@ -18,6 +18,7 @@ class AturanPeminjamanResource extends JsonResource
         return [
             'id'                => $this->id,
             'maks_hari_pinjam'  => $this->maks_hari_pinjam,
+            'maks_buku'         => $this->maks_buku,
             'denda_per_hari'    => $this->denda_per_hari,
             'aktif'             => (bool) $this->aktif,
             'keterangan'        => $this->keterangan,

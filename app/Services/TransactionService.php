@@ -26,6 +26,30 @@ class TransactionService
             $tanggalPinjam = now();
             $jatuhTempo    = $tanggalPinjam->copy()->addDays($aturan->maks_hari_pinjam);
 
+            // ── Validasi batas peminjaman ──────────────────────────────────
+            // Hitung buku aktif milik user (belum dikembalikan)
+            $statusAktif = ['menunggu_verifikasi', 'dipinjam', 'diperpanjang', 'terlambat', 'menunggu_verifikasi_kembali'];
+
+            $jumlahAktif = TransactionDetail::whereHas('transaction', function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                })
+                ->whereIn('status', $statusAktif)
+                ->count();
+
+            $jumlahDiajukan = count($bookIds);
+            $maksBuku       = $aturan->maks_buku ?? 3;
+
+            if (($jumlahAktif + $jumlahDiajukan) > $maksBuku) {
+                $sisaSlot = max(0, $maksBuku - $jumlahAktif);
+                throw new \Exception(
+                    "Batas peminjaman tercapai. Kamu sedang meminjam {$jumlahAktif} buku " .
+                    "(maks. {$maksBuku}). " .
+                    ($sisaSlot > 0
+                        ? "Kamu hanya dapat meminjam {$sisaSlot} buku lagi."
+                        : "Kembalikan buku terlebih dahulu sebelum meminjam yang baru.")
+                );
+            }
+            // ──────────────────────────────────────────────────────────────
             $transaction = Transactions::create([
                 'kode_transaksi'      => TransactionCodeGenerator::generate(),
                 'user_id'             => $userId,

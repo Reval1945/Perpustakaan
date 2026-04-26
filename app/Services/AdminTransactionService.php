@@ -24,6 +24,28 @@ class AdminTransactionService
             $tanggalPinjam = Carbon::today();
             $jatuhTempo    = $tanggalPinjam->copy()->addDays($aturan->maks_hari_pinjam);
 
+            // ── Validasi batas peminjaman ──────────────────────────────────
+            $statusAktif = ['menunggu_verifikasi', 'dipinjam', 'diperpanjang', 'terlambat', 'menunggu_verifikasi_kembali'];
+
+            $jumlahAktif = TransactionDetail::whereHas('transaction', fn ($q) => $q->where('user_id', $userId))
+                            ->whereIn('status', $statusAktif)
+                            ->count();
+
+            $jumlahDiajukan = count($bookIds);
+            $maksBuku       = $aturan->maks_buku ?? 3;
+
+            if (($jumlahAktif + $jumlahDiajukan) > $maksBuku) {
+                $sisaSlot = max(0, $maksBuku - $jumlahAktif);
+                throw new \Exception(
+                    "Batas peminjaman tercapai. Anggota ini sedang meminjam {$jumlahAktif} buku " .
+                    "(maks. {$maksBuku}). " .
+                    ($sisaSlot > 0
+                        ? "Hanya dapat menambah {$sisaSlot} buku lagi."
+                        : "Anggota harus mengembalikan buku terlebih dahulu.")
+                );
+            }
+            // ──────────────────────────────────────────────────────────────
+
             $transaksi = Transactions::create([
                 'kode_transaksi'      => TransactionCodeGenerator::generate(),
                 'user_id'             => $userId,

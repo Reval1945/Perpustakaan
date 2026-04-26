@@ -10,6 +10,7 @@ class UpdateAturanPeminjamanRequest extends FormRequest
     {
         return [
             'maks_hari_pinjam' => 'sometimes|integer|min:1',
+            'maks_buku'        => 'sometimes|integer|min:1',
             'denda_per_hari'   => 'sometimes|numeric|min:0',
             'aktif'            => 'sometimes|boolean',
             'keterangan'       => 'nullable|string'
@@ -20,6 +21,7 @@ class UpdateAturanPeminjamanRequest extends FormRequest
     {
         return [
             'maks_hari_pinjam.required' => 'Maksimal hari pinjam wajib diisi',
+            'maks_buku.required'        => 'Maksimal buku wajib diisi',
             'denda_per_hari.required'   => 'Denda per hari wajib diisi',
         ];
     }

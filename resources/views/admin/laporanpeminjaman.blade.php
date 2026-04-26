@@ -57,7 +57,9 @@
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Pinjam</th>
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Tgl Kembali</th>
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Status</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Denda</th>
                         <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Catatan</th>
+                        <th class="text-center py-3" style="color: var(--gray); font-size: 0.75rem; text-transform: uppercase; border: none;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="laporan-body">
@@ -143,7 +145,7 @@
     document.addEventListener("DOMContentLoaded", loadData);
 
     async function loadData() {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
         
         try {
             const res = await fetch("http://127.0.0.1:8000/api/transaction-details", {
@@ -153,13 +155,13 @@
             allData = json.data || [];
             applyFilter(); // Memanggil filter pertama kali untuk render awal
         } catch(err) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-danger">Gagal memuat data</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-danger">Gagal memuat data</td></tr>`;
         }
     }
 
     function renderTable(data) {
         if(data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Data tidak ditemukan</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5 text-muted">Data tidak ditemukan</td></tr>`;
             renderPagination(0, 1);
             return;
         }
@@ -180,7 +182,9 @@
             if (item.status === 'dikembalikan') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--success-soft); color: var(--success);">Selesai</span>`;
             } else if (item.status === 'dipinjam') {
-                badgeHtml = `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;
+                badgeHtml = `<span class="badge-custom" style="background: var(--primary-soft); color: var(--primary);">Dipinjam</span>`;   
+            } else if (item.status === 'diperpanjang') {
+                badgeHtml = `<span class="badge-custom" style="background: var(--info-soft); color: var(--info);">Diperpanjang</span>`;
             } else if (item.status === 'terlambat') {
                 badgeHtml = `<span class="badge-custom" style="background: var(--danger-soft); color: var(--danger);">Terlambat</span>`;
             }   else if (item.status === 'rusak') {
@@ -197,11 +201,17 @@
                 <tr class="small">
                     <td class="text-center text-muted">${globalNo}</td>
                     <td class="px-4 font-weight-bold">${nama}</td>
-                    <td>${judul}</td>
+                    <td style="max-width: 200px;">${judul}</td>
                     <td class="text-center">${tglPinjam}</td>
                     <td class="text-center">${tglKembali}</td>
                     <td class="text-center">${badgeHtml}</td>
+                    <td class="text-center small font-weight-bold">${item.denda ? `Rp ${Number(item.denda).toLocaleString('id-ID')}` : '-'}</td>
                     <td class="text-center small" style="max-width: 200px;">${item.catatan ?? '-'}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-light" onclick="cetakLaporanSatu('${item.id}')" style="border-radius: 8px; border: 1px solid var(--border);">
+                            <i class="fas fa-file-pdf text-danger"></i>
+                        </button>
+                    </td>
                 </tr>
             `;
         }).join('');
@@ -223,7 +233,6 @@
         wrapper.style.setProperty('display', 'flex', 'important');
         const startPos = (currentPage - 1) * ITEMS_PER_PAGE + 1;
         const endPos   = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
-        info.innerHTML = `Menampilkan <strong>${startPos}–${endPos}</strong> dari <strong>${totalItems}</strong> data`;
 
         const maxVisible = 5;
         let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
@@ -320,6 +329,22 @@
         } catch (err) {
             Swal.fire('Gagal', 'Gagal mengunduh laporan excel', 'error');
         }
+    }
+
+    async function cetakLaporanSatu(id) {
+        Swal.fire({ title: 'Menghasilkan PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        try {
+            const res = await fetch(`http://127.0.0.1:8000/api/laporan/peminjaman/${id}`, { 
+                headers: { 'Authorization': 'Bearer ' + token } 
+            });
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url; 
+            link.download = `Invoice_Peminjaman_${id}.pdf`; 
+            link.click();
+            Swal.close();
+        } catch (err) { Swal.fire('Gagal', 'Gagal mencetak dokumen', 'error'); }
     }
 </script>
 @endsection

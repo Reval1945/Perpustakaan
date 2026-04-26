@@ -391,7 +391,7 @@ document.getElementById('btnSimpanUser').addEventListener('click', async () => {
         email: document.getElementById('email').value,
         role: document.getElementById('role').value,
         class: document.getElementById('class').value,
-        nisn: document.getElementById('nisn').value,
+        nisn: document.getElementById('nisn').value.trim(),
         roll_number: document.getElementById('roll_number').value,
         phone: document.getElementById('phone').value,
     };
@@ -402,6 +402,15 @@ document.getElementById('btnSimpanUser').addEventListener('click', async () => {
     if (!data.name || !data.email) {
         return Swal.fire('Oops!', 'Nama dan Email wajib diisi.', 'warning');
     }
+
+    if (!data.nisn || String(data.nisn).length !== 10) {
+    return Swal.fire({
+        icon: 'error',
+        title: 'NISN Tidak Valid',
+        text: 'NISN wajib diisi dan harus tepat 10 digit!',
+        confirmButtonColor: '#d33'
+    });
+}
 
     Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
